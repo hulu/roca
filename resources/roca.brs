@@ -1,3 +1,7 @@
+' Creates a suite of test cases with a given description.
+' @param description a string describing the suite of tests contained within.
+' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
+' @param func the function to execute as part of this suite.
 sub describe(description as string, context as object, func as object)
     if context = invalid then
         context = createContext()
@@ -22,10 +26,17 @@ sub describe(description as string, context as object, func as object)
     end if
 end sub
 
+' Creates a test case with a given description.
+' @param description a string describing this test case
+' @param context the context from the parent 'describe', used to track test pass and fail states
+' @param func the function to execute as part of this test case
 sub it(description as string, context as object, func as object)
     context.__registerCase(description, context, func)
 end sub
 
+' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
+' to consumers.
+' @returns a new test case or suite context
 sub createContext()
     return {
         __state: {
@@ -41,7 +52,11 @@ sub createContext()
     }
 end sub
 
-sub __context_registerCase(description as string, context, func as object)
+' Registers a test case with the provided description and function in the given context.
+' @param description a string describing the test case
+' @param context the context from the parent 'describe', used to track test pass and fail states
+' @param func the function to execute as part of the test case
+sub __context_registerCase(description as string, context as object, func as object)
     m.__state.cases.push({
         description: description,
         func: func,
@@ -49,6 +64,10 @@ sub __context_registerCase(description as string, context, func as object)
     })
 end sub
 
+' Registers a test case with the provided description and function in the given context.
+' @param description a string describing the suite of tests contained within.
+' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
+' @param func the function to execute as part of this suite.
 sub __context_registerSuite(description as string, context as object, func as object)
     m.__state.suites.push({
         description: description,
@@ -57,10 +76,12 @@ sub __context_registerSuite(description as string, context as object, func as ob
     })
 end sub
 
+' Forces a test case into a "success" state.
 sub __context_pass()
     m.__state.success = true
 end sub
 
+' Forces a test case into a "failure" state.
 sub __context_fail()
     m.__state.success = false
 end sub
