@@ -1,30 +1,94 @@
 ' Creates a suite of test cases with a given description.
 ' @param description a string describing the suite of tests contained within.
-' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
+' @param parentContext the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
 ' @param func the function to execute as part of this suite.
-sub describe(description as string, context as object, func as object)
-    if context = invalid then
-        context = createContext()
-    end if
+sub describe(description as string, parentContext as object, func as object)
+    context = createContext()
+    context.__state.description = description
 
-    context.__registerSuite(description, context, func)
+    if parentContext <> invalid then
+        context.__state.parentCtx = parentContext
+        parentContext.__registerSuite(context, func)
+    end if
 
     func(context)
 
+    ' start to execute tests only from the top-level describe
     if context.__state.parentCtx = invalid then
-        ' calls func, checks the result, and prints "ok" or "not ok" followed by the description variable
-        for each case in context.__state.cases
-            ' TODO: recursively execute tests
+        ' first gather them all up so we can get an accurate count for our TAP output
+        allTests = gatherTests(context)
+
+        if allTests.count() = 0 then
+            print "No tests detected!"
+            return
+        end if
+
+        ' add the TAP version header and test count
+        print "TAP version 13"
+        print "1.." allTests.count()
+
+        ' then execute each test and report its results
+        index = 1
+        for each case in allTests
             case.func(case.ctx)
 
+            description = buildDescription(case)
             if case.ctx.__state.success then
-                print "ok - " case.description
+                print "ok " index " - " description
             else
-                print "not ok - " case.description
+                print "not ok " index " - " description
             end if
+
+            index = index + 1
         end for
     end if
 end sub
+
+' Performs a depth-first search of test suites, starting at `root`, to find all test cases.
+' @param root the context representing the top-level test suite
+' @param startAt the current suite to search within
+sub gatherTests(root as object, startAt = root as object)
+    casesInSuite = []
+    for each suiteModel in startAt.__state.suites
+        casesInSuite.append(gatherTests(root, suiteModel.ctx))
+    end for
+
+    casesInSuite.append(startAt.__state.cases)
+
+    return casesInSuite
+end sub
+
+' Builds a description string for the provided test case that includes all parent suite descriptions.
+' This mimicks the behavior of `mocha` with the `--reporter tap` option.
+function buildDescription(case as object)
+    if case.ctx = invalid then return
+
+    descriptions = [ case.description ]
+
+    ctx = case.ctx
+    while ctx <> invalid
+        if ctx.__state.description <> "" then
+            descriptions.unshift(ctx.__state.description)
+        end if
+        
+        ctx = ctx.__state.parentCtx
+    end while
+
+    description = ""
+    descriptionPart = descriptions.shift()
+
+    ' TODO: Replace with ifArrayJoin#join() when that's implemented in brs
+    while descriptionPart <> invalid and descriptionPart <> ""
+        if description <> "" then
+            description = description + " "
+        end if
+
+        description = description + descriptionPart
+        descriptionPart = descriptions.shift()
+    end while
+
+    return description
+end function
 
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
@@ -42,6 +106,7 @@ sub createContext()
         __state: {
             parentCtx: invalid,
             success: true,
+            description: "",
             cases: [],
             suites: []
         },
@@ -68,9 +133,8 @@ end sub
 ' @param description a string describing the suite of tests contained within.
 ' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
 ' @param func the function to execute as part of this suite.
-sub __context_registerSuite(description as string, context as object, func as object)
+sub __context_registerSuite(context as object, func as object)
     m.__state.suites.push({
-        description: description,
         func: func,
         ctx: context
     })
