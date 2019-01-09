@@ -1,5 +1,4 @@
 const brs = require('brs');
-const argv = require('yargs').argv;
 const glob = require('glob');
 
 function findBrsFiles(testFile, cb) {
@@ -21,12 +20,6 @@ async function runTest(files) {
     process.exit(0);
 }
 
-function testRunner(testFile) {
+module.exports = function(testFile) {
     findBrsFiles(testFile, runTest);
-}
-
-if (argv.f) {
-    testRunner(argv.f)
-} else {
-    console.warn("You need to specify a file to test.");
 }
