@@ -14,6 +14,7 @@ sub describe(description as string, func as object)
     withM = {
         __ctx: context
         __func: func
+        __log: __util_log
     }
     withM.__func()
 
@@ -38,6 +39,7 @@ sub describe(description as string, func as object)
             withM = {
                 pass: __util_pass,
                 fail: __util_fail,
+                log: __util_log,
                 __ctx: case.ctx,
                 __func: case.func
             }
@@ -158,4 +160,10 @@ end sub
 ' Forces a test case into a "failure" state.
 sub __util_fail()
     m.__ctx.__state.success = false
+end sub
+
+' Prints messages to stdout in a TAP-compliant format
+' @param msg the message to print as a TAP diagnostic
+sub __util_log(msg as string)
+    print "# " msg
 end sub
