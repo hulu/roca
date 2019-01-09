@@ -30,8 +30,17 @@ sub describe(description as string, parentContext as object, func as object)
         ' then execute each test and report its results
         index = 1
         for each case in allTests
-            case.func(case.ctx)
+            ' package the test case up with some test utilities accessible via `m.`
+            withUtils = {
+                pass: __util_pass,
+                fail: __util_fail,
+                __ctx: case.ctx,
+                __func: case.func
+            }
+            ' then call it
+            withUtils.__func()
 
+            ' and report the results
             description = buildDescription(case)
             if case.ctx.__state.success then
                 print "ok " index " - " description
@@ -92,10 +101,9 @@ end function
 
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
-' @param context the context from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of this test case
-sub it(description as string, context as object, func as object)
-    context.__registerCase(description, context, func)
+sub it(description as string, func as object)
+    m.ctx.__registerCase(description, m.ctx, func)
 end sub
 
 ' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
@@ -112,8 +120,6 @@ sub createContext()
         },
         __registerSuite: __context_registerSuite,
         __registerCase: __context_registerCase
-        pass: __context_pass,
-        fail: __context_fail
     }
 end sub
 
@@ -141,11 +147,11 @@ sub __context_registerSuite(context as object, func as object)
 end sub
 
 ' Forces a test case into a "success" state.
-sub __context_pass()
-    m.__state.success = true
+sub __util_pass()
+    m.__ctx.__state.success = true
 end sub
 
 ' Forces a test case into a "failure" state.
-sub __context_fail()
-    m.__state.success = false
+sub __util_fail()
+    m.__ctx.__state.success = false
 end sub
