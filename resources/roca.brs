@@ -1,17 +1,21 @@
 ' Creates a suite of test cases with a given description.
 ' @param description a string describing the suite of tests contained within.
-' @param parentContext the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
 ' @param func the function to execute as part of this suite.
-sub describe(description as string, parentContext as object, func as object)
+sub describe(description as string, func as object)
     context = createContext()
     context.__state.description = description
 
-    if parentContext <> invalid then
-        context.__state.parentCtx = parentContext
-        parentContext.__registerSuite(context, func)
+    if m.__ctx <> invalid then
+        context.__state.parentCtx = m.__ctx
+        m.__ctx.__registerSuite(context, func)
     end if
 
-    func(context)
+    ' package the suite up with its context accessible via `m.`
+    withM = {
+        __ctx: context
+        __func: func
+    }
+    withM.__func()
 
     ' start to execute tests only from the top-level describe
     if context.__state.parentCtx = invalid then
@@ -31,14 +35,14 @@ sub describe(description as string, parentContext as object, func as object)
         index = 1
         for each case in allTests
             ' package the test case up with some test utilities accessible via `m.`
-            withUtils = {
+            withM = {
                 pass: __util_pass,
                 fail: __util_fail,
                 __ctx: case.ctx,
                 __func: case.func
             }
             ' then call it
-            withUtils.__func()
+            withM.__func()
 
             ' and report the results
             description = buildDescription(case)
@@ -103,7 +107,7 @@ end function
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
 sub it(description as string, func as object)
-    m.ctx.__registerCase(description, m.ctx, func)
+    m.__ctx.__registerCase(description, m.__ctx, func)
 end sub
 
 ' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
