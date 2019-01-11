@@ -16,9 +16,11 @@ const argv = require('yargs')
             })
         },
         (argv) => {
-            testRunner(argv.file);
+            testRunner(argv.file, argv.s);
         }
     )
+    .describe('s', 'Path to brs files (if different from source/)')
+    .alias("s", "source")
     .help("h")
     .alias("h", "help")
     .argv;
