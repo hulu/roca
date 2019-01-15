@@ -2,8 +2,10 @@ const brs = require('brs');
 const glob = require('glob');
 const path = require('path');
 
-function findBrsFiles(testFile, cb) {
-    glob("source/**/*.brs", (err, files) => {
+function findBrsFiles(testFile, sourceDir, cb) {
+    let searchDir = sourceDir || 'source';
+    const pattern = path.join(searchDir, '**', '*.brs');
+    glob(pattern, (err, files) => {
         if (!err) {
             files.push(testFile);
             cb(files);
@@ -23,6 +25,6 @@ async function runTest(files) {
     process.exit(0);
 }
 
-module.exports = function(testFile) {
-    findBrsFiles(testFile, runTest);
+module.exports = function(testFile, sourceDir) {
+    findBrsFiles(testFile, sourceDir, runTest);
 }
