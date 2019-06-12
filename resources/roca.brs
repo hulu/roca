@@ -62,7 +62,7 @@ end sub
 ' Performs a depth-first search of test suites, starting at `root`, to find all test cases.
 ' @param root the context representing the top-level test suite
 ' @param startAt the current suite to search within
-sub gatherTests(root as object, startAt = root as object)
+function gatherTests(root as object, startAt = root as object)
     casesInSuite = []
     for each suiteModel in startAt.__state.suites
         casesInSuite.append(gatherTests(root, suiteModel.ctx))
@@ -71,12 +71,12 @@ sub gatherTests(root as object, startAt = root as object)
     casesInSuite.append(startAt.__state.cases)
 
     return casesInSuite
-end sub
+end function
 
 ' Builds a description string for the provided test case that includes all parent suite descriptions.
 ' This mimicks the behavior of `mocha` with the `--reporter tap` option.
 function buildDescription(case as object)
-    if case.ctx = invalid then return
+    if case.ctx = invalid then return invalid
 
     descriptions = [ case.description ]
 
@@ -115,7 +115,7 @@ end sub
 ' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
 ' to consumers.
 ' @returns a new test case or suite context
-sub createContext()
+function createContext()
     return {
         __state: {
             parentCtx: invalid,
@@ -127,7 +127,7 @@ sub createContext()
         __registerSuite: __context_registerSuite,
         __registerCase: __context_registerCase
     }
-end sub
+end function
 
 ' Registers a test case with the provided description and function in the given context.
 ' @param description a string describing the test case
