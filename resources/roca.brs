@@ -1,7 +1,8 @@
 ' Creates a suite of test cases with a given description.
 ' @param description a string describing the suite of tests contained within.
 ' @param func the function to execute as part of this suite.
-sub describe(description as string, func as object)
+' @param
+function describe(description as string, func as object, args = invalid as object)
     context = createContext()
     context.__state.description = description
 
@@ -15,49 +16,25 @@ sub describe(description as string, func as object)
         __ctx: context
         __func: func
         __log: __util_log
+        it: __it
+        fit: __fit
+        xit: __xit
     }
     withM.__func()
 
     ' start to execute tests only from the top-level describe
     if context.__state.parentCtx = invalid then
-        ' first gather them all up so we can get an accurate count for our TAP output
-        allTests = gatherTests(context)
-
-        if allTests.count() = 0 then
-            print "No tests detected!"
-            return
+        if args.exec = true then
+            context.__state.totalCases = context.__totalCases()
+            context.exec(args)
+            return context
+        else
+            context.__state.transitivelyHasFocusedCases = context.__transitivelyHasFocusedCases()
+            context.__state.totalCases = context.__totalCases()
+            return context
         end if
-
-        ' add the TAP version header and test count
-        print "TAP version 13"
-        print "1.." allTests.count()
-
-        ' then execute each test and report its results
-        index = 1
-        for each case in allTests
-            ' package the test case up with some test utilities accessible via `m.`
-            withM = {
-                pass: __util_pass,
-                fail: __util_fail,
-                log: __util_log,
-                __ctx: case.ctx,
-                __func: case.func
-            }
-            ' then call it
-            withM.__func()
-
-            ' and report the results
-            description = buildDescription(case)
-            if case.ctx.__state.success then
-                print "ok " index " - " description
-            else
-                print "not ok " index " - " description
-            end if
-
-            index = index + 1
-        end for
     end if
-end sub
+end function
 
 ' Performs a depth-first search of test suites, starting at `root`, to find all test cases.
 ' @param root the context representing the top-level test suite
@@ -108,38 +85,115 @@ end function
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
-sub it(description as string, func as object)
-    m.__ctx.__registerCase(description, m.__ctx, func)
+sub __it(description as string, func as object)
+    m.__ctx.__registerCase("default", description, m.__ctx, func)
+end sub
+
+sub __fit(description as string, func as object)
+    m.__ctx.__registerCase("focus", description, m.__ctx, func)
+end sub
+
+sub __xit(description as string, func as object)
+    m.__ctx.__registerCase("skip", description, m.__ctx, func)
 end sub
 
 ' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
 ' to consumers.
 ' @returns a new test case or suite context
 function createContext()
-    return {
+    ctx = {
         __state: {
             parentCtx: invalid,
-            success: true,
             description: "",
             cases: [],
+            hasFocusedCases: false,
+            transitivelyHasFocusedCases: false,
             suites: []
         },
+        __transitivelyHasFocusedCases: __context_transitivelyHasFocusedCases,
+        __totalCases: __context_totalCases,
         __registerSuite: __context_registerSuite,
-        __registerCase: __context_registerCase
+        __registerCase: __context_registerCase,
+        exec: __context_exec,
     }
+    return ctx
 end function
 
 ' Registers a test case with the provided description and function in the given context.
+' @param mode one of ["default", "skip", "focus"], describing how this test was declared
 ' @param description a string describing the test case
 ' @param context the context from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of the test case
-sub __context_registerCase(description as string, context as object, func as object)
+sub __context_registerCase(mode as string, description as string, context as object, func as object)
+    if mode <> "default" and mode <> "skip" and mode <> "focus" then
+        print "[roca.brs] Error: Received unexpected test case mode '" mode "'"
+        return
+    end if
+
+    if mode = "focus" then
+        m.__state.hasFocusedCases = true
+    end if
+
     m.__state.cases.push({
+        mode: mode,
+        __state: {
+            success: true
+        },
         description: description,
         func: func,
-        ctx: context
+        ctx: context,
+        report: __case_report,
+        exec: __case_execute
     })
 end sub
+
+function __case_execute()
+    withM = {
+        pass: __util_pass,
+        fail: __util_fail,
+        log: __util_log,
+        __ctx: m.ctx,
+        __func: m.func,
+        __state: m.__state
+    }
+    withM.__func()
+end function
+
+sub __case_report(index as integer)
+    description = buildDescription(m)
+    if m.mode = "skip" then
+        description += " # skip"
+    end if
+    if m.__state.success then
+        print "ok " index " - " description
+    else
+        print "not ok " index " - " description
+    end if
+end sub
+
+function __context_transitivelyHasFocusedCases() as boolean
+    for each suiteWrapper in m.__state.suites
+        suite = suiteWrapper.ctx
+        if suite.__state.hasFocusedCases = true then
+            return true
+        else if suite.__transitivelyHasFocusedCases() = true then
+            return true
+        end if
+    end for
+
+    return m.__state.hasFocusedCases
+end function
+
+
+function __context_totalCases() as integer
+    cases = 0
+    for each suiteWrapper in m.__state.suites
+        suite = suiteWrapper.ctx
+        cases += suite.__totalCases()
+    end for
+
+    return cases + m.__state.cases.count()
+end function
 
 ' Registers a test case with the provided description and function in the given context.
 ' @param description a string describing the suite of tests contained within.
@@ -152,14 +206,29 @@ sub __context_registerSuite(context as object, func as object)
     })
 end sub
 
+sub __context_exec(args as object)
+    if args.exec <> true then return
+    index = args.startingIndex
+    for each case in m.__state.cases
+        if (args.focusedCasesDetected and case.mode = "focus") or not args.focusedCasesDetected then
+            if case.mode <> "skip" then
+                case.exec()
+            end if
+        end if
+        case.report(index)
+
+        index++
+    end for
+end sub
+
 ' Forces a test case into a "success" state.
 sub __util_pass()
-    m.__ctx.__state.success = true
+    m.__state.success = true
 end sub
 
 ' Forces a test case into a "failure" state.
 sub __util_fail()
-    m.__ctx.__state.success = false
+    m.__state.success = false
 end sub
 
 ' Prints messages to stdout in a TAP-compliant format
