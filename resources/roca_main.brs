@@ -26,8 +26,10 @@ sub main()
         focusedCasesDetected: focusedCasesDetected,
         startingIndex: 1
     }
-    print "TAP version 13"
-    print "1.." totalTests
+
+    tap = tap()
+    tap.version()
+    tap.plan(totalTests)
 
     for each file in files
         path = ["pkg:", basePath, file].join("/")

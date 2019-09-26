@@ -15,6 +15,7 @@ function findBrsFiles(testFile, sourceDir, cb) {
 
 async function runTest(files) {
     let rocaFiles = [
+        "tap.brs",
         "roca_lib.brs",
         "roca_main.brs"
     ].map(basename => path.join(__dirname, "..", "resources", basename));

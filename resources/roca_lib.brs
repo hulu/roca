@@ -162,12 +162,13 @@ end function
 sub __case_report(index as integer)
     description = buildDescription(m)
     if m.mode = "skip" then
-        description += " # skip"
+        tap().skip(index, description)
     end if
+
     if m.__state.success then
-        print "ok " index " - " description
+        tap().pass(index, description)
     else
-        print "not ok " index " - " description
+        tap().fail(index, description)
     end if
 end sub
 
@@ -233,6 +234,6 @@ end sub
 
 ' Prints messages to stdout in a TAP-compliant format
 ' @param msg the message to print as a TAP diagnostic
-sub __util_log(msg as string)
-    print "# " msg
+sub __util_log(arg as dynamic)
+    tap().diagnostic(arg)
 end sub
