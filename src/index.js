@@ -14,10 +14,13 @@ function findBrsFiles(testFile, sourceDir, cb) {
 }
 
 async function runTest(files) {
-    let rocaBrs = path.join(__dirname, "..", "resources", "roca.brs");
+    let rocaFiles = [
+        "roca_lib.brs",
+        "roca_main.brs"
+    ].map(basename => path.join(__dirname, "..", "resources", basename));
 
     try {
-        const result = await brs.execute([ rocaBrs, ...files ]);
+        const result = await brs.execute([ ...rocaFiles, ...files ]);
     } catch(e) {
         console.error("Interpreter found an error: ", e);
         process.exit(11);
