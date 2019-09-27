@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/hulu/roca#readme",
   "dependencies": {
-    "brs": "^0.14.0",
+    "brs": "^0.15.0",
     "glob": "^7.1.4",
     "yargs": "^13.2.4"
   }
