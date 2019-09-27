@@ -36,20 +36,6 @@ function describe(description as string, func as object, args = invalid as objec
     end if
 end function
 
-' Performs a depth-first search of test suites, starting at `root`, to find all test cases.
-' @param root the context representing the top-level test suite
-' @param startAt the current suite to search within
-function gatherTests(root as object, startAt = root as object)
-    casesInSuite = []
-    for each suiteModel in startAt.__state.suites
-        casesInSuite.append(gatherTests(root, suiteModel.ctx))
-    end for
-
-    casesInSuite.append(startAt.__state.cases)
-
-    return casesInSuite
-end function
-
 ' Builds a description string for the provided test case that includes all parent suite descriptions.
 ' This mimicks the behavior of `mocha` with the `--reporter tap` option.
 function buildDescription(case as object)
