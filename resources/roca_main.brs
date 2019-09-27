@@ -24,7 +24,7 @@ sub main()
     args = {
         exec: true,
         focusedCasesDetected: focusedCasesDetected,
-        startingIndex: 1
+        startingIndex: 0
     }
 
     tap = tap()
