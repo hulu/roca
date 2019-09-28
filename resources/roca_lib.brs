@@ -120,7 +120,7 @@ sub __context_registerCase(mode as string, description as string, context as obj
     m.__state.cases.push({
         mode: mode,
         __state: {
-            success: true
+            success: invalid
         },
         description: description,
         func: func,
@@ -144,13 +144,13 @@ end function
 
 sub __case_report(index as integer)
     description = buildDescription(m)
-    if m.mode = "skip" then
+    if m.mode = "skip" or m.__state.success = invalid then
         tap().skip(index, description)
     end if
 
-    if m.__state.success then
+    if m.__state.success = true then
         tap().pass(index, description)
-    else
+    else if m.__state.success = false then
         tap().fail(index, description)
     end if
 end sub
