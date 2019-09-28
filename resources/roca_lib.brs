@@ -22,18 +22,15 @@ function describe(description as string, func as object, args = invalid as objec
     }
     withM.__func()
 
+    context.__state.transitivelyHasFocusedCases = context.__transitivelyHasFocusedCases()
+    context.__state.totalCases = context.__totalCases()
+
     ' start to execute tests only from the top-level describe
-    if context.__state.parentCtx = invalid then
-        if args.exec = true then
-            context.__state.totalCases = context.__totalCases()
-            context.exec(args)
-            return context
-        else
-            context.__state.transitivelyHasFocusedCases = context.__transitivelyHasFocusedCases()
-            context.__state.totalCases = context.__totalCases()
-            return context
-        end if
+    if context.__state.parentCtx = invalid and args.exec = true then
+        context.exec(args)
     end if
+
+    return context
 end function
 
 ' Builds a description string for the provided test case that includes all parent suite descriptions.
@@ -195,6 +192,13 @@ end sub
 
 sub __context_exec(args as object)
     if args.exec <> true then return
+
+    for each suiteWrapper in m.__state.suites
+        suite = suiteWrapper.ctx
+        suite.exec(args)
+        args.startingIndex += suite.__state.totalCases
+    end for
+
     index = args.startingIndex
     for each case in m.__state.cases
         if (args.focusedCasesDetected and case.mode = "focus") or not args.focusedCasesDetected then
