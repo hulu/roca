@@ -5,16 +5,17 @@
 function describe(description as string, func as object, args = invalid as object)
     suite = __roca_suite()
     suite.__state.description = description
+    suite.__state.func = func
 
     if m.__suite <> invalid then
         suite.__state.parentSuite = m.__suite
-        m.__suite.__registerSuite(suite, func)
+        m.__suite.__registerSuite(suite)
     end if
 
     ' package the suite up with its context accessible via `m.`
     withM = {
         __suite: suite
-        __func: func
+        __func: suite.__state.func
         __log: __util_log
         it: __it
         fit: __fit
@@ -100,12 +101,12 @@ function __roca_suite()
     }
 end function
 
-' Registers a test case with the provided description and function in the given context.
+' Registers a test case with the provided description and function in the given suite.
 ' @param mode one of ["default", "skip", "focus"], describing how this test was declared
 ' @param description a string describing the test case
-' @param context the context from the parent 'describe', used to track test pass and fail states
+' @param suite the suite from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of the test case
-sub __suite_registerCase(mode as string, description as string, context as object, func as object)
+sub __suite_registerCase(mode as string, description as string, suite as object, func as object)
     if mode <> "default" and mode <> "skip" and mode <> "focus" then
         print "[roca.brs] Error: Received unexpected test case mode '" mode "'"
         return
@@ -122,7 +123,7 @@ sub __suite_registerCase(mode as string, description as string, context as objec
         },
         description: description,
         func: func,
-        ctx: context,
+        ctx: suite,
         report: __case_report,
         exec: __case_execute
     })
@@ -154,8 +155,7 @@ sub __case_report(index as integer)
 end sub
 
 function __suite_transitivelyHasFocusedCases() as boolean
-    for each suiteWrapper in m.__state.suites
-        suite = suiteWrapper.ctx
+    for each suite in m.__state.suites
         if suite.__state.hasFocusedCases = true then
             return true
         else if suite.__transitivelyHasFocusedCases() = true then
@@ -169,30 +169,24 @@ end function
 
 function __suite_totalCases() as integer
     cases = 0
-    for each suiteWrapper in m.__state.suites
-        suite = suiteWrapper.ctx
+    for each suite in m.__state.suites
         cases += suite.__totalCases()
     end for
 
     return cases + m.__state.cases.count()
 end function
 
-' Registers a test case with the provided description and function in the given context.
+' Registers a test case with the provided description and function in the given parent suite.
 ' @param description a string describing the suite of tests contained within.
-' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
-' @param func the function to execute as part of this suite.
-sub __suite_registerSuite(context as object, func as object)
-    m.__state.suites.push({
-        func: func,
-        ctx: context
-    })
+' @param suite the suite from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
+sub __suite_registerSuite(suite)
+    m.__state.suites.push(suite)
 end sub
 
 sub __suite_exec(args as object)
     if args.exec <> true then return
 
-    for each suiteWrapper in m.__state.suites
-        suite = suiteWrapper.ctx
+    for each suite in m.__state.suites
         suite.exec(args)
         args.startingIndex += suite.__state.totalCases
     end for
