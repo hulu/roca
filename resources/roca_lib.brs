@@ -7,7 +7,7 @@ function describe(description as string, func as object, args = invalid as objec
     suite.__state.description = description
 
     if m.__suite <> invalid then
-        suite.__state.parentCtx = m.__suite
+        suite.__state.parentSuite = m.__suite
         m.__suite.__registerSuite(suite, func)
     end if
 
@@ -26,7 +26,7 @@ function describe(description as string, func as object, args = invalid as objec
     suite.__state.totalCases = suite.__totalCases()
 
     ' start to execute tests only from the top-level describe
-    if suite.__state.parentCtx = invalid and args.exec = true then
+    if suite.__state.parentSuite = invalid and args.exec = true then
         suite.exec(args)
     end if
 
@@ -46,7 +46,7 @@ function buildDescription(case as object)
             descriptions.unshift(ctx.__state.description)
         end if
         
-        ctx = ctx.__state.parentCtx
+        ctx = ctx.__state.parentSuite
     end while
 
     description = ""
@@ -83,22 +83,21 @@ end sub
 ' Creates a new test suite, which can contain an arbitrary number of test cases and sub-suites.
 ' @returns a new test suite
 function __roca_suite()
-    ctx = {
+    return {
         __state: {
-            parentCtx: invalid,
+            parentSuite: invalid,
             description: "",
             cases: [],
             hasFocusedCases: false,
             transitivelyHasFocusedCases: false,
             suites: []
         },
-        __transitivelyHasFocusedCases: __context_transitivelyHasFocusedCases,
-        __totalCases: __context_totalCases,
-        __registerSuite: __context_registerSuite,
-        __registerCase: __context_registerCase,
-        exec: __context_exec,
+        __transitivelyHasFocusedCases: __suite_transitivelyHasFocusedCases,
+        __totalCases: __suite_totalCases,
+        __registerSuite: __suite_registerSuite,
+        __registerCase: __suite_registerCase,
+        exec: __suite_exec,
     }
-    return ctx
 end function
 
 ' Registers a test case with the provided description and function in the given context.
@@ -106,7 +105,7 @@ end function
 ' @param description a string describing the test case
 ' @param context the context from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of the test case
-sub __context_registerCase(mode as string, description as string, context as object, func as object)
+sub __suite_registerCase(mode as string, description as string, context as object, func as object)
     if mode <> "default" and mode <> "skip" and mode <> "focus" then
         print "[roca.brs] Error: Received unexpected test case mode '" mode "'"
         return
@@ -154,7 +153,7 @@ sub __case_report(index as integer)
     end if
 end sub
 
-function __context_transitivelyHasFocusedCases() as boolean
+function __suite_transitivelyHasFocusedCases() as boolean
     for each suiteWrapper in m.__state.suites
         suite = suiteWrapper.ctx
         if suite.__state.hasFocusedCases = true then
@@ -168,7 +167,7 @@ function __context_transitivelyHasFocusedCases() as boolean
 end function
 
 
-function __context_totalCases() as integer
+function __suite_totalCases() as integer
     cases = 0
     for each suiteWrapper in m.__state.suites
         suite = suiteWrapper.ctx
@@ -182,14 +181,14 @@ end function
 ' @param description a string describing the suite of tests contained within.
 ' @param context the context from the parent `describe`, used to create sub-suites.  Use `invalid` for the top-level suite.
 ' @param func the function to execute as part of this suite.
-sub __context_registerSuite(context as object, func as object)
+sub __suite_registerSuite(context as object, func as object)
     m.__state.suites.push({
         func: func,
         ctx: context
     })
 end sub
 
-sub __context_exec(args as object)
+sub __suite_exec(args as object)
     if args.exec <> true then return
 
     for each suiteWrapper in m.__state.suites
