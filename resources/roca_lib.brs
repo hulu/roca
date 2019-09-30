@@ -6,14 +6,14 @@ function describe(description as string, func as object, args = invalid as objec
     suite = __roca_suite()
     suite.__state.description = description
 
-    if m.__ctx <> invalid then
-        suite.__state.parentCtx = m.__ctx
-        m.__ctx.__registerSuite(suite, func)
+    if m.__suite <> invalid then
+        suite.__state.parentCtx = m.__suite
+        m.__suite.__registerSuite(suite, func)
     end if
 
     ' package the suite up with its context accessible via `m.`
     withM = {
-        __ctx: suite
+        __suite: suite
         __func: func
         __log: __util_log
         it: __it
@@ -69,15 +69,15 @@ end function
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
 sub __it(description as string, func as object)
-    m.__ctx.__registerCase("default", description, m.__ctx, func)
+    m.__suite.__registerCase("default", description, m.__suite, func)
 end sub
 
 sub __fit(description as string, func as object)
-    m.__ctx.__registerCase("focus", description, m.__ctx, func)
+    m.__suite.__registerCase("focus", description, m.__suite, func)
 end sub
 
 sub __xit(description as string, func as object)
-    m.__ctx.__registerCase("skip", description, m.__ctx, func)
+    m.__suite.__registerCase("skip", description, m.__suite, func)
 end sub
 
 ' Creates a new test suite, which can contain an arbitrary number of test cases and sub-suites.
