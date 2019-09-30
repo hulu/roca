@@ -3,17 +3,17 @@
 ' @param func the function to execute as part of this suite.
 ' @param
 function describe(description as string, func as object, args = invalid as object)
-    context = createContext()
-    context.__state.description = description
+    suite = __roca_suite()
+    suite.__state.description = description
 
     if m.__ctx <> invalid then
-        context.__state.parentCtx = m.__ctx
-        m.__ctx.__registerSuite(context, func)
+        suite.__state.parentCtx = m.__ctx
+        m.__ctx.__registerSuite(suite, func)
     end if
 
     ' package the suite up with its context accessible via `m.`
     withM = {
-        __ctx: context
+        __ctx: suite
         __func: func
         __log: __util_log
         it: __it
@@ -22,15 +22,15 @@ function describe(description as string, func as object, args = invalid as objec
     }
     withM.__func()
 
-    context.__state.transitivelyHasFocusedCases = context.__transitivelyHasFocusedCases()
-    context.__state.totalCases = context.__totalCases()
+    suite.__state.transitivelyHasFocusedCases = suite.__transitivelyHasFocusedCases()
+    suite.__state.totalCases = suite.__totalCases()
 
     ' start to execute tests only from the top-level describe
-    if context.__state.parentCtx = invalid and args.exec = true then
-        context.exec(args)
+    if suite.__state.parentCtx = invalid and args.exec = true then
+        suite.exec(args)
     end if
 
-    return context
+    return suite
 end function
 
 ' Builds a description string for the provided test case that includes all parent suite descriptions.
@@ -80,10 +80,9 @@ sub __xit(description as string, func as object)
     m.__ctx.__registerCase("skip", description, m.__ctx, func)
 end sub
 
-' Creates a new test or suite context, which encapsulates the test or suite's internal state and provides the test API
-' to consumers.
-' @returns a new test case or suite context
-function createContext()
+' Creates a new test suite, which can contain an arbitrary number of test cases and sub-suites.
+' @returns a new test suite
+function __roca_suite()
     ctx = {
         __state: {
             parentCtx: invalid,
