@@ -123,7 +123,7 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         },
         description: description,
         func: func,
-        ctx: suite,
+        suite: suite,
         report: __case_report,
         exec: __case_execute
     })
@@ -134,7 +134,7 @@ function __case_execute()
         pass: __util_pass,
         fail: __util_fail,
         log: __util_log,
-        __ctx: m.ctx,
+        __suite: m.suite,
         __func: m.func,
         __state: m.__state
     }
@@ -144,13 +144,13 @@ end function
 sub __case_report(index as integer)
     description = buildDescription(m)
     if m.mode = "skip" or m.__state.success = invalid then
-        tap().skip(index, description)
+        tap().skip(index, m.description)
     end if
 
     if m.__state.success = true then
-        tap().pass(index, description)
+        tap().pass(index, m.description)
     else if m.__state.success = false then
-        tap().fail(index, description)
+        tap().fail(index, m.description)
     end if
 end sub
 
