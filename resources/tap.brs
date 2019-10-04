@@ -10,7 +10,15 @@ function Tap() as object
         skip: __tap_skip,
         fail: __tap_fail,
         diagnostic: __tap_diagnostic,
-        formatTitle: __tap_formatTitle
+        formatTitle: __tap_formatTitle,
+        enterSubTest: __tap_enterSubTest,
+        exitSubTest: __tap_exitSubTest,
+        indent: __tap_indent,
+        deindent: __tap_deindent,
+        getIndent: __tap_getIndent,
+        __state: {
+            depth: 0
+        }
     }
 end function
 
@@ -22,21 +30,21 @@ end sub
 ' Prints a TAP testing plan in the form of "1..${numberOfTests}"
 ' @param {integer} numberOfTests - the number of test cases being run
 sub __tap_plan(numberOfTests as integer)
-    print "1.." numberOfTests
+    print m.getIndent() "1.." numberOfTests
 end sub
 
 ' Prints a "test case passed" message to the TAP stream
 ' @param {integer} index - the zero-based index of the test that passed
 ' @param {string} rawTitle - the unsanitized title of the test that passed
 sub __tap_pass(index as integer, rawTitle as string)
-    print "ok"; index + 1; "-"; m.formatTitle(rawTitle)
+    print m.getIndent() "ok " index + 1 " - " m.formatTitle(rawTitle)
 end sub
 
 ' Prints a "test case skipped" message to the TAP stream
 ' @param {integer} index - the zero-based index of the test that was skipped
 ' @param {string} rawTitle - the unsanitized title of the test that was skipped
 sub __tap_skip(index as integer, rawTitle as string)
-    print "ok"; index + 1; "-"; m.formatTitle(rawTitle); "# skip"
+    print m.getIndent() "ok " index + 1 " - " m.formatTitle(rawTitle) " # skip"
 end sub
 
 ' Prints a "test case failed" message to the TAP stream
@@ -44,7 +52,7 @@ end sub
 ' @param {string} rawTitle - the unsanitized title of the test that failed
 ' @param {assocarray} [metadata] - blob of data to be printed in an indented YAML block
 sub __tap_fail(index as integer, rawTitle as string, metadata = invalid as object)
-    print "not ok"; index + 1; "-"; m.formatTitle(rawTitle)
+    print m.getIndent() "not ok " index + 1 " - " m.formatTitle(rawTitle)
     if metadata <> invalid then
         ' TODO print a YAML (but probably JSON) document of that data
     end if
@@ -53,7 +61,7 @@ end sub
 ' Prints the provided data as a TAP-compliant diagnostic (i.e. prefixed with `# `)
 ' @param {dynamic} arg - the value to print
 sub __tap_diagnostic(arg as dynamic)
-    print "#"; arg
+    print m.getInent() "# " arg
 end sub
 
 ' Sanitizes a test case's title for inclusion in a TAP stream.
@@ -63,4 +71,29 @@ end sub
 ' @returns {string} a sanitized version of `title`
 function __tap_formatTitle(title as string) as string
     return title.replace("#", "")
+end function
+
+sub __tap_enterSubTest(name as string)
+    print m.getIndent() "# Subtest: " name
+    m.indent()
+end sub
+
+sub __tap_exitSubTest()
+    m.deindent()
+end sub
+
+sub __tap_indent()
+    m.__state.depth++
+end sub
+
+sub __tap_deindent()
+    if m.__state.depth > 0 then m.__state.depth--
+end sub
+
+function __tap_getIndent()
+    indent = ""
+    for i = 0 to m.__state.depth - 1
+        indent += "    "
+    end for
+    return indent
 end function

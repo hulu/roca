@@ -91,7 +91,12 @@ function __roca_suite()
             cases: [],
             hasFocusedCases: false,
             transitivelyHasFocusedCases: false,
-            suites: []
+            suites: [],
+            results: {
+                passed: 0,
+                failed: 0,
+                skipped: 0
+            }
         },
         __transitivelyHasFocusedCases: __suite_transitivelyHasFocusedCases,
         __totalCases: __suite_totalCases,
@@ -141,18 +146,21 @@ function __case_execute()
     withM.__func()
 end function
 
-sub __case_report(index as integer)
+function __case_report(index as integer, tap as object) as string
     description = buildDescription(m)
     if m.mode = "skip" or m.__state.success = invalid then
-        tap().skip(index, m.description)
+        tap.skip(index, m.description)
+        return "skiped"
     end if
 
     if m.__state.success = true then
-        tap().pass(index, m.description)
+        tap.pass(index, m.description)
+        return "passed"
     else if m.__state.success = false then
-        tap().fail(index, m.description)
+        tap.fail(index, m.description)
+        return "failed"
     end if
-end sub
+end function
 
 function __suite_transitivelyHasFocusedCases() as boolean
     for each suite in m.__state.suites
@@ -186,22 +194,53 @@ end sub
 sub __suite_exec(args as object)
     if args.exec <> true then return
 
-    for each suite in m.__state.suites
-        suite.exec(args)
-        args.startingIndex += suite.__state.totalCases
-    end for
+    tap = args.tap
+    tap.enterSubTest(m.__state.description)
+    tap.plan(m.__state.suites.count() + m.__state.cases.count())
 
-    index = args.startingIndex
+    subTestIndex = 0
+    for each suite in m.__state.suites
+        suite.exec({
+            exec: true,
+            focusedCasesDetected: args.focusedCasesDetected,
+            index: subTestIndex,
+            tap: args.tap
+        })
+
+        subTestIndex++
+    end for
+    tap.exitSubTest()
+
+    index = args.index
     for each case in m.__state.cases
+        tap.indent()
         if (args.focusedCasesDetected and case.mode = "focus") or not args.focusedCasesDetected then
             if case.mode <> "skip" then
                 case.exec()
             end if
         end if
-        case.report(index)
+        result = case.report(index, tap)
+        if result = "passed" then
+            m.__state.results.passed++
+        else if result = "failed" then
+            m.__state.results.passed++
+        else
+            m.__state.results.skipped++
+        end if
+        tap.deindent()
 
         index++
     end for
+
+    results = m.__state.results
+    description = m.__state.description
+    ' ignore skipped tests as part of suite completion -- as long as the suite doesn't fail, it's
+    ' basically a success
+    if results.failed > 0 then
+        tap.fail(args.index, description)
+    else
+        tap.pass(args.index, description)
+    end if
 end sub
 
 ' Forces a test case into a "success" state.

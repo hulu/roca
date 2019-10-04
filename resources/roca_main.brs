@@ -21,20 +21,21 @@ sub main()
         totalTests += suite.__state.totalCases
     end for
 
+    tap = tap()
+    tap.version()
+    tap.plan(rootSuites.count())
+
     args = {
         exec: true,
         focusedCasesDetected: focusedCasesDetected,
-        startingIndex: 0
+        index: 0,
+        tap: tap
     }
-
-    tap = tap()
-    tap.version()
-    tap.plan(totalTests)
 
     for each file in files
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, args)
-        args.startingIndex += suite.__state.totalCases
+        args.index += 1
     end for
 end sub
 
