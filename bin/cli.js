@@ -7,16 +7,10 @@ const argv = require('yargs')
         "Options:": "Other Options"
     })
     .command(
-        "file <file>",
-        "Run tests on given file", 
-        (yargs) => {
-            yargs.positional("file", {
-                type: "string",
-                describe: "The test file to execute"
-            })
-        },
+        ["$0", "run"],
+        "Discovers and executes all .test.brs tests in the current directory", 
         (argv) => {
-            testRunner(argv.file, argv.s);
+            testRunner(argv.s);
         }
     )
     .describe('s', 'Path to brs files (if different from source/)')

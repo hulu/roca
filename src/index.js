@@ -2,12 +2,11 @@ const brs = require('brs');
 const glob = require('glob');
 const path = require('path');
 
-function findBrsFiles(testFile, sourceDir, cb) {
+function findBrsFiles(sourceDir, cb) {
     let searchDir = sourceDir || 'source';
     const pattern = path.join(searchDir, '**', '*.brs');
     glob(pattern, (err, files) => {
         if (!err) {
-            files.push(testFile);
             cb(files);
         }
     });
@@ -24,11 +23,10 @@ async function runTest(files) {
         const result = await brs.execute([ ...rocaFiles, ...files ]);
     } catch(e) {
         console.error("Interpreter found an error: ", e);
-        process.exit(11);
+        process.exitCode = 1;
     }
-    process.exit(0);
 }
 
-module.exports = function(testFile, sourceDir) {
-    findBrsFiles(testFile, sourceDir, runTest);
+module.exports = function(sourceDir) {
+    findBrsFiles(sourceDir, runTest);
 }
