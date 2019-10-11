@@ -1,8 +1,6 @@
 sub main()
     basePath = "tests"
     files = MatchFiles("pkg:/" + basePath, "*.test.brs")
-    print "# found " files.count() " files"
-    roca = "pkg:/tests/roca.brs"
 
     rootSuites = []
     for each file in files
