@@ -223,7 +223,7 @@ sub __suite_exec(args as object)
         if result = "passed" then
             m.__state.results.passed++
         else if result = "failed" then
-            m.__state.results.passed++
+            m.__state.results.failed++
         else
             m.__state.results.skipped++
         end if
