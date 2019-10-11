@@ -150,7 +150,7 @@ function __case_report(index as integer, tap as object) as string
     description = buildDescription(m)
     if m.mode = "skip" or m.__state.success = invalid then
         tap.skip(index, m.description)
-        return "skiped"
+        return "skipped"
     end if
 
     if m.__state.success = true then
