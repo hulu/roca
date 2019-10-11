@@ -1,7 +1,8 @@
 ' Creates a suite of test cases with a given description.
-' @param description a string describing the suite of tests contained within.
-' @param func the function to execute as part of this suite.
-' @param
+' @param {string} description - a string describing the suite of tests contained within.
+' @param {function} func - the function to execute as part of this suite.
+' @param {assocarray} [args] - the set of arguments provided by the Roca test framework
+' @returns {assocarray} - the newly-created test suite -- state included.
 function describe(description as string, func as object, args = invalid as object)
     suite = __roca_suite()
     suite.__state.description = description
