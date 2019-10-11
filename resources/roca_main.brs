@@ -16,11 +16,6 @@ sub main()
         focusedCasesDetected = (focusedCasesDetected or suite.__state.transitivelyHasFocusedCases)
     end for
 
-    totalTests = 0
-    for each suite in rootSuites
-        totalTests += suite.__state.totalCases
-    end for
-
     tap = tap()
     tap.version()
     tap.plan(rootSuites.count())
