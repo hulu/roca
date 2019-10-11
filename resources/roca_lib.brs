@@ -35,38 +35,6 @@ function describe(description as string, func as object, args = invalid as objec
     return suite
 end function
 
-' Builds a description string for the provided test case that includes all parent suite descriptions.
-' This mimicks the behavior of `mocha` with the `--reporter tap` option.
-function buildDescription(case as object)
-    if case.ctx = invalid then return invalid
-
-    descriptions = [ case.description ]
-
-    ctx = case.ctx
-    while ctx <> invalid
-        if ctx.__state.description <> "" then
-            descriptions.unshift(ctx.__state.description)
-        end if
-        
-        ctx = ctx.__state.parentSuite
-    end while
-
-    description = ""
-    descriptionPart = descriptions.shift()
-
-    ' TODO: Replace with ifArrayJoin#join() when that's implemented in brs
-    while descriptionPart <> invalid and descriptionPart <> ""
-        if description <> "" then
-            description = description + " "
-        end if
-
-        description = description + descriptionPart
-        descriptionPart = descriptions.shift()
-    end while
-
-    return description
-end function
-
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
@@ -148,7 +116,6 @@ function __case_execute()
 end function
 
 function __case_report(index as integer, tap as object) as string
-    description = buildDescription(m)
     if m.mode = "skip" or m.__state.success = invalid then
         tap.skip(index, m.description)
         return "skipped"
