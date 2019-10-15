@@ -179,7 +179,7 @@ sub __suite_exec(args as object)
     end for
     tap.exitSubTest()
 
-    index = args.index
+    index = subTestIndex
     for each case in m.__state.cases
         tap.indent()
         if (args.focusedCasesDetected and case.mode = "focus") or not args.focusedCasesDetected then
