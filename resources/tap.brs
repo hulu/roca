@@ -61,7 +61,7 @@ end sub
 ' Prints the provided data as a TAP-compliant diagnostic (i.e. prefixed with `# `)
 ' @param {dynamic} arg - the value to print
 sub __tap_diagnostic(arg as dynamic)
-    print m.getInent() "# " arg
+    print m.getIndent() "# " arg
 end sub
 
 ' Sanitizes a test case's title for inclusion in a TAP stream.
