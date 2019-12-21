@@ -111,6 +111,7 @@ function __case_execute()
         __suite: m.suite,
         __func: m.func,
         __state: m.__state
+        assert: assert(__util_pass, __util_fail, m.__state)
     }
     withM.__func()
 end function

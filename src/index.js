@@ -14,7 +14,8 @@ async function runTest(files, reporter) {
     let rocaFiles = [
         "tap.brs",
         "roca_lib.brs",
-        "roca_main.brs"
+        "roca_main.brs",
+        "assert_lib.brs"
     ].map(basename => path.join(__dirname, "..", "resources", basename));
 
     try {
