@@ -34,19 +34,20 @@ To allow `npm test` to run your unit tests, simply call `roca` in your `package.
 Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca tests are written in BrightScript.  By default, roca will find and execute all files in the `test/` directory that match `*.test.brs`.  The smallest possible unit test must meet the following requirements:
 
 1. A function called `main` that accepts one argument of type `object` and returns a value of type `object`
-2. That `main` function returns the return value of a top-level `describe` function that accepts the argument from (1)
-3. A test case declared with `m.it`
-4. The test case passes or fails with `m.pass()`, `m.fail()`, or an assertion that calls one of those
+2. That `main` function initializes a Roca instance by passing the arguments from (1) into `roca()`.
+3. That `main` function returns the return value of the `someRocaInstance.describe()` function 
+4. A test case declared with `m.it`
+5. The test case passes or fails with `m.pass()`, `m.fail()`, or an assertion that calls one of those
 
 Put simply:
 
 ```brightscript
 function main(args as object) as object
-    return describe("test suite", sub()
+    return roca(args).describe("test suite", sub()
         m.it("has a test case", sub()
             m.pass()
         end sub)
-    end sub, args)
+    end sub)
 end function
 ```
 
@@ -57,26 +58,52 @@ Other output formats are available!  See `roca --help` for more details.
 
 ## API
 ### Global Functions
-#### `describe(description as string, func as object, args = invalid as object) as object`
-Roca only has one global function &mdash; `describe` &mdash; used to declare test suites with arbitrary nesting.
+#### `roca(args = {} as object) as object`
+Roca only has one global function &mdash; `roca` &mdash; used to initialize a new Roca test instance.  You probably want
+to call it only once.
 
 Parameters:
-* `description as string` - a string describing the suite of tests contained within this `describe` function
-* `func as object` - the function to execute as part of this suite
-* `args = invalid as object` - (optional) the set of arguments provided by the Roca test framework
+* `args = {} as object` - (optional) the set of arguments provided by the Roca test framework
 
 Return value:
-* the newly-created test suite, including state, as an associative array
+* the newly-created test framework as an associative array
 
 Example:
 ```brightscript
-describe("a test suite", sub()
-    ' this is a test suite!
-end sub)
+function main(args as object) as object
+    r = roca(args)
+    print r    ' => an instance of roca
+    return r
+end sub
 ```
 
-### Within a Test Suite
-Defining a test case matches the semantics of [Jasmine](https://jasmine.github.io/), using `it`, `fit`, and `xit` functions accessible on the `m` scope within a suite.
+### The `roca` Object
+Defining a test case matches the semantics of [Jasmine](https://jasmine.github.io/), using `it` (or `fit` and `xit`) and `describe` functions accessible on the `m` scope within a suite.
+
+#### `m.describe(description as string, func as object) as object`
+Creates a new test suite that will contain test cases.  Note that there must always be one root suite, created by calling `describe()` directly on the result of `roca().
+
+Parameters:
+* `description as string` - a string describing the test case executed by `func`
+* `func as object` - the function to execute as part of this test suite
+
+Return value:
+* the newly-created test suite as an associative-array, including test-pass state and test cases
+
+Example:
+```brightscript
+function main(args as object) as object
+    roca(args).describe("a test suite", sub()
+        ' this function is executed when the suite is executed
+
+        m.describe("a sub-suite", sub()
+            m.describe("a sub-sub-suite", sub()
+                ' sub-suites can be nested arbitrarily
+            end sub)
+        end sub)
+    end sub)
+end function
+```
 
 #### `m.it(description as string, func as object)`
 Creates a test case with a given description.
@@ -133,7 +160,6 @@ m.xit("a focused test case", sub()
 end sub)
 ```
 
-### Within a Test Case
 #### `m.log(value as dynamic)`
 Prints a value to the console in a TAP-safe way.
 
@@ -147,6 +173,7 @@ m.it("prints diagnostic info", sub()
 end sub)
 ```
 
+### Within a Test Case
 #### `m.pass()`
 Marks a unit test as passing, overriding any previous "failed" states.
 

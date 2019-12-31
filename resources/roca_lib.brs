@@ -1,9 +1,25 @@
+' Initializes a Roca unit test instance with the arguments provided by the Roca CLI.
+' Should only be called once per test file, accepting the arguments passed into `main`.
+'
+' @param {assocarray} args - the set of arguments provided by the Roca test framework
+'
+' @returns {assocarray} - an instance of Roca
+function roca(args = {} as object)
+    return {
+        log: __util_log,
+        args: args,
+        describe: __roca_describe,
+        it: __it,
+        fit: __fit,
+        xit: __xit
+    }
+end function
+
 ' Creates a suite of test cases with a given description.
 ' @param {string} description - a string describing the suite of tests contained within.
 ' @param {function} func - the function to execute as part of this suite.
-' @param {assocarray} [args] - the set of arguments provided by the Roca test framework
 ' @returns {assocarray} - the newly-created test suite -- state included.
-function describe(description as string, func as object, args = invalid as object)
+function __roca_describe(description as string, func as object)
     suite = __roca_suite()
     suite.__state.description = description
     suite.__state.func = func
@@ -17,10 +33,11 @@ function describe(description as string, func as object, args = invalid as objec
     withM = {
         __suite: suite
         __func: suite.__state.func
-        __log: __util_log
+        log: __util_log
         it: __it
         fit: __fit
         xit: __xit
+        describe: __roca_describe
     }
     withM.__func()
 
@@ -28,8 +45,8 @@ function describe(description as string, func as object, args = invalid as objec
     suite.__state.totalCases = suite.__totalCases()
 
     ' start to execute tests only from the top-level describe
-    if suite.__state.parentSuite = invalid and args.exec = true then
-        suite.exec(args)
+    if suite.__state.parentSuite = invalid and m.args.exec = true then
+        suite.exec(m.args)
     end if
 
     return suite
