@@ -11,6 +11,7 @@ function Tap() as object
         fail: __tap_fail,
         diagnostic: __tap_diagnostic,
         formatTitle: __tap_formatTitle,
+        printExtras: __tap_printExtras
         enterSubTest: __tap_enterSubTest,
         exitSubTest: __tap_exitSubTest,
         indent: __tap_indent,
@@ -54,7 +55,7 @@ end sub
 sub __tap_fail(index as integer, rawTitle as string, metadata = invalid as object)
     print m.getIndent() "not ok " index + 1 " - " m.formatTitle(rawTitle)
     if metadata <> invalid then
-        ' TODO print a YAML (but probably JSON) document of that data
+        m.printExtras(metadata)
     end if
 end sub
 
@@ -72,6 +73,35 @@ end sub
 function __tap_formatTitle(title as string) as string
     return title.replace("#", "")
 end function
+
+' Given a metadata object, it recursively prints all
+' items inside a YAML block with its respective indentation
+' @param {object} extra - the metadata object
+' @param {number} level - indentation level
+sub __tap_printExtras(extra = {}, level = 0)
+    if level = 0 then
+        m.indent()
+        print m.getIndent() "---"
+    end if
+
+    m.indent()
+    for each item in extra
+        if type(extra[item]) = "roAssociativeArray" then
+            print m.getIndent() item ":"
+            level = level + 1
+            m.printExtras(extra[item], level)
+            level = level - 1
+        else if extra[item] <> invalid
+            print m.getIndent() item ": " extra[item]
+        end if
+    end for
+    m.deindent()
+
+    if level = 0 then
+        print m.getIndent() "..."
+        m.deindent()
+    end if
+end sub
 
 sub __tap_enterSubTest(name as string)
     print m.getIndent() "# Subtest: " name
