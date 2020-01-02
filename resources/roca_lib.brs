@@ -94,6 +94,7 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         mode: mode,
         __state: {
             success: invalid
+            metadata: invalid
         },
         description: description,
         func: func,
@@ -111,6 +112,7 @@ function __case_execute()
         __suite: m.suite,
         __func: m.func,
         __state: m.__state
+        assert: assert(__util_pass, __util_fail, m.__state)
     }
     withM.__func()
 end function
@@ -125,7 +127,7 @@ function __case_report(index as integer, tap as object) as string
         tap.pass(index, m.description)
         return "passed"
     else if m.__state.success = false then
-        tap.fail(index, m.description)
+        tap.fail(index, m.description, m.__state.metadata)
         return "failed"
     end if
 end function
@@ -217,8 +219,9 @@ sub __util_pass()
 end sub
 
 ' Forces a test case into a "failure" state.
-sub __util_fail()
+sub __util_fail(metadata = invalid)
     m.__state.success = false
+    m.__state.metadata = metadata
 end sub
 
 ' Prints messages to stdout in a TAP-compliant format
