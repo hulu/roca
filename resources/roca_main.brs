@@ -1,15 +1,20 @@
 function main() as object
-    basePath = "tests"
-    files = MatchFiles("pkg:/" + basePath, "*.test.brs")
+    files = []
+    dirsToSearch = ["test", "tests", "source", "components"]
+    for each dir in dirsToSearch
+        files.append(__roca_findTestFiles("pkg:/" + dir))
+    end for
 
     rootSuites = []
     filesWithFocusedCases = []
-    for each file in files
-        filePath = [basePath, file].join("/")
-        suite = _brs_.runInScope(["pkg:", filePath].join("/"), {})
+    for each filePath in files
+        ' user-facing
+        filePathWithoutPkg = filePath.replace("pkg:", "")
+
+        suite = _brs_.runInScope(filePath, {})
 
         if suite = invalid then
-            print "Error running tests: Runtime exception occurred in " + [basePath, file].join("/")
+            print "Error running tests: Runtime exception occurred in " + filePathWithoutPkg
             return
         end if
 
@@ -19,7 +24,7 @@ function main() as object
 
         for each subSuite in suite
             if subSuite.mode = "focus" or subSuite.__state.hasFocusedDescendants then
-                filesWithFocusedCases.push(filePath)
+                filesWithFocusedCases.push(filePathWithoutPkg)
             end if
 
             rootSuites.push(subSuite)
@@ -43,16 +48,18 @@ function main() as object
         tap: tap
     }
 
-    for each file in files
+    for each filePath in files
+        ' user-facing
+        filePathWithoutPkg = filePath.replace("pkg:", "")
+
         ' Don't allow test files to pollute each other
         _brs_.resetMocks()
 
-        filePath = [basePath, file].join("/")
-        suite = _brs_.runInScope(["pkg:", filePath].join("/"), args)
+        suite = _brs_.runInScope(filePath, args)
 
         ' If brs returned invalid for runInScope, that means the suite threw an exception, so we should bail.
         if suite = invalid then
-            tap.bail("Error running tests: Runtime exception occurred in " + filePath)
+            tap.bail("Error running tests: Runtime exception occurred in " + filePath.replace("pkg:", ""))
             return
         end if
 
@@ -68,3 +75,30 @@ function main() as object
     }
 end function
 
+' Recursively searches directories for '*.test.brs' files starting at `path`.
+'
+' @param {string} [path="pkg:"] - the path to search
+' @param {roArray} [testFiles=[]] - the current set of discovered test files
+'
+' @returns {roArray} an array containing the fully-qualified path to each '*.test.brs' file
+'                    discovered recursively from `path`
+function __roca_findTestFiles(path as string, testFiles = [] as object) as object
+    files = ListDir(path)
+
+    for each maybeDir in files
+        subDirPath = [path, maybeDir].join("/")
+
+        ' check to see if this is a sub-directory
+        subDirFiles = ListDir(subDirPath)
+        if subDirFiles.count() > 0 then
+            testFiles = __roca_findTestFiles(subDirPath, testFiles)
+        end if
+    end for
+
+    filesInPath = MatchFiles(path, "*.test.brs")
+    for each file in filesInPath
+        testFiles.push([path, file].join("/"))
+    end for
+
+    return testFiles
+end function
