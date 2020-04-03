@@ -60,3 +60,8 @@ function __formatError(errMessage)
         stack: {}
     }
 end function
+
+function __deepEquals(actual, expected)
+    print "DEEP EQUALS IMPLEMENTATION GOES HERE"
+
+end function
