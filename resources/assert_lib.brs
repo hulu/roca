@@ -70,7 +70,6 @@ sub __deepEquals(actual, expected, error)
     end if
 end sub
 
-
 'utility function to compare two objects/associative arrays with nested data structures
 function deepEquals(left as object, right as object) as boolean
     ' because Brightsript does not support closures and we are doing recursion,
