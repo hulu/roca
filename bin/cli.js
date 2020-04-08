@@ -45,7 +45,7 @@ const argv = require('yargs')
         }
     )
     .describe('e', 'List of directories to exclude (i.e. foo,bar)')
-    .alias("e", "exclude")
+    .alias("e", "excludes")
     .help("h")
     .alias("h", "help")
     .argv;
