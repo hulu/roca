@@ -4,9 +4,20 @@ const path = require('path');
 const util = require('util');
 const TapMochaReporter = require('tap-mocha-reporter');
 
-async function findBrsFiles(sourceDir) {
-    let searchDir = sourceDir || 'source';
-    const pattern = path.join(searchDir, '**', '*.brs');
+async function findBrsFiles(exclusions) {
+    const defaultDirs = ['source', 'components'];
+    let exclusionList = [];
+
+    if (exclusions) {
+        exclusionList = exclusions.trim().split(',');
+    }
+
+    let inclusionList = defaultDirs
+        .filter( dir => !exclusionList.includes(dir))
+        .map( dir => path.join(dir, '**', '*.brs'));
+
+    let pattern = inclusionList.length > 1 ? `{${inclusionList.join(',')}}` : inclusionList[0];
+
     return util.promisify(glob)(pattern);
 }
 
@@ -32,7 +43,7 @@ async function runTest(files, reporter) {
 }
 
 module.exports = async function(options) {
-    let { sourceDir, reporter } = options;
-    let files = await findBrsFiles(sourceDir);
+    let { exclusions, reporter } = options;
+    let files = await findBrsFiles(exclusions);
     await runTest(files, reporter);
 }

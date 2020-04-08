@@ -8,7 +8,7 @@ const argv = require('yargs')
     })
     .command(
         ["$0", "run "],
-        "Discovers and executes all .test.brs tests in the current directory", 
+        "Discovers and executes all .test.brs tests in the current directory",
         (yargs) => {
             yargs.option("reporter", {
                 // use capital-R for reporter selection to match mocha
@@ -39,13 +39,13 @@ const argv = require('yargs')
         },
         async (argv) => {
             await testRunner({
-                sourceDir: argv.s,
+                exclusions: argv.e,
                 reporter: argv.reporter
             });
         }
     )
-    .describe('s', 'Path to brs files (if different from source/)')
-    .alias("s", "source")
+    .describe('e', 'List of directories to exclude (i.e. foo,bar)')
+    .alias("e", "exclude")
     .help("h")
     .alias("h", "help")
     .argv;
