@@ -6,7 +6,7 @@ const TapMochaReporter = require('tap-mocha-reporter');
 
 async function findBrsFiles(exclusions) {
     const defaultDirs = ['source', 'components'];
-    let exclusionList = [];
+    let exclusionList = ['test', 'tests', 'node_modules'];
 
     if (exclusions) {
         exclusionList = exclusions.trim().split(',');
