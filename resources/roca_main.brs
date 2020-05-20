@@ -37,7 +37,10 @@ sub main()
     for each file in files
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, args)
-        args.index += 1
+
+        if focusedCasesDetected and suite.__state.hasFocusedDescendants then
+            args.index += 1
+        end if
     end for
 end sub
 
