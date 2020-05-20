@@ -9,14 +9,23 @@ sub main()
         if suite <> invalid then rootSuites.push(suite)
     end for
 
+    numFocusedSuites = 0
     focusedCasesDetected = false
     for each suite in rootSuites
-        focusedCasesDetected = (focusedCasesDetected or suite.__state.transitivelyHasFocusedCases)
+        if suite.__state.hasFocusedDescendants then
+            numFocusedSuites++
+            focusedCasesDetected = true
+        end if
     end for
 
     tap = tap()
     tap.version()
-    tap.plan(rootSuites.count())
+
+    if focusedCasesDetected then
+        tap.plan(numFocusedSuites)
+    else
+        tap.plan(rootSuites.count())
+    end if
 
     args = {
         exec: true,
