@@ -266,7 +266,7 @@ sub __suite_exec(args as object)
     index = subTestIndex
     for each case in m.__state.cases
         tap.indent()
-        if case.mode <> "skip" then
+        if m.mode <> "skip" and case.mode <> "skip" then
             case.exec()
         end if
         result = case.report(index, tap)
