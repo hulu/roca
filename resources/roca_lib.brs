@@ -50,6 +50,8 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         end if
 
         suite.__state.hasFocusedAncestors = m.__suite.mode = "focus" or m.__suite.__state.hasFocusedAncestors
+        suite.__state.hasSkippedAncestors = m.__suite.mode = "skip" or m.__suite.__state.hasSkippedAncestors
+
         suite.__state.parentSuite = m.__suite
         m.__suite.__registerSuite(suite)
     end if
@@ -107,6 +109,7 @@ function __roca_suite()
             hasFocusedSuites: false,
             hasFocusedDescendants: false,
             hasFocusedAncestors: false,
+            hasSkippedAncestors: false,
             suites: [],
             results: {
                 passed: 0,
@@ -266,7 +269,7 @@ sub __suite_exec(args as object)
     index = subTestIndex
     for each case in m.__state.cases
         tap.indent()
-        if m.mode <> "skip" and case.mode <> "skip" then
+        if case.mode <> "skip" and m.mode <> "skip" and m.__state.hasSkippedAncestors <> true then
             case.exec()
         end if
         result = case.report(index, tap)
