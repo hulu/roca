@@ -163,10 +163,10 @@ Example:
 ```brightscript
 m.xdescribe("an skipped test suite", sub()
     m.it("a test case", sub()
-        ' this test won't run, because another suite is focused
+        ' this test will be skipped, because it's inside of a skipped suite
     end sub)
 
-    ' This sub-suite will be skipped, because it's inside of a focused suite
+    ' This sub-suite will be skipped, because it's inside of a skipped suite
     m.describe("a sub-suite", sub() 
         m.it("a test case inside of the sub-suite", sub()
             ' this test will be skipped, because it has skipped ancestors
