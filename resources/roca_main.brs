@@ -9,14 +9,23 @@ sub main()
         if suite <> invalid then rootSuites.push(suite)
     end for
 
+    numFocusedSuites = 0
     focusedCasesDetected = false
     for each suite in rootSuites
-        focusedCasesDetected = (focusedCasesDetected or suite.__state.transitivelyHasFocusedCases)
+        if suite.__state.hasFocusedDescendants then
+            numFocusedSuites++
+            focusedCasesDetected = true
+        end if
     end for
 
     tap = tap()
     tap.version()
-    tap.plan(rootSuites.count())
+
+    if focusedCasesDetected then
+        tap.plan(numFocusedSuites)
+    else
+        tap.plan(rootSuites.count())
+    end if
 
     args = {
         exec: true,
@@ -28,7 +37,12 @@ sub main()
     for each file in files
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, args)
-        args.index += 1
+
+        ' If there are focused cases, only update the index when we've run a focused root suite.
+        ' Otherwise, always update it.
+        if focusedCasesDetected <> true or suite.__state.hasFocusedDescendants then
+            args.index += 1
+        end if
     end for
 end sub
 

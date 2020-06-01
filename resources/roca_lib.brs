@@ -8,23 +8,50 @@ function roca(args = {} as object)
     return {
         log: __util_log,
         args: args,
+        __createDescribeBlock: __roca_createDescribeBlock,
         describe: __roca_describe,
+        fdescribe: __roca_fdescribe,
+        xdescribe: __roca_xdescribe,
         it: __it,
         fit: __fit,
         xit: __xit
     }
 end function
 
-' Creates a suite of test cases with a given description.
 ' @param {string} description - a string describing the suite of tests contained within.
 ' @param {function} func - the function to execute as part of this suite.
 ' @returns {assocarray} - the newly-created test suite -- state included.
 function __roca_describe(description as string, func as object)
+    return m.__createDescribeBlock("default", description, func)
+end function
+
+function __roca_fdescribe(description as string, func as object)
+    return m.__createDescribeBlock("focus", description, func)
+end function
+
+function __roca_xdescribe(description as string, func as object)
+    return m.__createDescribeBlock("skip", description, func)
+end function
+
+function __roca_createDescribeBlock(mode as string, description as string, func as object)
+    if mode <> "default" and mode <> "skip" and mode <> "focus" then
+        print "[roca.brs] Error: Received unexpected describe block mode'" mode "'"
+        return
+    end if
+
     suite = __roca_suite()
+    suite.mode = mode
     suite.__state.description = description
     suite.__state.func = func
 
     if m.__suite <> invalid then
+        if mode = "focus" then
+            m.__suite.__state.hasFocusedSuites = true
+        end if
+
+        suite.__state.hasFocusedAncestors = m.__suite.mode = "focus" or m.__suite.__state.hasFocusedAncestors
+        suite.__state.hasSkippedAncestors = m.__suite.mode = "skip" or m.__suite.__state.hasSkippedAncestors
+
         suite.__state.parentSuite = m.__suite
         m.__suite.__registerSuite(suite)
     end if
@@ -37,11 +64,14 @@ function __roca_describe(description as string, func as object)
         it: __it
         fit: __fit
         xit: __xit
-        describe: __roca_describe
+        __createDescribeBlock: __roca_createDescribeBlock,
+        describe: __roca_describe,
+        fdescribe: __roca_fdescribe,
+        xdescribe: __roca_xdescribe,
     }
     withM.__func()
 
-    suite.__state.transitivelyHasFocusedCases = suite.__transitivelyHasFocusedCases()
+    suite.__state.hasFocusedDescendants = suite.__hasFocusedDescendants()
     suite.__state.totalCases = suite.__totalCases()
 
     ' start to execute tests only from the top-level describe
@@ -76,7 +106,10 @@ function __roca_suite()
             description: "",
             cases: [],
             hasFocusedCases: false,
-            transitivelyHasFocusedCases: false,
+            hasFocusedSuites: false,
+            hasFocusedDescendants: false,
+            hasFocusedAncestors: false,
+            hasSkippedAncestors: false,
             suites: [],
             results: {
                 passed: 0,
@@ -84,11 +117,13 @@ function __roca_suite()
                 skipped: 0
             }
         },
-        __transitivelyHasFocusedCases: __suite_transitivelyHasFocusedCases,
+        __hasFocusedDescendants: __suite_hasFocusedDescendants,
         __totalCases: __suite_totalCases,
         __registerSuite: __suite_registerSuite,
         __registerCase: __suite_registerCase,
+        __filterFocused: __suite_filterFocused,
         exec: __suite_exec,
+        mode: "",
     }
 end function
 
@@ -149,16 +184,20 @@ function __case_report(index as integer, tap as object) as string
     end if
 end function
 
-function __suite_transitivelyHasFocusedCases() as boolean
+function __suite_hasFocusedDescendants() as boolean
     for each suite in m.__state.suites
-        if suite.__state.hasFocusedCases = true then
+        if suite.mode = "focus" then
             return true
-        else if suite.__transitivelyHasFocusedCases() = true then
+        else if suite.__state.hasFocusedCases = true then
+            return true
+        else if suite.__state.hasFocusedSuites = true then
+            return true
+        else if suite.__hasFocusedDescendants() = true then
             return true
         end if
     end for
 
-    return m.__state.hasFocusedCases
+    return m.__state.hasFocusedCases or m.__state.hasFocusedSuites
 end function
 
 
@@ -178,8 +217,37 @@ sub __suite_registerSuite(suite)
     m.__state.suites.push(suite)
 end sub
 
+sub __suite_filterFocused()
+    ' If we have test cases or sub-suites that are in focus, only test those.
+    ' Otherwise, we can assume that we should test everything because we are in the focus chain.
+    if m.__state.hasFocusedDescendants then
+        focusedCases = []
+        for each testCase in m.__state.cases
+            if testCase.mode = "focus" then
+                focusedCases.push(testCase)
+            end if
+        end for
+
+        focusedSuites = []
+        for each suite in m.__state.suites
+            if suite.mode = "focus" or suite.__state.hasFocusedDescendants then
+                focusedSuites.push(suite)
+            end if
+        end for
+
+        m.__state.cases = focusedCases
+        m.__state.suites = focusedSuites
+    end if
+end sub
+
 sub __suite_exec(args as object)
     if args.exec <> true then return
+
+    if args.focusedCasesDetected then
+        if m.__state.hasFocusedAncestors <> true and m.__state.hasFocusedDescendants <> true and m.mode <> "focus" then return
+
+        m.__filterFocused()
+    end if
 
     tap = args.tap
     tap.enterSubTest(m.__state.description)
@@ -201,10 +269,8 @@ sub __suite_exec(args as object)
     index = subTestIndex
     for each case in m.__state.cases
         tap.indent()
-        if (args.focusedCasesDetected and case.mode = "focus") or not args.focusedCasesDetected then
-            if case.mode <> "skip" then
-                case.exec()
-            end if
+        if case.mode <> "skip" and m.mode <> "skip" and m.__state.hasSkippedAncestors <> true then
+            case.exec()
         end if
         result = case.report(index, tap)
         if result = "passed" then

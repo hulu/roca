@@ -123,6 +123,58 @@ m.it("a test case", sub()
 end sub)
 ```
 
+#### `m.fdescribe(description as string, func as object)`
+Creates a focused test suite &mdash; a test suite that causes all non-focused tests *in all files* to be ignored.  Useful when debugging specific sets of unit tests.
+
+Parameters:
+* `description as string` - a string describing the test case executed by `func`
+* `func as object` - the function to execute as part of this test case
+
+Example:
+```brightscript
+m.describe("an unfocused test suite", sub()
+    m.it("a test case", sub()
+        ' this test won't run, because another suite is focused
+    end sub)
+end sub)
+
+m.fdescribe("a focused test suite", sub() 
+    m.it("a test case inside of a focused suite", sub()
+        ' this test *will* be executed, because it's inside a focused suite
+    end sub)
+
+    ' This sub-suite will run, because it's inside of a focused suite
+    m.describe("a sub-suite", sub() 
+        m.it("a test case inside of the sub-suite", sub()
+            ' this test *will* be executed, because it has focused ancestors
+        end sub)
+    end sub)
+end sub)
+```
+
+#### `m.xdescribe(description as string, func as object)`
+Creates a skipped unit test suite.  Any tests and sub-suites inside it will never execute.
+
+Parameters:
+* `description as string` - a string describing the test case executed by `func`
+* `func as object` - the function to execute as part of this test case
+
+Example:
+```brightscript
+m.xdescribe("an skipped test suite", sub()
+    m.it("a test case", sub()
+        ' this test will be skipped, because it's inside of a skipped suite
+    end sub)
+
+    ' This sub-suite will be skipped, because it's inside of a skipped suite
+    m.describe("a sub-suite", sub() 
+        m.it("a test case inside of the sub-suite", sub()
+            ' this test will be skipped, because it has skipped ancestors
+        end sub)
+    end sub)
+end sub)
+```
+
 #### `m.fit(description as string, func as object)`
 Creates a focused test case &mdash; a test case that causes all non-focused tests *in all files* to be skipped.  Useful when debugging specific unit tests.
 
