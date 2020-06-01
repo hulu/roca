@@ -298,7 +298,9 @@ end sub
 
 ' Forces a test case into a "success" state.
 sub __util_pass()
-    m.__state.success = true
+    if m.__state.success <> false
+        m.__state.success = true
+    end if
 end sub
 
 ' Forces a test case into a "failure" state.
