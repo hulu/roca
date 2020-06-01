@@ -297,6 +297,9 @@ sub __suite_exec(args as object)
 end sub
 
 ' Forces a test case into a "success" state.
+'
+' If the test case is already in a failure state, do nothing
+' to preserve the previous failure.
 sub __util_pass()
     if m.__state.success <> false
         m.__state.success = true
@@ -304,9 +307,14 @@ sub __util_pass()
 end sub
 
 ' Forces a test case into a "failure" state.
+'
+' If the test case is already in a failure state, do nothing
+' to preserve the previous failure.
 sub __util_fail(metadata = invalid)
-    m.__state.success = false
-    m.__state.metadata = metadata
+    if m.__state.success <> false
+        m.__state.success = false
+        m.__state.metadata = metadata
+    end if
 end sub
 
 ' Prints messages to stdout in a TAP-compliant format

@@ -37,7 +37,7 @@ Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca te
 2. That `main` function initializes a Roca instance by passing the arguments from (1) into `roca()`.
 3. That `main` function returns the return value of the `someRocaInstance.describe()` function 
 4. A test case declared with `m.it`
-5. The test case passes or fails with `m.pass()`, `m.fail()`, or an assertion that calls one of those
+5. The test case passes or fails with `m.pass()`, `m.fail()`, or an assertion that calls one of those.
 
 Put simply:
 
@@ -46,6 +46,29 @@ function main(args as object) as object
     return roca(args).describe("test suite", sub()
         m.it("has a test case", sub()
             m.pass()
+        end sub)
+    end sub)
+end function
+```
+
+### Asserts
+
+Similar to [Chai](https://www.chaijs.com/api/assert/), `roca` offers an `assert` library, available via `m.assert`. It has the following methods:
+
+- `m.assert.equal(actual, expected, errorMessage)`
+- `m.assert.notEqual(actual, expected, errorMessage)`
+- `m.assert.isTrue(value, errorMessage)`
+- `m.assert.isFalse(value, errorMessage)`
+- `m.assert.isInvalid(value, errorMessage)`
+
+These methods will call `m.pass` or `m.fail` for you.
+
+Usage:
+```brightscript
+function main(args as object) as object
+    return roca(args).describe("test suite", sub()
+        m.it("test case", sub()
+            m.assert.equal("foo", "foo", "foo equals foo")
         end sub)
     end sub)
 end function
