@@ -103,7 +103,9 @@ function __roca_deepEquals(lhs as object, rhs as object) as boolean
         end for
     end if
 
-    if __roca_isNumeric(lhs) <> __roca_isNumeric(rhs) then return false
+    if __roca_isNumeric(lhs) <> __roca_isNumeric(rhs) then
+        if lhs <> rhs then return false
+    end if
 
     if __roca_isString(lhs) and __roca_isString(rhs) then
         if lhs <> rhs then return false
