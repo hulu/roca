@@ -40,12 +40,15 @@ const argv = require('yargs')
         async (argv) => {
             await testRunner({
                 sourceDir: argv.s,
-                reporter: argv.reporter
+                reporter: argv.reporter,
+                globalSetupFile: argv.g,
             });
         }
     )
     .describe('s', 'Path to brs files (if different from source/)')
     .alias("s", "source")
+    .describe("g", "Path to a global setup file")
+    .alias("g", "global-setup")
     .help("h")
     .alias("h", "help")
     .argv;
