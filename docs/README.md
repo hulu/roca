@@ -79,6 +79,31 @@ Roca exclusively reports its state via the [Test Anything Protocol](http://testa
 
 Other output formats are available!  See `roca --help` for more details.
 
+### Using a test setup/helper file
+In order to enable custom unit test helper functions and/or unit test setup code, you can create a BrightScript file that will be run before any of your unit tests. Pass it to `roca` via the `-r`/`--require` flag.
+
+For example, say you wanted to define a helper function that you could call in any of your unit tests:
+```brs
+' inside myProject/test/MySetupFile.brs
+function callMeAnywhere()
+  return 123
+end function
+```
+
+Then in your code, you'd have:
+```brs
+' inside myProject/test/MyTestFile.test.brs
+...
+m.it("adds local and remote login buttons to page", sub()
+    print callMeAnywhere() ' => 123
+end sub)
+```
+
+And then you'd tell to `roca` to use the setup file:
+```bash
+roca -r "test/MySetupFile.brs"
+```
+
 ## API
 ### Global Functions
 #### `roca(args = {} as object) as object`

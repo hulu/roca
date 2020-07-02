@@ -10,7 +10,7 @@ async function findBrsFiles(sourceDir) {
     return util.promisify(glob)(pattern);
 }
 
-async function runTest(files, reporter, globalSetupFile) {
+async function runTest(files, reporter, requireFilePath) {
     let rocaFiles = [
         "tap.brs",
         "roca_lib.brs",
@@ -21,8 +21,8 @@ async function runTest(files, reporter, globalSetupFile) {
     try {
         let reporterStream = new TapMochaReporter(reporter);
         let allTestFiles = [...rocaFiles];
-        if (globalSetupFile) {
-            allTestFiles.push(globalSetupFile);
+        if (requireFilePath) {
+            allTestFiles.push(requireFilePath);
         }
         allTestFiles.push(...files);
         await brs.execute(allTestFiles, {
@@ -37,7 +37,7 @@ async function runTest(files, reporter, globalSetupFile) {
 }
 
 module.exports = async function(options) {
-    let { sourceDir, reporter, globalSetupFile } = options;
+    let { sourceDir, reporter, requireFilePath } = options;
     let files = await findBrsFiles(sourceDir);
-    await runTest(files, reporter, globalSetupFile);
+    await runTest(files, reporter, requireFilePath);
 }

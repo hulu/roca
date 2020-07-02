@@ -41,14 +41,14 @@ const argv = require('yargs')
             await testRunner({
                 sourceDir: argv.s,
                 reporter: argv.reporter,
-                globalSetupFile: argv.g,
+                requireFilePath: argv.r,
             });
         }
     )
     .describe('s', 'Path to brs files (if different from source/)')
     .alias("s", "source")
-    .describe("g", "Path to a global setup file")
-    .alias("g", "global-setup")
+    .describe("r", "Path to a required setup file (will be run before unit tests)")
+    .alias("r", "require")
     .help("h")
     .alias("h", "help")
     .argv;
