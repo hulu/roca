@@ -12,10 +12,10 @@ Roca requires the [brs](https://github.com/sjbarag/brs/) runtime, which runs on 
 npm init
 ```
 
-Then install `@hulu/roca` as a development dependency with:
+Then install `@hulu/roca` and `brs` as development dependencies with:
 
 ```bash
-npm install --save-dev @hulu/roca
+npm install --save-dev @hulu/roca brs
 ```
 
 ### Add NPM hook
