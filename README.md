@@ -30,8 +30,33 @@ To allow `npm test` to run your unit tests, simply call `roca` in your `package.
 }
 ```
 
+### Directory Layout
+Roca tests must be in a *sibling* of your existing `source/` and `components/` tree, like this:
+
+
+```
+.
+├── components
+│  ├── FooComponent.brs
+│  └── FooComponent.xml
+├── manifest
+├── source
+│  ├── main.brs
+│  └── util.brs
+└── tests
+   ├── FooComponent.test.brs
+   └── util.test.brs
+```
+
+Additionally, `roca` should be called from the same directory as your `manifest` file.  If you keep your entire source tree in a subdirectory, you'll want to `cd` into that before executing `roca`.
+
+### Modify Channel Entry Point (if necessary)
+Roca only supports a main channel entry point of `runUserInterface`, which helpfully avoids naming conflicts with the `main` functions used in `roca` and the individual test files.
+
+Luckily `runUserInterface` is supported for all the same use-cases as `main`: https://developer.roku.com/docs/developer-program/getting-started/architecture/dev-environment.md#sub-runuserinterface
+
 ### Adding a Test
-Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca tests are written in BrightScript.  By default, roca will find and execute all files in the `test/` directory that match `*.test.brs`.  The smallest possible unit test must meet the following requirements:
+Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca tests are written in BrightScript.  Roca will find and execute all files in the `./tests/` directory that match `*.test.brs`.  The smallest possible unit test must meet the following requirements:
 
 1. A function called `main` that accepts one argument of type `object` and returns a value of type `object`
 2. That `main` function initializes a Roca instance by passing the arguments from (1) into `roca()`.
@@ -84,7 +109,7 @@ In order to enable custom unit test helper functions and/or unit test setup code
 
 For example, say you wanted to define a helper function that you could call in any of your unit tests:
 ```brs
-' inside myProject/test/MySetupFile.brs
+' inside myProject/tests/MySetupFile.brs
 function callMeAnywhere()
   return 123
 end function
@@ -92,7 +117,7 @@ end function
 
 Then in your code, you'd have:
 ```brs
-' inside myProject/test/MyTestFile.test.brs
+' inside myProject/tests/MyTestFile.test.brs
 ...
 m.it("adds local and remote login buttons to page", sub()
     print callMeAnywhere() ' => 123
@@ -101,7 +126,7 @@ end sub)
 
 And then you'd tell to `roca` to use the setup file:
 ```bash
-roca -r "test/MySetupFile.brs"
+roca -r "tests/MySetupFile.brs"
 ```
 
 ## API
