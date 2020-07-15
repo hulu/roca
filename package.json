@@ -29,7 +29,7 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
-    "brs": "^0.17.2"
+    "brs": "^0.24.0"
   },
   "peerDependencies": {
     "brs": "^0.17.2"
