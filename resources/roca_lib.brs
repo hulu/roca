@@ -68,6 +68,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         describe: __roca_describe,
         fdescribe: __roca_fdescribe,
         xdescribe: __roca_xdescribe,
+        addFields: __roca_addFields
     }
     withM.__func()
 
@@ -95,6 +96,16 @@ end sub
 
 sub __xit(description as string, func as object)
     m.__suite.__registerCase("skip", description, m.__suite, func)
+end sub
+
+' Fields to add to `m` in the case context.
+' @param fields a roAssociativeObject
+sub __roca_addFields(fields as object)
+    if type(fields) <> "roAssociativeArray" then
+        print "[roca.brs] Error: addFields only accepts a 'roAssociativeArray' - got '" type(fields) "'"
+    else
+        m.__suite.__fields = fields
+    end if
 end sub
 
 ' Creates a new test suite, which can contain an arbitrary number of test cases and sub-suites.
@@ -166,6 +177,14 @@ function __case_execute()
         __state: m.__state
         assert: assert(__util_pass, __util_fail, m.__state)
     }
+
+    ' extra case fields
+    if m.suite.__fields <> invalid then
+        for each item in m.suite.__fields.items()
+            withM.addreplace(item.key, item.value)
+        end for
+    end if
+
     withM.__func()
 end function
 
