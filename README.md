@@ -1,3 +1,34 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Roca](#roca)
+  - [Getting Started](#getting-started)
+    - [Install](#install)
+    - [Add NPM hook](#add-npm-hook)
+    - [Directory Layout](#directory-layout)
+    - [Modify Channel Entry Point (if necessary)](#modify-channel-entry-point-if-necessary)
+    - [Adding a Test](#adding-a-test)
+    - [Asserts](#asserts)
+    - [Output & CI Support](#output--ci-support)
+    - [Using a test setup/helper file](#using-a-test-setuphelper-file)
+  - [API](#api)
+    - [Global Functions](#global-functions)
+      - [`roca(args = {} as object) as object`](#rocaargs---as-object-as-object)
+    - [The `roca` Object](#the-roca-object)
+      - [`m.describe(description as string, func as object) as object`](#mdescribedescription-as-string-func-as-object-as-object)
+      - [`m.it(description as string, func as object)`](#mitdescription-as-string-func-as-object)
+      - [`m.fdescribe(description as string, func as object)`](#mfdescribedescription-as-string-func-as-object)
+      - [`m.xdescribe(description as string, func as object)`](#mxdescribedescription-as-string-func-as-object)
+      - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
+      - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
+      - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
+    - [Within a Test Case](#within-a-test-case)
+      - [`m.pass()`](#mpass)
+      - [`m.fail()`](#mfail)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Roca
 
 BrightScript unit testing.  No device required.
