@@ -44,7 +44,7 @@ sub main()
 
         ' If there are focused cases, only update the index when we've run a focused root suite.
         ' Otherwise, always update it.
-        if focusedCasesDetected <> true or suite.__state.hasFocusedDescendants then
+        if focusedCasesDetected <> true or (suite <> invalid and suite.__state.hasFocusedDescendants) then
             args.index += 1
         end if
     end for
