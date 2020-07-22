@@ -42,6 +42,12 @@ sub main()
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, args)
 
+        ' If brs returned invalid for runInScope, that means the suite threw an exception, so we should bail.
+        if suite = invalid then
+            tap.bail("Error occurred in " + [basePath, file].join("/"))
+            return
+        end if
+
         ' If there are focused cases, only update the index when we've run a focused root suite.
         ' Otherwise, always update it.
         if focusedCasesDetected <> true or suite.__state.hasFocusedDescendants then
