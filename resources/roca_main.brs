@@ -44,7 +44,7 @@ sub main()
 
         ' If brs returned invalid for runInScope, that means the suite threw an exception, so we should bail.
         if suite = invalid then
-            tap.bail()
+            tap.bail("Error occurred in " + [basePath, file].join("/"))
             return
         end if
 

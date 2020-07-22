@@ -129,6 +129,6 @@ function __tap_getIndent()
     return indent
 end function
 
-function __tap_bail()
-    print "Bail out!"
+function __tap_bail(msg="" as string)
+    print "Bail out! " + msg
 end function
