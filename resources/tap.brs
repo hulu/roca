@@ -17,6 +17,7 @@ function Tap() as object
         indent: __tap_indent,
         deindent: __tap_deindent,
         getIndent: __tap_getIndent,
+        bail: __tap_bail,
         __state: {
             depth: 0
         }
@@ -126,4 +127,8 @@ function __tap_getIndent()
         indent += "    "
     end for
     return indent
+end function
+
+function __tap_bail()
+    print "Bail out!"
 end function
