@@ -29,9 +29,20 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
-    "brs": "^0.24.0"
+    "brs": "^0.24.0",
+    "doctoc": "^1.4.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11"
   },
   "peerDependencies": {
     "brs": "^0.17.2"
+  },
+  "lint-staged": {
+    "README.md": "doctoc"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
