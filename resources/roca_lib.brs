@@ -53,6 +53,13 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         suite.__state.hasSkippedAncestors = m.__suite.mode = "skip" or m.__suite.__state.hasSkippedAncestors
 
         suite.__state.parentSuite = m.__suite
+
+        ' cascade context
+        if m.__suite.__ctx <> invalid then
+            suite.__ctx = {}
+            suite.__ctx.append(m.__suite.__ctx)
+        end if
+
         m.__suite.__registerSuite(suite)
     end if
 
@@ -68,7 +75,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         describe: __roca_describe,
         fdescribe: __roca_fdescribe,
         xdescribe: __roca_xdescribe,
-        addFields: __roca_addFields
+        addContext: __roca_addContext
     }
     withM.__func()
 
@@ -99,12 +106,13 @@ sub __xit(description as string, func as object)
 end sub
 
 ' Fields to add to `m` in the case context.
-' @param fields a roAssociativeObject
-sub __roca_addFields(fields as object)
-    if type(fields) <> "roAssociativeArray" then
-        print "[roca.brs] Error: addFields only accepts a 'roAssociativeArray' - got '" type(fields) "'"
+' @param ctx a roAssociativeArray
+sub __roca_addContext(ctx as object)
+    if type(ctx) <> "roAssociativeArray" then
+        print "[roca.brs] Error: addContext only accepts a 'roAssociativeArray' - got '" type(ctx) "'"
     else
-        m.__suite.__fields = fields
+        if m.__suite.__ctx = invalid then m.__suite.__ctx = {}
+        m.__suite.__ctx.append(ctx)
     end if
 end sub
 
@@ -179,11 +187,7 @@ function __case_execute()
     }
 
     ' extra case fields
-    if m.suite.__fields <> invalid then
-        for each item in m.suite.__fields.items()
-            withM.addreplace(item.key, item.value)
-        end for
-    end if
+    if m.suite.__ctx <> invalid then withM.append(m.suite.__ctx)
 
     withM.__func()
 end function
