@@ -323,15 +323,17 @@ end sub)
 Provides context to cases in the form of extra fields.
 
 - `ctx` should be a `roAssociativeArray`,
-- `m.addContext` should be called in the scope of `m.describe`'s `sub`,
 - `m.addContext` can be called multiple times,
 - Context cascades into sub-suites.
 
 Example:
 ```brightscript
+m.addContext({
+    aField: "value 1"
+})
+
 m.describe("a test suite with context", sub()
     m.addContext({
-        aField: "value 1"
         afn: function()
             return "value 2"
         end function
@@ -339,7 +341,7 @@ m.describe("a test suite with context", sub()
 
     m.it("a test case", sub()
         m.assert.equal("value 1", m.aField, "Get context field")
-        m.assert.equal("value 2", m.aFunction(), "Use context function")
+        m.assert.equal("value 2", m.afn(), "Use context function")
     end sub)
 end sub)
 ```

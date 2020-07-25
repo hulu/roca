@@ -14,7 +14,9 @@ function roca(args = {} as object)
         xdescribe: __roca_xdescribe,
         it: __it,
         fit: __fit,
-        xit: __xit
+        xit: __xit,
+        __ctx: {},
+        addContext: __roca_addContext
     }
 end function
 
@@ -55,13 +57,13 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         suite.__state.parentSuite = m.__suite
 
         ' cascade context
-        if m.__suite.__ctx <> invalid then
-            suite.__ctx = {}
-            suite.__ctx.append(m.__suite.__ctx)
-        end if
+        suite.__ctx.append(m.__suite.__ctx)
 
         m.__suite.__registerSuite(suite)
     end if
+
+    ' cascade roca context
+    if m.__ctx <> invalid then suite.__ctx.append(m.__ctx)
 
     ' package the suite up with its context accessible via `m.`
     withM = {
@@ -110,8 +112,11 @@ end sub
 sub __roca_addContext(ctx as object)
     if type(ctx) <> "roAssociativeArray" then
         print "[roca.brs] Error: addContext only accepts a 'roAssociativeArray' - got '" type(ctx) "'"
+    ' called from roca object
+    else if m.__ctx <> invalid then
+        m.__ctx.append(ctx)
+    ' called in suite
     else
-        if m.__suite.__ctx = invalid then m.__suite.__ctx = {}
         m.__suite.__ctx.append(ctx)
     end if
 end sub
@@ -141,6 +146,7 @@ function __roca_suite()
         __registerSuite: __suite_registerSuite,
         __registerCase: __suite_registerCase,
         __filterFocused: __suite_filterFocused,
+        __ctx: {},
         exec: __suite_exec,
         mode: "",
     }
