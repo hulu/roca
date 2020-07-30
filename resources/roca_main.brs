@@ -39,6 +39,9 @@ sub main()
     }
 
     for each file in files
+        ' Don't allow test files to pollute each other
+        _brs_.resetMocks()
+
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, args)
 
