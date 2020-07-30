@@ -91,7 +91,7 @@ Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca te
 
 1. A function called `main` that accepts one argument of type `object` and returns a value of type `object`
 2. That `main` function initializes a Roca instance by passing the arguments from (1) into `roca()`.
-3. That `main` function returns the return value of the `someRocaInstance.describe()` function 
+3. That `main` function returns the return value of the `someRocaInstance.describe()` function
 4. A test case declared with `m.it`
 5. The test case passes or fails with `m.pass()`, `m.fail()`, or an assertion that calls one of those.
 
@@ -242,13 +242,13 @@ m.describe("an unfocused test suite", sub()
     end sub)
 end sub)
 
-m.fdescribe("a focused test suite", sub() 
+m.fdescribe("a focused test suite", sub()
     m.it("a test case inside of a focused suite", sub()
         ' this test *will* be executed, because it's inside a focused suite
     end sub)
 
     ' This sub-suite will run, because it's inside of a focused suite
-    m.describe("a sub-suite", sub() 
+    m.describe("a sub-suite", sub()
         m.it("a test case inside of the sub-suite", sub()
             ' this test *will* be executed, because it has focused ancestors
         end sub)
@@ -271,7 +271,7 @@ m.xdescribe("an skipped test suite", sub()
     end sub)
 
     ' This sub-suite will be skipped, because it's inside of a skipped suite
-    m.describe("a sub-suite", sub() 
+    m.describe("a sub-suite", sub()
         m.it("a test case inside of the sub-suite", sub()
             ' this test will be skipped, because it has skipped ancestors
         end sub)
@@ -347,5 +347,32 @@ Example:
 ```brightscript
 m.it("fails", sub()
     m.fail()
+end sub)
+```
+
+#### `m.addContext(ctx as object)`
+Provides context to cases in the form of extra fields.
+
+- `ctx` should be a `roAssociativeArray`,
+- `m.addContext` can be called multiple times,
+- Context cascades into sub-suites.
+
+Example:
+```brightscript
+m.addContext({
+    aField: "value 1"
+})
+
+m.describe("a test suite with context", sub()
+    m.addContext({
+        afn: function()
+            return "value 2"
+        end function
+    })
+
+    m.it("a test case", sub()
+        m.assert.equal("value 1", m.aField, "Get context field")
+        m.assert.equal("value 2", m.afn(), "Use context function")
+    end sub)
 end sub)
 ```

@@ -14,7 +14,9 @@ function roca(args = {} as object)
         xdescribe: __roca_xdescribe,
         it: __it,
         fit: __fit,
-        xit: __xit
+        xit: __xit,
+        __ctx: {},
+        addContext: __roca_addContext
     }
 end function
 
@@ -53,8 +55,15 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         suite.__state.hasSkippedAncestors = m.__suite.mode = "skip" or m.__suite.__state.hasSkippedAncestors
 
         suite.__state.parentSuite = m.__suite
+
+        ' cascade context
+        suite.__ctx.append(m.__suite.__ctx)
+
         m.__suite.__registerSuite(suite)
     end if
+
+    ' cascade roca context
+    if m.__ctx <> invalid then suite.__ctx.append(m.__ctx)
 
     ' package the suite up with its context accessible via `m.`
     withM = {
@@ -68,6 +77,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         describe: __roca_describe,
         fdescribe: __roca_fdescribe,
         xdescribe: __roca_xdescribe,
+        addContext: __roca_addContext
     }
     withM.__func()
 
@@ -97,6 +107,20 @@ sub __xit(description as string, func as object)
     m.__suite.__registerCase("skip", description, m.__suite, func)
 end sub
 
+' Fields to add to `m` in the case context.
+' @param ctx a roAssociativeArray
+sub __roca_addContext(ctx as object)
+    if type(ctx) <> "roAssociativeArray" then
+        print "[roca.brs] Error: addContext only accepts a 'roAssociativeArray' - got '" type(ctx) "'"
+    ' called from roca object
+    else if m.__ctx <> invalid then
+        m.__ctx.append(ctx)
+    ' called in suite
+    else
+        m.__suite.__ctx.append(ctx)
+    end if
+end sub
+
 ' Creates a new test suite, which can contain an arbitrary number of test cases and sub-suites.
 ' @returns a new test suite
 function __roca_suite()
@@ -122,6 +146,7 @@ function __roca_suite()
         __registerSuite: __suite_registerSuite,
         __registerCase: __suite_registerCase,
         __filterFocused: __suite_filterFocused,
+        __ctx: {},
         exec: __suite_exec,
         mode: "",
     }
@@ -166,6 +191,10 @@ function __case_execute()
         __state: m.__state
         assert: assert(__util_pass, __util_fail, m.__state)
     }
+
+    ' extra case fields
+    if m.suite.__ctx <> invalid then withM.append(m.suite.__ctx)
+
     withM.__func()
 end function
 
