@@ -23,6 +23,7 @@
       - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
       - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
       - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
+      - [`m.addContext(ctx as object)`](#maddcontextctx-as-object)
     - [Within a Test Case](#within-a-test-case)
       - [`m.pass()`](#mpass)
       - [`m.fail()`](#mfail)
@@ -329,6 +330,33 @@ m.it("prints diagnostic info", sub()
 end sub)
 ```
 
+#### `m.addContext(ctx as object)`
+Provides context to cases in the form of extra fields.
+
+- `ctx` should be a `roAssociativeArray`,
+- `m.addContext` can be called multiple times,
+- Context cascades into sub-suites.
+
+Example:
+```brightscript
+m.addContext({
+    aField: "value 1"
+})
+
+m.describe("a test suite with context", sub()
+    m.addContext({
+        aFn: function()
+            return "value 2"
+        end function
+    })
+
+    m.it("a test case", sub()
+        m.assert.equal("value 1", m.aField, "Get context field")
+        m.assert.equal("value 2", m.aFn(), "Use context function")
+    end sub)
+end sub)
+```
+
 ### Within a Test Case
 #### `m.pass()`
 Marks a unit test as passing, overriding any previous "failed" states.
@@ -347,32 +375,5 @@ Example:
 ```brightscript
 m.it("fails", sub()
     m.fail()
-end sub)
-```
-
-#### `m.addContext(ctx as object)`
-Provides context to cases in the form of extra fields.
-
-- `ctx` should be a `roAssociativeArray`,
-- `m.addContext` can be called multiple times,
-- Context cascades into sub-suites.
-
-Example:
-```brightscript
-m.addContext({
-    aField: "value 1"
-})
-
-m.describe("a test suite with context", sub()
-    m.addContext({
-        afn: function()
-            return "value 2"
-        end function
-    })
-
-    m.it("a test case", sub()
-        m.assert.equal("value 1", m.aField, "Get context field")
-        m.assert.equal("value 2", m.afn(), "Use context function")
-    end sub)
 end sub)
 ```
