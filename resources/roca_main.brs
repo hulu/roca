@@ -6,9 +6,15 @@ sub main()
     for each file in files
         path = ["pkg:", basePath, file].join("/")
         suite = _brs_.runInScope(path, {})
+
+        if suite = invalid then
+            print "Error running tests: Runtime exception occurred in " + [basePath, file].join("/")
+            return
+        end if
+
         if GetInterface(suite, "ifArray") <> invalid then
             rootSuites.append(suite)
-        else if suite <> invalid then
+        else
             rootSuites.push(suite)
         end if
     end for
