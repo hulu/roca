@@ -17,9 +17,11 @@
       - [`roca(args = {} as object) as object`](#rocaargs---as-object-as-object)
     - [The `roca` Object](#the-roca-object)
       - [`m.describe(description as string, func as object) as object`](#mdescribedescription-as-string-func-as-object-as-object)
-      - [`m.it(description as string, func as object)`](#mitdescription-as-string-func-as-object)
       - [`m.fdescribe(description as string, func as object)`](#mfdescribedescription-as-string-func-as-object)
       - [`m.xdescribe(description as string, func as object)`](#mxdescribedescription-as-string-func-as-object)
+      - [`m.beforeEach(func as object)`](#mbeforeeachfunc-as-object)
+      - [`m.afterEach(func as object)`](#maftereachfunc-as-object)
+      - [`m.it(description as string, func as object)`](#mitdescription-as-string-func-as-object)
       - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
       - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
       - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
@@ -210,24 +212,6 @@ function main(args as object) as object
 end function
 ```
 
-#### `m.it(description as string, func as object)`
-Creates a test case with a given description.
-
-Parameters:
-* `description as string` - a string describing the test case executed by `func`
-* `func as object` - the function to execute as part of this test case
-
-Example:
-```brightscript
-m.it("a test case", sub()
-    if 4 / 2 = 2 then
-        m.pass()
-    else
-        m.fail()
-    end if
-end sub)
-```
-
 #### `m.fdescribe(description as string, func as object)`
 Creates a focused test suite &mdash; a test suite that causes all non-focused tests *in all files* to be ignored.  Useful when debugging specific sets of unit tests.
 
@@ -277,6 +261,80 @@ m.xdescribe("an skipped test suite", sub()
             ' this test will be skipped, because it has skipped ancestors
         end sub)
     end sub)
+end sub)
+```
+
+#### `m.beforeEach(func as object)`
+Runs the given `func` before each child test suite and case. Note: it will run in the `m` context of the following test or suite, which will allow you to set fields on `m` within `beforeEach` and access them in the test or suite. However, **the `m` contex is different for each test/suite, so if you need state to be shared across multiple tests/suites, you should be using [`m.addContext`](#maddcontextctx-as-object)**.
+
+Parameters:
+* `func as object` - the function to execute prior to each child test/suite
+
+Example:
+```brightscript
+m.describe("a test suite", sub()
+    m.beforeEach(sub()
+        doSomeCoolMocksOrSetup()
+        m.foo = "bar"
+    end sub)
+
+    m.it("a test case", sub()
+        print m.foo ' => "bar"
+        m.iWannaShareThis = true
+
+        m.pass()
+    end sub)
+
+    m.it("a second test case", sub()
+        print m.foo ' => "bar"
+        print m.iWannaShareThis ' => invalid
+
+        m.pass()
+    end sub)
+end sub)
+```
+
+#### `m.afterEach(func as object)`
+Runs the given `func` after each child test suite and case. Note: it will run in the `m` context of the previous test or suite, which will allow you to set fields on `m` in the test/suite and then access them in `afterEach`. However, **the `m` contex is different for each test/suite, so if you need state to be shared across multiple tests/suites, you should be using [`m.addContext`](#maddcontextctx-as-object)**.
+
+Parameters:
+* `func as object` - the function to execute after each child test/suite
+
+Example:
+```brightscript
+m.describe("a test suite", sub()
+    m.afterEach(sub()
+        doSomeCoolTeardown()
+        print m.foo ' => "bar" (after first test)
+                    ' => invalid (after second test)
+    end sub)
+
+    m.it("a test case", sub()
+        m.foo = "bar"
+        m.pass()
+    end sub)
+
+    m.it("a second test case", sub()
+        m.pass()
+    end sub)
+end sub)
+```
+
+#### `m.it(description as string, func as object)`
+Creates a test case with a given description.
+
+Parameters:
+* `description as string` - a string describing the test case executed by `func`
+* `func as object` - the function to execute as part of this test case
+
+Example:
+```brightscript
+m.it("a test case", sub()
+    if 4 / 2 = 2 then
+        m.pass()
+    else
+        m.fail()
+    end if
 end sub)
 ```
 
