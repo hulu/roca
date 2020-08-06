@@ -16,7 +16,13 @@ function roca(args = {} as object)
         fit: __fit,
         xit: __xit,
         __ctx: {},
-        addContext: __roca_addContext
+        addContext: __roca_addContext,
+        __state: {
+            beforeEachChildFn: invalid,
+            afterEachChildFn: invalid
+        },
+        beforeEach: __roca_beforeEach,
+        afterEach: __roca_afterEach
     }
 end function
 
@@ -46,6 +52,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
     suite.__state.description = description
     suite.__state.func = func
 
+    ' This will be true for suites, but false for the roca object.
     if m.__suite <> invalid then
         if mode = "focus" then
             m.__suite.__state.hasFocusedSuites = true
@@ -59,6 +66,12 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         ' cascade context
         suite.__ctx.append(m.__suite.__ctx)
 
+        ' pass the beforeEach function to the child so that it can execute it in-scope
+        suite.__state.beforeExecFn = m.__suite.__state.beforeEachChildFn
+
+        ' pass the afterEach function to the child so that it can execute it in-scope
+        suite.__state.afterExecFn = m.__suite.__state.afterEachChildFn
+
         m.__suite.__registerSuite(suite)
     end if
 
@@ -69,6 +82,8 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
     withM = {
         __suite: suite
         __func: suite.__state.func
+        __beforeExecFn: suite.__state.beforeExecFn
+        __afterExecFn: suite.__state.afterExecFn
         log: __util_log
         it: __it
         fit: __fit
@@ -77,9 +92,20 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         describe: __roca_describe,
         fdescribe: __roca_fdescribe,
         xdescribe: __roca_xdescribe,
-        addContext: __roca_addContext
+        addContext: __roca_addContext,
+        beforeEach: __roca_beforeEach,
+        afterEach: __roca_afterEach
     }
+
+    if withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
+        withM.__beforeExecFn()
+    end if
+
     withM.__func()
+
+    if withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
+        withM.__afterExecFn()
+    end if
 
     suite.__state.hasFocusedDescendants = suite.__hasFocusedDescendants()
     suite.__state.totalCases = suite.__totalCases()
@@ -105,6 +131,18 @@ end sub
 
 sub __xit(description as string, func as object)
     m.__suite.__registerCase("skip", description, m.__suite, func)
+end sub
+
+' Registers a function to run before each child executes
+' @param func the function to run
+sub __roca_beforeEach(func as object)
+    m.__suite.__state.beforeEachChildFn = func
+end sub
+
+' Registers a function to run after each child executes
+' @param func the function to run
+sub __roca_afterEach(func as object)
+    m.__suite.__state.afterEachChildFn = func
 end sub
 
 ' Fields to add to `m` in the case context.
@@ -139,7 +177,15 @@ function __roca_suite()
                 passed: 0,
                 failed: 0,
                 skipped: 0
-            }
+            },
+            ' function to run in-scope before executing the test suite
+            beforeExecFn: invalid,
+            ' function that each child should run in-scope before executing
+            beforeEachChildFn: invalid,
+            ' function to run in-scope after executing the test suite
+            afterExecFn: invalid,
+            ' function that each child should run in-scope after executing
+            afterEachChildFn: invalid
         },
         __hasFocusedDescendants: __suite_hasFocusedDescendants,
         __totalCases: __suite_totalCases,
@@ -177,7 +223,9 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         func: func,
         suite: suite,
         report: __case_report,
-        exec: __case_execute
+        exec: __case_execute,
+        __beforeExecFn: suite.__state.beforeEachChildFn,
+        __afterExecFn: suite.__state.afterEachChildFn
     })
 end sub
 
@@ -190,12 +238,24 @@ function __case_execute()
         __func: m.func,
         __state: m.__state
         assert: assert(__util_pass, __util_fail, m.__state)
+        __beforeExecFn: m.__beforeExecFn
+        __afterExecFn: m.__afterExecFn
     }
 
     ' extra case fields
     if m.suite.__ctx <> invalid then withM.append(m.suite.__ctx)
 
+    ' we need to execute the beforeEach using the test case `m` scope
+    if withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
+        withM.__beforeExecFn()
+    end if
+
     withM.__func()
+
+    ' we need to execute the afterEach using the test case `m` scope
+    if withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
+        withM.__afterExecFn()
+    end if
 end function
 
 function __case_report(index as integer, tap as object) as string
