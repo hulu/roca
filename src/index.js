@@ -35,7 +35,7 @@ async function runTest(files, options) {
         reporterStream.end();
 
         if (forbidFocused && returnVals.length > 0) {
-            // iterate through return values and find usesfitorfdescribe from roca_main
+            // iterate through return values and see if there are focused cases
             for (output of returnVals) {
                 let focusedFiles = output.getValue().get("fileswithfocusedcases").getElements();
                 if (focusedFiles.length > 0) {
