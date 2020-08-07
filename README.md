@@ -11,7 +11,8 @@
     - [Adding a Test](#adding-a-test)
     - [Asserts](#asserts)
     - [Output & CI Support](#output--ci-support)
-    - [Using a test setup/helper file](#using-a-test-setuphelper-file)
+      - [CLI Options](#cli-options)
+        - [`-r`/`--require`](#-r--require)
   - [API](#api)
     - [Global Functions](#global-functions)
       - [`roca(args = {} as object) as object`](#rocaargs---as-object-as-object)
@@ -134,9 +135,17 @@ end function
 ### Output & CI Support
 Roca exclusively reports its state via the [Test Anything Protocol](http://testanything.org/), and defaults to a Mocha-like "spec" output.  Failed tests cause the `roca` CLI to return a non-zero exit code, which allows most continuous integration systems to automatically detect pass/fail states.
 
-Other output formats are available!  See `roca --help` for more details.
+#### CLI Options
 
-### Using a test setup/helper file
+| Option                  | Behavior       |
+| ------------------------|----------------|
+| `-h`/`--help`           | The help menu. |
+| `-s`/`--source`         | Path to brs files (if different from source/) |
+| `-R`/`--reporter`       | The mocha reporter to use, via [`tap-mocha-reporter`](https://github.com/tapjs/tap-mocha-reporter). See `--help` for options. |
+| `-r`/`--require`        |  Path to a required setup file (will be run before unit tests) |
+| `-f`/`--forbid-focused` | Fail if focused test or suite is detected. |
+
+##### `-r`/`--require`
 In order to enable custom unit test helper functions and/or unit test setup code, you can create a BrightScript file that will be run before any of your unit tests. Pass it to `roca` via the `-r`/`--require` flag.
 
 For example, say you wanted to define a helper function that you could call in any of your unit tests:
