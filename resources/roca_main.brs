@@ -22,7 +22,7 @@ sub main()
     numFocusedSuites = 0
     focusedCasesDetected = false
     for each suite in rootSuites
-        if suite.__state.hasFocusedDescendants then
+        if suite.mode = "focus" or suite.__state.hasFocusedDescendants then
             numFocusedSuites++
             focusedCasesDetected = true
         end if
