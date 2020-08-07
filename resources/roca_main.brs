@@ -1,38 +1,37 @@
-sub main()
+function main() as object
     basePath = "tests"
     files = MatchFiles("pkg:/" + basePath, "*.test.brs")
 
     rootSuites = []
+    filesWithFocusedCases = []
     for each file in files
-        path = ["pkg:", basePath, file].join("/")
-        suite = _brs_.runInScope(path, {})
+        filePath = [basePath, file].join("/")
+        suite = _brs_.runInScope(["pkg:", filePath].join("/"), {})
 
         if suite = invalid then
             print "Error running tests: Runtime exception occurred in " + [basePath, file].join("/")
             return
         end if
 
-        if GetInterface(suite, "ifArray") <> invalid then
-            rootSuites.append(suite)
-        else
-            rootSuites.push(suite)
+        if GetInterface(suite, "ifArray") = invalid then
+            suite = [suite]
         end if
-    end for
 
-    numFocusedSuites = 0
-    focusedCasesDetected = false
-    for each suite in rootSuites
-        if suite.mode = "focus" or suite.__state.hasFocusedDescendants then
-            numFocusedSuites++
-            focusedCasesDetected = true
-        end if
+        for each subSuite in suite
+            if subSuite.mode = "focus" or subSuite.__state.hasFocusedDescendants then
+                filesWithFocusedCases.push(filePath)
+            end if
+
+            rootSuites.push(subSuite)
+        end for
     end for
 
     tap = tap()
     tap.version()
 
+    focusedCasesDetected = filesWithFocusedCases.count() > 0
     if focusedCasesDetected then
-        tap.plan(numFocusedSuites)
+        tap.plan(filesWithFocusedCases.count())
     else
         tap.plan(rootSuites.count())
     end if
@@ -48,12 +47,12 @@ sub main()
         ' Don't allow test files to pollute each other
         _brs_.resetMocks()
 
-        path = ["pkg:", basePath, file].join("/")
-        suite = _brs_.runInScope(path, args)
+        filePath = [basePath, file].join("/")
+        suite = _brs_.runInScope(["pkg:", filePath].join("/"), args)
 
         ' If brs returned invalid for runInScope, that means the suite threw an exception, so we should bail.
         if suite = invalid then
-            tap.bail("Error occurred in " + [basePath, file].join("/"))
+            tap.bail("Error running tests: Runtime exception occurred in " + filePath)
             return
         end if
 
@@ -63,5 +62,9 @@ sub main()
             args.index += 1
         end if
     end for
-end sub
+
+    return {
+        filesWithFocusedCases: filesWithFocusedCases
+    }
+end function
 
