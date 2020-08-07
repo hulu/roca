@@ -115,9 +115,15 @@ sub __roca_addContext(ctx as object)
     ' called from roca object
     else if m.__ctx <> invalid then
         m.__ctx.append(ctx)
+
+        ' make context immediately accessible in roca object
+        m.append(ctx)
     ' called in suite
     else
         m.__suite.__ctx.append(ctx)
+
+        ' make context immediately accessible in the suite
+        m.append(ctx)
     end if
 end sub
 
