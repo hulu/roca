@@ -1,13 +1,13 @@
-const brs = require('brs');
-const glob = require('glob');
-const path = require('path');
-const util = require('util');
-const TapMochaReporter = require('tap-mocha-reporter');
+const brs = require("brs");
+const glob = require("glob");
+const path = require("path");
+const util = require("util");
+const TapMochaReporter = require("tap-mocha-reporter");
 const c = require("ansi-colors");
 
 async function findBrsFiles(sourceDir) {
-    let searchDir = sourceDir || 'source';
-    const pattern = path.join(searchDir, '**', '*.brs');
+    let searchDir = sourceDir || "source";
+    const pattern = path.join(searchDir, "**", "*.brs");
     return util.promisify(glob)(pattern);
 }
 
@@ -39,9 +39,8 @@ async function runTest(files, options) {
             for (output of returnVals) {
                 let focusedFiles = output.getValue().get("fileswithfocusedcases").getElements();
                 if (focusedFiles.length > 0) {
-                    let formattedList = focusedFiles.map((brsStringPath) => `    ${brsStringPath.value}`).join("/n");
-                    console.error(c.red(`Error: used command line arg ${c.cyan("--forbid-focused")} but found focused tests in these files:`));
-                    console.error(formattedList);
+                    let formattedList = focusedFiles.map((brsStringPath) => `\t${brsStringPath.value}`).join("\n");
+                    console.error(c.red(`Error: used command line arg ${c.cyan("--forbid-focused")} but found focused tests in these files:\n${formattedList}`));
 
                     process.exitCode = 1;
                     return;

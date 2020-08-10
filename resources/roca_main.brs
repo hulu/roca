@@ -29,16 +29,16 @@ function main() as object
     tap = tap()
     tap.version()
 
-    focusedCasesDetected = filesWithFocusedCases.count() > 0
+    numFocusedCases = filesWithFocusedCases.count()
     if focusedCasesDetected then
-        tap.plan(filesWithFocusedCases.count())
+        tap.plan(numFocusedCases)
     else
         tap.plan(rootSuites.count())
     end if
 
     args = {
         exec: true,
-        focusedCasesDetected: focusedCasesDetected,
+        focusedCasesDetected: numFocusedCases > 0
         index: 0,
         tap: tap
     }
