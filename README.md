@@ -135,6 +135,8 @@ end function
 ### Output & CI Support
 Roca exclusively reports its state via the [Test Anything Protocol](http://testanything.org/), and defaults to a Mocha-like "spec" output.  Failed tests cause the `roca` CLI to return a non-zero exit code, which allows most continuous integration systems to automatically detect pass/fail states.
 
+Other output formats are available!  See `roca --help` for more details.
+
 #### CLI Options
 
 | Option                  | Behavior       |
