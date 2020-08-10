@@ -37,13 +37,16 @@ async function runTest(files, options) {
         if (forbidFocused && returnVals.length > 0) {
             // iterate through return values and see if there are focused cases
             for (output of returnVals) {
-                let focusedFiles = output.getValue().get("fileswithfocusedcases").getElements();
-                if (focusedFiles.length > 0) {
-                    let formattedList = focusedFiles.map((brsStringPath) => `\t${brsStringPath.value}`).join("\n");
-                    console.error(c.red(`Error: used command line arg ${c.cyan("--forbid-focused")} but found focused tests in these files:\n${formattedList}`));
+                let maybeFiles = output.getValue().get("fileswithfocusedcases");
+                if (maybeFiles) {
+                    let focusedFiles = maybeFiles.getElements();
+                    if (focusedFiles.length > 0) {
+                        let formattedList = focusedFiles.map((brsStringPath) => `\t${brsStringPath.value}`).join("\n");
+                        console.error(c.red(`Error: used command line arg ${c.cyan("--forbid-focused")} but found focused tests in these files:\n${formattedList}`));
 
-                    process.exitCode = 1;
-                    return;
+                        process.exitCode = 1;
+                        return;
+                    }
                 }
             }
         }
