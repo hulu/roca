@@ -42,13 +42,16 @@ const argv = require('yargs')
                 sourceDir: argv.s,
                 reporter: argv.reporter,
                 requireFilePath: argv.r,
+                forbidFocused: argv.f
             });
         }
     )
-    .describe('s', 'Path to brs files (if different from source/)')
+    .describe("s", "Path to brs files (if different from source/)")
     .alias("s", "source")
     .describe("r", "Path to a required setup file (will be run before unit tests)")
     .alias("r", "require")
+    .describe("f", "Fail if focused test or suite is encountered")
+    .alias("f", "--forbid-focused")
     .help("h")
     .alias("h", "help")
     .argv;
