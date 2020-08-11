@@ -97,13 +97,15 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         afterEach: __roca_afterEach
     }
 
-    if withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
+    ' don't run beforeEach/afterEach if we're not executing
+    if m.args.exec = true and withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
         withM.__beforeExecFn()
     end if
 
     withM.__func()
 
-    if withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
+    ' don't run beforeEach/afterEach if we're not executing
+    if m.args.exec = true and withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
         withM.__afterExecFn()
     end if
 
