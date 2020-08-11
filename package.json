@@ -11,7 +11,8 @@
     "resources/"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand -- "
   },
   "repository": {
     "type": "git",
@@ -30,9 +31,11 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.9",
     "brs": "^0.27.0",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
+    "jest": "^26.3.0",
     "lint-staged": "^10.2.11"
   },
   "peerDependencies": {
