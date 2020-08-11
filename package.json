@@ -30,7 +30,7 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
-    "brs": "^0.25.0",
+    "brs": "^0.27.0",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11"
