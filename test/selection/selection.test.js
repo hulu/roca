@@ -72,4 +72,25 @@ describe("selection", () => {
             { fullTitle: "root 1 case 3.1" },
         ]);
     });
+
+    test("mixed", async () => {
+        let results = await rocaInDir(__dirname, "mixed");
+
+        expect(results.stats).toMatchObject({
+            tests: 3,
+            passes: 1,
+            pending: 2,
+            failures: 0
+        });
+
+        expect(results.tests).toMatchObject([
+            { fullTitle: "root suite 2 case 2.3" },
+            { fullTitle: "root suite 3 suite 3.2 case 3.2.1" },
+            { fullTitle: "root suite 3 case 3.1" }
+        ]);
+
+        expect(results.passes).toMatchObject([
+            { fullTitle: "root suite 2 case 2.3" },
+        ]);
+    });
 });
