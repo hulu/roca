@@ -72,4 +72,15 @@ describe("simple-suites", () => {
             { fullTitle: "foo case 2" },
         ]);
     });
+
+    test("no-cases", async () => {
+        let results = await rocaInDir(__dirname, "no-cases");
+        expect(results.stats).toMatchObject({
+            tests: 1,
+            suites: 1,
+            passes: 1, // a suite counts as a test, and therefore passes
+            pending: 0,
+            failures: 0
+        });
+    });
 });
