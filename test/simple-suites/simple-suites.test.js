@@ -58,6 +58,13 @@ describe("simple-suites", () => {
             failures: 0
         });
 
+        expect(results.tests).toMatchObject([
+            { fullTitle: "bar case 1" },
+            { fullTitle: "bar case 2" },
+            { fullTitle: "foo case 1" },
+            { fullTitle: "foo case 2" },
+        ]);
+
         expect(results.passes).toMatchObject([
             { fullTitle: "bar case 1" },
             { fullTitle: "bar case 2" },
