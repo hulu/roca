@@ -7,7 +7,7 @@ const c = require("ansi-colors");
 
 async function findBrsFiles(sourceDir) {
     let searchDir = sourceDir || "source";
-    const pattern = path.join(searchDir, "**", "*.brs");
+    const pattern = path.join(process.cwd(), searchDir, "**", "*.brs");
     return util.promisify(glob)(pattern);
 }
 
@@ -20,14 +20,16 @@ async function runTest(files, options) {
         "assert_lib.brs"
     ].map(basename => path.join(__dirname, "..", "resources", basename));
 
+    let reporterStream = new TapMochaReporter(reporter);
+    let allTestFiles = [...rocaFiles];
+    if (requireFilePath) {
+        allTestFiles.push(requireFilePath);
+    }
+    allTestFiles.push(...files);
+
     try {
-        let reporterStream = new TapMochaReporter(reporter);
-        let allTestFiles = [...rocaFiles];
-        if (requireFilePath) {
-            allTestFiles.push(requireFilePath);
-        }
-        allTestFiles.push(...files);
         let returnVals = await brs.execute(allTestFiles, {
+            root: process.cwd(),
             stdout: reporterStream,
             stderr: process.stderr
         });
@@ -54,10 +56,12 @@ async function runTest(files, options) {
         console.error("Interpreter found an error: ", e);
         process.exitCode = 1;
     }
+
+    return reporterStream.runner.testResults;
 }
 
 module.exports = async function(args) {
     let { sourceDir, ...options } = args;
     let files = await findBrsFiles(sourceDir);
-    await runTest(files, options);
+    return await runTest(files, options);
 }
