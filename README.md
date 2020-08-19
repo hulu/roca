@@ -23,7 +23,7 @@
       - [`m.beforeEach(func as object)`](#mbeforeeachfunc-as-object)
       - [`m.afterEach(func as object)`](#maftereachfunc-as-object)
       - [`m.it(description as string, func as object, args = invalid as dynamic)`](#mitdescription-as-string-func-as-object-args--invalid-as-dynamic)
-      - [`m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mit_each(arrayOfArgs-as-object-descriptionGenerator-as-object-func-as-object))
+      - [`m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mit_eacharrayofargs-as-object-descriptiongenerator-as-object-func-as-object)
       - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
       - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
       - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
