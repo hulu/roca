@@ -13,6 +13,7 @@ function roca(args = {} as object)
         fdescribe: __roca_fdescribe,
         xdescribe: __roca_xdescribe,
         it: __it,
+        it_each: __it_each,
         fit: __fit,
         xit: __xit,
         __ctx: {},
@@ -86,6 +87,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         __func: suite.__state.func
         log: __util_log
         it: __it
+        it_each: __it_each
         fit: __fit
         xit: __xit
         __createDescribeBlock: __roca_createDescribeBlock,
@@ -113,16 +115,22 @@ end function
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
-sub __it(description as string, func as object)
-    m.__suite.__registerCase("default", description, m.__suite, func)
+sub __it(description as string, func as object, args = invalid as dynamic)
+    m.__suite.__registerCase("default", description, m.__suite, func, args)
 end sub
 
-sub __fit(description as string, func as object)
-    m.__suite.__registerCase("focus", description, m.__suite, func)
+sub __fit(description as string, func as object, args = invalid as dynamic)
+    m.__suite.__registerCase("focus", description, m.__suite, func, args)
 end sub
 
-sub __xit(description as string, func as object)
-    m.__suite.__registerCase("skip", description, m.__suite, func)
+sub __xit(description as string, func as object, args = invalid as dynamic)
+    m.__suite.__registerCase("skip", description, m.__suite, func, args)
+end sub
+
+sub __it_each(argsArray as object, descriptionGenerator as object, func as object)
+    for each args in argsArray
+        m.__suite.__registerCase("default", descriptionGenerator(args), m.__suite, func, args)
+    end for
 end sub
 
 ' Registers a function to run before each child executes
@@ -197,7 +205,7 @@ end function
 ' @param description a string describing the test case
 ' @param suite the suite from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of the test case
-sub __suite_registerCase(mode as string, description as string, suite as object, func as object)
+sub __suite_registerCase(mode as string, description as string, suite as object, func as object, args as dynamic)
     if mode <> "default" and mode <> "skip" and mode <> "focus" then
         print "[roca.brs] Error: Received unexpected test case mode '" mode "'"
         return
@@ -215,6 +223,7 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         },
         description: description,
         func: func,
+        func_args: args
         suite: suite,
         report: __case_report,
         exec: __case_execute,
@@ -248,7 +257,11 @@ function __case_execute()
         end if
     end for
 
-    withM.__func()
+    if m.func_args <> invalid then 
+        withM.__func(m.func_args)
+    else
+        withM.__func()
+    end if
 
     for each fn in m.__afterExec
         if fn <> invalid and type(fn) = "Function" then
