@@ -18,8 +18,8 @@ function roca(args = {} as object)
         __ctx: {},
         addContext: __roca_addContext,
         __state: {
-            beforeEachChildFn: invalid,
-            afterEachChildFn: invalid
+            beforeEachChild: [],
+            afterEachChild: []
         },
         beforeEach: __roca_beforeEach,
         afterEach: __roca_afterEach
@@ -66,11 +66,11 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         ' cascade context
         suite.__ctx.append(m.__suite.__ctx)
 
-        ' pass the beforeEach function to the child so that it can execute it in-scope
-        suite.__state.beforeExecFn = m.__suite.__state.beforeEachChildFn
+        ' pass the beforeEach functions to the child so that it can execute it in-scope
+        suite.__state.beforeExec = m.__suite.__state.beforeEachChild
 
-        ' pass the afterEach function to the child so that it can execute it in-scope
-        suite.__state.afterExecFn = m.__suite.__state.afterEachChildFn
+        ' pass the afterEach functions to the child so that it can execute it in-scope
+        suite.__state.afterExecFn = m.__suite.__state.afterEachChild
 
         m.__suite.__registerSuite(suite)
     end if
@@ -82,8 +82,8 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
     withM = {
         __suite: suite
         __func: suite.__state.func
-        __beforeExecFn: suite.__state.beforeExecFn
-        __afterExecFn: suite.__state.afterExecFn
+        __beforeExec: suite.__state.beforeExec
+        __afterExec: suite.__state.afterExec
         log: __util_log
         it: __it
         fit: __fit
@@ -98,15 +98,25 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
     }
 
     ' don't run beforeEach/afterEach if we're not executing
-    if m.args.exec = true and withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
-        withM.__beforeExecFn()
+    if m.args.exec = true
+        for i = 0 to withM.__beforeExec.count()
+            fn = withM.__beforeExec[i]
+            if fn <> invalid and type(fn) = "Function" then
+                withM.__beforeExec[i]()
+            end if
+        end for
     end if
 
     withM.__func()
 
     ' don't run beforeEach/afterEach if we're not executing
-    if m.args.exec = true and withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
-        withM.__afterExecFn()
+    if m.args.exec = true
+        for i = 0 to withM.__afterExec.count()
+            fn = withM.__afterExec[i]
+            if fn <> invalid and type(fn) = "Function" then
+                withM.__afterExec[i]()
+            end if
+        end for
     end if
 
     suite.__state.hasFocusedDescendants = suite.__hasFocusedDescendants()
@@ -138,13 +148,13 @@ end sub
 ' Registers a function to run before each child executes
 ' @param func the function to run
 sub __roca_beforeEach(func as object)
-    m.__suite.__state.beforeEachChildFn = func
+    m.__suite.__state.beforeEachChild.push(func)
 end sub
 
 ' Registers a function to run after each child executes
 ' @param func the function to run
 sub __roca_afterEach(func as object)
-    m.__suite.__state.afterEachChildFn = func
+    m.__suite.__state.afterEachChild.push(func)
 end sub
 
 ' Fields to add to `m` in the case context.
@@ -186,14 +196,14 @@ function __roca_suite()
                 failed: 0,
                 skipped: 0
             },
-            ' function to run in-scope before executing the test suite
-            beforeExecFn: invalid,
-            ' function that each child should run in-scope before executing
-            beforeEachChildFn: invalid,
-            ' function to run in-scope after executing the test suite
-            afterExecFn: invalid,
-            ' function that each child should run in-scope after executing
-            afterEachChildFn: invalid
+            ' list of functions to run in-scope before executing the test suite
+            beforeExec: [],
+            ' list of functions that each child should run in-scope before executing
+            beforeEachChild: [],
+            ' list of functions to run in-scope after executing the test suite
+            afterExec: [],
+            ' list of functions that each child should run in-scope after executing
+            afterEachChild: []
         },
         __hasFocusedDescendants: __suite_hasFocusedDescendants,
         __totalCases: __suite_totalCases,
@@ -232,8 +242,8 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         suite: suite,
         report: __case_report,
         exec: __case_execute,
-        __beforeExecFn: suite.__state.beforeEachChildFn,
-        __afterExecFn: suite.__state.afterEachChildFn
+        __beforeExec: suite.__state.beforeEachChild,
+        __afterExec: suite.__state.afterEachChild
     })
 end sub
 
@@ -246,24 +256,35 @@ function __case_execute()
         __func: m.func,
         __state: m.__state
         assert: assert(__util_pass, __util_fail, m.__state)
-        __beforeExecFn: m.__beforeExecFn
-        __afterExecFn: m.__afterExecFn
     }
 
     ' extra case fields
     if m.suite.__ctx <> invalid then withM.append(m.suite.__ctx)
 
-    ' we need to execute the beforeEach using the test case `m` scope
-    if withM.__beforeExecFn <> invalid and type(withM.__beforeExecFn) = "Function" then
-        withM.__beforeExecFn()
-    end if
+    for i = 0 to m.__beforeExec.count()
+        fn = m.__beforeExec[i]
+        if fn <> invalid and type(fn) = "Function" then
+            ' execute the beforeEach using the test case `m` scope
+            withM.__beforeExec = fn
+            withM.__beforeExec()
+
+            ' clean up
+            withM.__beforeExec = invalid
+        end if
+    end for
 
     withM.__func()
 
-    ' we need to execute the afterEach using the test case `m` scope
-    if withM.__afterExecFn <> invalid and type(withM.__afterExecFn) = "Function" then
-        withM.__afterExecFn()
-    end if
+    for i = 0 to m.__afterExec.count()
+        fn = m.__afterExec[i]
+        if fn <> invalid and type(fn) = "Function" then
+            ' execute the beforeEach using the test case `m` scope
+            withM.__afterExec = fn
+            withM.__afterExec()
+
+            withM.__afterExec = invalid
+        end if
+    end for
 end function
 
 function __case_report(index as integer, tap as object) as string
