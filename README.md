@@ -22,7 +22,8 @@
       - [`m.xdescribe(description as string, func as object)`](#mxdescribedescription-as-string-func-as-object)
       - [`m.beforeEach(func as object)`](#mbeforeeachfunc-as-object)
       - [`m.afterEach(func as object)`](#maftereachfunc-as-object)
-      - [`m.it(description as string, func as object)`](#mitdescription-as-string-func-as-object)
+      - [`m.it(description as string, func as object, args = invalid as dynamic)`](#mitdescription-as-string-func-as-object-args--invalid-as-dynamic)
+      - [`m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mit_each(arrayOfArgs-as-object-descriptionGenerator-as-object-func-as-object))
       - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
       - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
       - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
@@ -331,12 +332,13 @@ m.describe("a test suite", sub()
 end sub)
 ```
 
-#### `m.it(description as string, func as object)`
+#### `m.it(description as string, func as object, args = invalid as dynamic)`
 Creates a test case with a given description.
 
 Parameters:
 * `description as string` - a string describing the test case executed by `func`
 * `func as object` - the function to execute as part of this test case
+* `args = invalid as dynamic` - optional parameter that will be passed in `func` as an argument
 
 Example:
 ```brightscript
@@ -346,6 +348,32 @@ m.it("a test case", sub()
     else
         m.fail()
     end if
+end sub)
+
+m.it("a test case with args", sub(count)
+    if count > 0 then m.pass() else m.fail()
+end sub, 10)
+```
+
+#### `m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`
+Creates a parameterized test cases with generated description.
+
+Parameters:
+* `arrayOfArgs as object` - the array of args that will be passed in `func`
+* `descriptionGenerator as object` - a function that generate description string
+* `func as object` - the function to execute as part of this test case
+
+Example:
+```
+m.it_each([
+    [1, 1],
+    [2, 1],
+],
+function (args)
+    return substitute("compare {0} with {1}", args[0].tostr(), args[1].tostr())
+end function,
+sub(args)
+    if args[0] = args[1] then m.pass() else m.fail()
 end sub)
 ```
 
