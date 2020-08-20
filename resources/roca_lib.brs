@@ -115,6 +115,7 @@ end function
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
+' @param optional parameter that will be passed in func as an argument
 sub __it(description as string, func as object, args = invalid as dynamic)
     m.__suite.__registerCase("default", description, m.__suite, func, args)
 end sub
@@ -129,7 +130,19 @@ end sub
 
 sub __it_each(argsArray as object, descriptionGenerator as object, func as object)
     for each args in argsArray
-        m.__suite.__registerCase("default", descriptionGenerator(args), m.__suite, func, args)
+        m.it(descriptionGenerator(args), func, args)
+    end for
+end sub
+
+sub __fit_each(argsArray as object, descriptionGenerator as object, func as object)
+    for each args in argsArray
+        m.fit(descriptionGenerator(args), func, args)
+    end for
+end sub
+
+sub __xit_each(argsArray as object, descriptionGenerator as object, func as object)
+    for each args in argsArray
+        m.xit(descriptionGenerator(args), func, args)
     end for
 end sub
 
