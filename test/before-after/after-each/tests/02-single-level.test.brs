@@ -19,7 +19,6 @@ function main(args as object) as object
             m.inScopeValue = "in-scope"
             m.assert.isInvalid(m.counterB, "afterEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 0, "counterA must be incremented for each test case")
-            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in afterEach")
         end sub)
 
         m.it("case 2", sub()
@@ -27,7 +26,6 @@ function main(args as object) as object
             m.inScopeValue = "in-scope"
             m.assert.isInvalid(m.counterB, "afterEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 1, "counterA must be incremented for each test case")
-            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in afterEach")
         end sub)
 
         m.xit("skipped case", sub()
@@ -39,7 +37,6 @@ function main(args as object) as object
             m.inScopeValue = "in-scope"
             m.assert.isInvalid(m.counterB, "afterEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 2, "counterA must be incremented for each test case")
-            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in afterEach")
         end sub)
     end sub)
 end function
