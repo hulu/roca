@@ -10,16 +10,20 @@ function main(args as object) as object
             ' tacit approval to do the same in production tests :)
             if m.__suite.__ctx.counterA <> invalid then m.__suite.__ctx.counterA++
             m.append(m.__suite.__ctx)
+
+            m.inScopeValue = "in-scope"
         end sub)
 
         m.it("case 1", sub()
             m.assert.isInvalid(m.counterB, "beforeEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 1, "counterA must be incremented for each test case")
+            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in beforeEach")
         end sub)
 
         m.it("case 2", sub()
             m.assert.isInvalid(m.counterB, "beforeEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 2, "counterA must be incremented for each test case")
+            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in beforeEach")
         end sub)
 
         m.xit("skipped case", sub()
@@ -29,6 +33,7 @@ function main(args as object) as object
         m.it("case 3", sub()
             m.assert.isInvalid(m.counterB, "beforeEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 3, "counterA must be incremented for each test case")
+            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must match its set value in beforeEach")
         end sub)
     end sub)
 end function

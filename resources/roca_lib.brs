@@ -18,8 +18,8 @@ function roca(args = {} as object)
         __ctx: {},
         addContext: __roca_addContext,
         __state: {
-            beforeEachChild: [],
-            afterEachChild: []
+            beforeEachFns: [],
+            afterEachFns: []
         },
         beforeEach: __roca_beforeEach,
         afterEach: __roca_afterEach
@@ -67,10 +67,12 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         suite.__ctx.append(m.__suite.__ctx)
 
         ' pass the beforeEach functions to the child so that it can execute it in-scope
-        suite.__state.beforeExec = m.__suite.__state.beforeEachChild
+        suite.__state.beforeEachFns = []
+        suite.__state.beforeEachFns.append(m.__suite.__state.beforeEachFns)
 
         ' pass the afterEach functions to the child so that it can execute it in-scope
-        suite.__state.afterExecFn = m.__suite.__state.afterEachChild
+        suite.__state.afterEachFns = []
+        suite.__state.afterEachFns.append(m.__suite.__state.afterEachFns)
 
         m.__suite.__registerSuite(suite)
     end if
@@ -82,8 +84,6 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
     withM = {
         __suite: suite
         __func: suite.__state.func
-        __beforeExec: suite.__state.beforeExec
-        __afterExec: suite.__state.afterExec
         log: __util_log
         it: __it
         fit: __fit
@@ -97,27 +97,7 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         afterEach: __roca_afterEach
     }
 
-    ' don't run beforeEach/afterEach if we're not executing
-    if m.args.exec = true
-        for i = 0 to withM.__beforeExec.count()
-            fn = withM.__beforeExec[i]
-            if fn <> invalid and type(fn) = "Function" then
-                withM.__beforeExec[i]()
-            end if
-        end for
-    end if
-
     withM.__func()
-
-    ' don't run beforeEach/afterEach if we're not executing
-    if m.args.exec = true
-        for i = 0 to withM.__afterExec.count()
-            fn = withM.__afterExec[i]
-            if fn <> invalid and type(fn) = "Function" then
-                withM.__afterExec[i]()
-            end if
-        end for
-    end if
 
     suite.__state.hasFocusedDescendants = suite.__hasFocusedDescendants()
     suite.__state.totalCases = suite.__totalCases()
@@ -148,13 +128,13 @@ end sub
 ' Registers a function to run before each child executes
 ' @param func the function to run
 sub __roca_beforeEach(func as object)
-    m.__suite.__state.beforeEachChild.push(func)
+    m.__suite.__state.beforeEachFns.push(func)
 end sub
 
 ' Registers a function to run after each child executes
 ' @param func the function to run
 sub __roca_afterEach(func as object)
-    m.__suite.__state.afterEachChild.push(func)
+    m.__suite.__state.afterEachFns.push(func)
 end sub
 
 ' Fields to add to `m` in the case context.
@@ -196,14 +176,10 @@ function __roca_suite()
                 failed: 0,
                 skipped: 0
             },
-            ' list of functions to run in-scope before executing the test suite
-            beforeExec: [],
-            ' list of functions that each child should run in-scope before executing
-            beforeEachChild: [],
-            ' list of functions to run in-scope after executing the test suite
-            afterExec: [],
-            ' list of functions that each child should run in-scope after executing
-            afterEachChild: []
+            ' list of functions to run before each test and nested test
+            beforeEachFns: [],
+            ' list of functions to run after each test and nested test
+            afterEachFns: []
         },
         __hasFocusedDescendants: __suite_hasFocusedDescendants,
         __totalCases: __suite_totalCases,
@@ -242,8 +218,8 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         suite: suite,
         report: __case_report,
         exec: __case_execute,
-        __beforeExec: suite.__state.beforeEachChild,
-        __afterExec: suite.__state.afterEachChild
+        __beforeExec: suite.__state.beforeEachFns,
+        __afterExec: suite.__state.afterEachFns
     })
 end sub
 
@@ -282,6 +258,7 @@ function __case_execute()
             withM.__afterExec = fn
             withM.__afterExec()
 
+            ' clean up
             withM.__afterExec = invalid
         end if
     end for
@@ -411,6 +388,11 @@ sub __suite_exec(args as object)
         tap.fail(args.index, description)
     else
         tap.pass(args.index, description)
+    end if
+
+    ' we may have changed context during execution, so let's update our parent's context
+    if m.__state.parentSuite <> invalid then
+        m.__state.parentSuite.__ctx.append(m.__ctx)
     end if
 end sub
 

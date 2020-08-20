@@ -6,10 +6,10 @@ describe("before-after", () => {
         let results = await rocaInDir(__dirname, "before-each");
 
         expect(results.stats).toMatchObject({
-            suites: 3,
-            tests: 3,
-            passes: 1,
-            pending: 1,
+            suites: 4,
+            tests: 12,
+            passes: 9,
+            pending: 3,
             failures: 0
         });
 

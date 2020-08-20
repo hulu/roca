@@ -10,18 +10,16 @@ function main(args as object) as object
             ' tacit approval to do the same in production tests :)
             if m.__suite.__ctx.counterB <> invalid then m.__suite.__ctx.counterB++
             m.append(m.__suite.__ctx)
-            print "parent beforeEach"
         end sub)
 
         m.it("case 1", sub()
             m.assert.isInvalid(m.counterA, "beforeEach state must not spread to sibling suites")
-            m.assert.equal(m.counterB, 4, "counterC must be incremented for each test case")
+            m.assert.equal(m.counterB, 4, "counterB must be incremented for each test case")
         end sub)
 
         m.it("case 2", sub()
-        print m
             m.assert.isInvalid(m.counterA, "beforeEach state must not spread to sibling suites")
-            m.assert.equal(m.counterB, 5, "counterC must be incremented for each test case")
+            m.assert.equal(m.counterB, 5, "counterB must be incremented for each test case")
         end sub)
 
         m.xit("skipped case", sub()
@@ -30,7 +28,7 @@ function main(args as object) as object
 
         m.it("case 3", sub()
             m.assert.isInvalid(m.counterA, "beforeEach state must not spread to sibling suites")
-            m.assert.equal(m.counterB, 6, "counterC must be incremented for each test case")
+            m.assert.equal(m.counterB, 6, "counterB must be incremented for each test case")
         end sub)
 
         m.describe("suite 1", sub()
