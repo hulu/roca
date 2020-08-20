@@ -237,8 +237,7 @@ function __case_execute()
     ' extra case fields
     if m.suite.__ctx <> invalid then withM.append(m.suite.__ctx)
 
-    for i = 0 to m.__beforeExec.count()
-        fn = m.__beforeExec[i]
+    for each fn in m.__beforeExec
         if fn <> invalid and type(fn) = "Function" then
             ' execute the beforeEach using the test case `m` scope
             withM.__beforeExec = fn
@@ -251,8 +250,7 @@ function __case_execute()
 
     withM.__func()
 
-    for i = 0 to m.__afterExec.count()
-        fn = m.__afterExec[i]
+    for each fn in m.__afterExec
         if fn <> invalid and type(fn) = "Function" then
             ' execute the beforeEach using the test case `m` scope
             withM.__afterExec = fn
