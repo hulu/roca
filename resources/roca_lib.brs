@@ -134,7 +134,7 @@ end sub
 ' Registers a function to run after each child executes
 ' @param func the function to run
 sub __roca_afterEach(func as object)
-    m.__suite.__state.afterEachFns.push(func)
+    m.__suite.__state.afterEachFns.unshift(func)
 end sub
 
 ' Fields to add to `m` in the case context.

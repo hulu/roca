@@ -6,17 +6,17 @@ function main(args as object) as object
 
         m.afterEach(sub()
             m.counterA++
+            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must remain in scope in subsequent afterEach calls")
+        end sub)
+
+        m.afterEach(sub()
+            m.counterA++
+            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must remain in scope in subsequent afterEach calls")
+        end sub)
+
+        m.afterEach(sub()
+            m.counterA++
             m.inScopeValue = "in-scope"
-        end sub)
-
-        m.afterEach(sub()
-            m.counterA++
-            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must remain in scope in subsequent afterEach calls")
-        end sub)
-
-        m.afterEach(sub()
-            m.counterA++
-            m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must remain in scope in subsequent afterEach calls")
         end sub)
 
         m.it("case 1", sub()

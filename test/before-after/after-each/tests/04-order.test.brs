@@ -24,9 +24,9 @@ function main(args as object) as object
 
                 m.it("case 2", sub()
                     m.assert.equal(m.breadcrumbs.count(), 3, "breadcrumbs should have 3 entries in the second test")
-                    m.assert.equal(m.breadcrumbs[0], 1, "afterEach should be executed from the top downward")
-                    m.assert.equal(m.breadcrumbs[1], 2, "afterEach should be executed from the top downward")
-                    m.assert.equal(m.breadcrumbs[2], 3, "afterEach should be executed from the top downward")
+                    m.assert.equal(m.breadcrumbs[0], 3, "afterEach should be executed from the bottom upward")
+                    m.assert.equal(m.breadcrumbs[1], 2, "afterEach should be executed from the bottom upward")
+                    m.assert.equal(m.breadcrumbs[2], 1, "afterEach should be executed from the bottom upward")
                 end sub)
             end sub)
         end sub)
