@@ -5,11 +5,7 @@ function main(args as object) as object
         })
 
         m.beforeEach(sub()
-            ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-            ' and are being done here as part of testing the test framework; please don't view this as
-            ' tacit approval to do the same in production tests :)
-            if m.__suite.__ctx.counterA <> invalid then m.__suite.__ctx.counterA++
-            m.append(m.__suite.__ctx)
+            m.counterA++
 
             m.inScopeValue = "in-scope"
         end sub)

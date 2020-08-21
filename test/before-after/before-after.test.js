@@ -6,9 +6,9 @@ describe("before-after", () => {
         let results = await rocaInDir(__dirname, "before-each");
 
         expect(results.stats).toMatchObject({
-            suites: 5,
-            tests: 16,
-            passes: 12,
+            suites: 10,
+            tests: 17,
+            passes: 13,
             pending: 4,
             failures: 0
         });
@@ -26,6 +26,7 @@ describe("before-after", () => {
             { fullTitle: "multiple-calls root case 1" },
             { fullTitle: "multiple-calls root case 2" },
             { fullTitle: "multiple-calls root case 3" },
+            { fullTitle: "order of execution second describe third describe case 1" },
         ]);
     });
 
@@ -33,9 +34,9 @@ describe("before-after", () => {
         let results = await rocaInDir(__dirname, "after-each");
 
         expect(results.stats).toMatchObject({
-            suites: 5,
-            tests: 16,
-            passes: 12,
+            suites: 10,
+            tests: 18,
+            passes: 14,
             pending: 4,
             failures: 0
         });
@@ -53,6 +54,8 @@ describe("before-after", () => {
             { fullTitle: "multiple-calls root case 1" },
             { fullTitle: "multiple-calls root case 2" },
             { fullTitle: "multiple-calls root case 3" },
+            { fullTitle: "order of execution second describe third describe case 1" },
+            { fullTitle: "order of execution second describe third describe case 2" },
         ]);
     });
 

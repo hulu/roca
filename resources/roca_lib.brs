@@ -260,6 +260,13 @@ function __case_execute()
             withM.__afterExec = invalid
         end if
     end for
+
+    ' if the test case updated any of our context values, let's propagate that update
+    if m.suite.__ctx <> invalid then
+        for each key in m.suite.__ctx.keys()
+            m.suite.__ctx[key] = withM[key]
+        end for
+    end if
 end function
 
 function __case_report(index as integer, tap as object) as string

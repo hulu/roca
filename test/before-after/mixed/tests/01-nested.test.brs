@@ -1,16 +1,15 @@
 function main(args as object) as object
     return roca(args).describe("nested root", sub()
         m.addContext({
-            counterB: 0,
-            incrementCounterB: incrementCounterB
+           counterB: 0
         })
 
         m.beforeEach(sub()
-            m.incrementCounterB()
+            m.counterB++
         end sub)
 
         m.afterEach(sub()
-            m.incrementCounterB()
+            m.counterB++
         end sub)
 
         m.it("case 1", sub()
@@ -34,16 +33,15 @@ function main(args as object) as object
 
         m.describe("suite 1", sub()
             m.addContext({
-                counterC: 0,
-                incrementCounterC: incrementCounterC
+                counterC: 0
             })
 
             m.beforeEach(sub()
-                m.incrementCounterC()
+                m.counterC++
             end sub)
 
             m.afterEach(sub()
-                m.incrementCounterC()
+                m.counterC++
             end sub)
 
             m.it("case 1.1", sub()
@@ -67,19 +65,3 @@ function main(args as object) as object
         end sub)
     end sub)
 end function
-
-sub incrementCounterB()
-    ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-    ' and are being done here as part of testing the test framework; please don't view this as
-    ' tacit approval to do the same in production tests :)
-    if m.__suite.__ctx.counterB <> invalid then m.__suite.__ctx.counterB++
-    m.append(m.__suite.__ctx)
-end sub
-
-sub incrementCounterC()
-    ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-    ' and are being done here as part of testing the test framework; please don't view this as
-    ' tacit approval to do the same in production tests :)
-    if m.__suite.__ctx.counterC <> invalid then m.__suite.__ctx.counterC++
-    m.append(m.__suite.__ctx)
-end sub

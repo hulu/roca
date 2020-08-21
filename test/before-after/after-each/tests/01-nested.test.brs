@@ -5,11 +5,7 @@ function main(args as object) as object
         })
 
         m.afterEach(sub()
-            ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-            ' and are being done here as part of testing the test framework; please don't view this as
-            ' tacit approval to do the same in production tests :)
-            if m.__suite.__ctx.counterB <> invalid then m.__suite.__ctx.counterB++
-            m.append(m.__suite.__ctx)
+            m.counterB++
         end sub)
 
         m.it("case 1", sub()
@@ -37,11 +33,7 @@ function main(args as object) as object
             })
 
             m.afterEach(sub()
-                ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-                ' and are being done here as part of testing the test framework; please don't view this as
-                ' tacit approval to do the same in production tests :)
-                if m.__suite.__ctx.counterC <> invalid then m.__suite.__ctx.counterC++
-                m.append(m.__suite.__ctx)
+                m.counterC++
             end sub)
 
             m.it("case 1.1", sub()

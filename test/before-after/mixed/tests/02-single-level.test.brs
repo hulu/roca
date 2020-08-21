@@ -1,18 +1,17 @@
 function main(args as object) as object
     return roca(args).describe("single-level root", sub()
         m.addContext({
-            counterA: 0,
-            incrementCounterA: incrementCounterA
+            counterA: 0
         })
 
         m.beforeEach(sub()
-            m.incrementCounterA()
+            m.counterA++
 
             m.inScopeValue = "in-scope"
         end sub)
 
         m.afterEach(sub()
-            m.incrementCounterA()
+            m.counterA++
 
             m.assert.equal(m.inScopeValue, "in-scope", "inScopeValue must remain in scope in the afterEach")
         end sub)
@@ -40,11 +39,3 @@ function main(args as object) as object
         end sub)
     end sub)
 end function
-
-sub incrementCounterA()
-    ' WARNING: accessing m.__suite and m.__suite.__ctx are prone to breakage in future releases,
-    ' and are being done here as part of testing the test framework; please don't view this as
-    ' tacit approval to do the same in production tests :)
-    if m.__suite.__ctx.counterA <> invalid then m.__suite.__ctx.counterA++
-    m.append(m.__suite.__ctx)
-end sub
