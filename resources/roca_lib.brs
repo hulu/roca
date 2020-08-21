@@ -115,7 +115,7 @@ end function
 ' Creates a test case with a given description.
 ' @param description a string describing this test case
 ' @param func the function to execute as part of this test case
-' @param optional parameter that will be passed in func as an argument
+' @param args optional parameter that will be passed in func as an argument
 sub __it(description as string, func as object, args = invalid as dynamic)
     m.__suite.__registerCase("default", description, m.__suite, func, args)
 end sub
@@ -218,6 +218,7 @@ end function
 ' @param description a string describing the test case
 ' @param suite the suite from the parent 'describe', used to track test pass and fail states
 ' @param func the function to execute as part of the test case
+' @param args object/value that will be passed in func as an argument if it is not `invalid`
 sub __suite_registerCase(mode as string, description as string, suite as object, func as object, args as dynamic)
     if mode <> "default" and mode <> "skip" and mode <> "focus" then
         print "[roca.brs] Error: Received unexpected test case mode '" mode "'"
