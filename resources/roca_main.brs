@@ -1,4 +1,4 @@
-function main() as dynamic
+function main() as object
     files = []
     dirsToSearch = ["test", "tests", "source", "components"]
     for each dir in dirsToSearch
