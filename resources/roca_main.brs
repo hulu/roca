@@ -15,7 +15,7 @@ function main() as object
 
         if suite = invalid then
             print "Error running tests: Runtime exception occurred in " + filePathWithoutPkg
-            return
+            return {}
         end if
 
         if GetInterface(suite, "ifArray") = invalid then
@@ -60,7 +60,7 @@ function main() as object
         ' If brs returned invalid for runInScope, that means the suite threw an exception, so we should bail.
         if suite = invalid then
             tap.bail("Error running tests: Runtime exception occurred in " + filePath.replace("pkg:", ""))
-            return
+            return {}
         end if
 
         ' If there are focused cases, only update the index when we've run a focused root suite.
