@@ -8,7 +8,7 @@ const argv = require('yargs')
     })
     .command(
         ["$0", "run "],
-        "Discovers and executes all .test.brs tests in the current directory", 
+        "Discovers and executes all .test.brs tests in the current directory",
         (yargs) => {
             yargs.option("reporter", {
                 // use capital-R for reporter selection to match mocha
@@ -51,7 +51,7 @@ const argv = require('yargs')
     .describe("r", "Path to a required setup file (will be run before unit tests)")
     .alias("r", "require")
     .describe("f", "Fail if focused test or suite is encountered")
-    .alias("f", "--forbid-focused")
+    .alias("f", "forbid-focused")
     .help("h")
     .alias("h", "help")
     .argv;
