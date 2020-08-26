@@ -15,7 +15,9 @@ function roca(args = {} as object)
         it: __it,
         it_each: __it_each,
         fit: __fit,
+        ft_each: __ft_each,
         xit: __xit,
+        xt_each: __xt_each,
         __ctx: {},
         addContext: __roca_addContext,
         __state: {
@@ -89,7 +91,9 @@ function __roca_createDescribeBlock(mode as string, description as string, func 
         it: __it
         it_each: __it_each
         fit: __fit
+        fit_each: __fit_each
         xit: __xit
+        xit_each: __xit_each
         __createDescribeBlock: __roca_createDescribeBlock,
         describe: __roca_describe,
         fdescribe: __roca_fdescribe,
