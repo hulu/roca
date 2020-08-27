@@ -23,8 +23,8 @@
       - [`m.beforeEach(func as object)`](#mbeforeeachfunc-as-object)
       - [`m.afterEach(func as object)`](#maftereachfunc-as-object)
       - [`m.it(description as string, func as object, args = invalid as dynamic)`](#mitdescription-as-string-func-as-object-args--invalid-as-dynamic)
-      - [`m.fit(description as string, func as object, args = invalid as dynamic))`](#mfitdescription-as-string-func-as-object-args--invalid-as-dynamic)
-      - [`m.xit(description as string, func as object, args = invalid as dynamic))`](#mxitdescription-as-string-func-as-object-args--invalid-as-dynamic)
+      - [`m.fit(description as string, func as object)`](#mfitdescription-as-string-func-as-object)
+      - [`m.xit(description as string, func as object)`](#mxitdescription-as-string-func-as-object)
       - [`m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mit_eacharrayofargs-as-object-descriptiongenerator-as-object-func-as-object)
       - [`m.fit_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mfit_eacharrayofargs-as-object-descriptiongenerator-as-object-func-as-object)
       - [`m.xit_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mxit_eacharrayofargs-as-object-descriptiongenerator-as-object-func-as-object)
@@ -363,6 +363,7 @@ Creates a focused test case &mdash; a test case that causes all non-focused test
 Parameters:
 * `description as string` - a string describing the test case executed by `func`
 * `func as object` - the function to execute as part of this test case
+* `args = invalid as dynamic` - optional parameter that will be passed in `func` as an argument
 
 Example:
 ```brightscript
@@ -386,6 +387,7 @@ Creates a skipped unit test case.  It will never execute.
 Parameters:
 * `description as string` - a string describing the test case executed by `func`
 * `func as object` - the (skipped) function to execute as part of this test case
+* `args = invalid as dynamic` - optional parameter that will be passed in `func` as an argument
 
 Example:
 ```brightscript
