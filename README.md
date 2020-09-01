@@ -9,7 +9,6 @@
     - [Directory Layout](#directory-layout)
     - [Modify Channel Entry Point (if necessary)](#modify-channel-entry-point-if-necessary)
     - [Adding a Test](#adding-a-test)
-    - [Asserts](#asserts)
     - [Output & CI Support](#output--ci-support)
       - [CLI Options](#cli-options)
         - [`-r`/`--require`](#-r--require)
@@ -30,9 +29,14 @@
       - [`m.xit_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`](#mxit_eacharrayofargs-as-object-descriptiongenerator-as-object-func-as-object)
       - [`m.log(value as dynamic)`](#mlogvalue-as-dynamic)
       - [`m.addContext(ctx as object)`](#maddcontextctx-as-object)
-    - [Within a Test Case](#within-a-test-case)
+    - [Within test cases: passing, failing, asserts](#within-test-cases-passing-failing-asserts)
       - [`m.pass()`](#mpass)
       - [`m.fail()`](#mfail)
+      - [`m.assert.equal(actual, expected, errorMessage)`](#massertequalactual-expected-errormessage)
+      - [`m.assert.notEqual(actual, expected, errorMessage)`](#massertnotequalactual-expected-errormessage)
+      - [`m.assert.isTrue(value, errorMessage)`](#massertistruevalue-errormessage)
+      - [`m.assert.isFalse(value, errorMessage)`](#massertisfalsevalue-errormessage)
+      - [`m.assert.isInvalid(value, errorMessage)`](#massertisinvalidvalue-errormessage)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -114,28 +118,6 @@ function main(args as object) as object
 end function
 ```
 
-### Asserts
-
-Similar to [Chai](https://www.chaijs.com/api/assert/), `roca` offers an `assert` library, available via `m.assert`. It has the following methods:
-
-- `m.assert.equal(actual, expected, errorMessage)`
-- `m.assert.notEqual(actual, expected, errorMessage)`
-- `m.assert.isTrue(value, errorMessage)`
-- `m.assert.isFalse(value, errorMessage)`
-- `m.assert.isInvalid(value, errorMessage)`
-
-These methods will call `m.pass` or `m.fail` for you.
-
-Usage:
-```brightscript
-function main(args as object) as object
-    return roca(args).describe("test suite", sub()
-        m.it("test case", sub()
-            m.assert.equal("foo", "foo", "foo equals foo")
-        end sub)
-    end sub)
-end function
-```
 
 ### Output & CI Support
 Roca exclusively reports its state via the [Test Anything Protocol](http://testanything.org/), and defaults to a Mocha-like "spec" output.  Failed tests cause the `roca` CLI to return a non-zero exit code, which allows most continuous integration systems to automatically detect pass/fail states.
@@ -398,7 +380,7 @@ end sub)
 
 #### `m.it_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`
 Creates a parameterized test cases with generated description.
-Will be expanded as `m.it` in for cycle with the passing argument to `func` from arguments array  
+Will be expanded as `m.it` in for cycle with the passing argument to `func` from arguments array
 
 Parameters:
 * `arrayOfArgs as object` - the array of args that will be passed in `func`
@@ -421,7 +403,7 @@ end sub)
 
 #### `m.fit_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`
 Creates a parameterized test cases with generated description.
-Will be expanded as `m.fit` in for cycle with the passing argument to `func` from arguments array  
+Will be expanded as `m.fit` in for cycle with the passing argument to `func` from arguments array
 
 Parameters:
 * `arrayOfArgs as object` - the array of args that will be passed in `func`
@@ -444,7 +426,7 @@ end sub)
 
 #### `m.xit_each(arrayOfArgs as object, descriptionGenerator as object, func as object)`
 Creates a parameterized test cases with generated description.
-Will be expanded as `m.xit` in for cycle with the passing argument to `func` from arguments array  
+Will be expanded as `m.xit` in for cycle with the passing argument to `func` from arguments array
 
 Parameters:
 * `arrayOfArgs as object` - the array of args that will be passed in `func`
@@ -455,7 +437,7 @@ Example:
 ```
 m.xit_each([1, 2, 3],
 function (args)
-    return "omitted parameterized test case" 
+    return "omitted parameterized test case"
 end function,
 sub(args)
     m.fail()' this test will never be executed, so it doesn't matter if it's explicitly failed
@@ -502,9 +484,12 @@ m.describe("a test suite with context", sub()
 end sub)
 ```
 
-### Within a Test Case
+### Within test cases: passing, failing, asserts
+
+You can directly call `m.pass()` or `m.fail()` within a test case to mark it as passed or failed. Alternatively, `roca` offers an `assert` library (similar to [Chai](https://www.chaijs.com/api/assert/)), available via `m.assert`. These methods will call `m.pass()` or `m.fail()` for you.
+
 #### `m.pass()`
-Marks a unit test as passing, overriding any previous "failed" states.
+Marks a unit test as passing. If the test case has previously been marked as failed, then this results in a no-op.
 
 Example:
 ```brightscript
@@ -514,11 +499,64 @@ end sub)
 ```
 
 #### `m.fail()`
-Marks a unit test as failing, overriding any previous "passed" states.
+Marks a unit test as failing. Only the first failure encountered in a test case will be reported, and it will override any prior calls to `m.pass`.
 
 Example:
 ```brightscript
 m.it("fails", sub()
     m.fail()
+end sub)
+```
+
+#### `m.assert.equal(actual, expected, errorMessage)`
+Compares two **primitive** values for equality.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    m.assert.equal("foo", "foo", "foo should not equal foo")
+end sub)
+```
+
+#### `m.assert.notEqual(actual, expected, errorMessage)`
+Opposite of `m.assert.equal`. Compares two **primitive** values.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    m.assert.notEqual("foo", "not foo", "foo should not equal foo")
+end sub)
+```
+
+#### `m.assert.isTrue(value, errorMessage)`
+Checks to see if a **boolean** value is `true`.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    foo = true
+    m.assert.isTrue(foo, "foo should be true")
+end sub)
+```
+
+#### `m.assert.isFalse(value, errorMessage)`
+Checks to see if a **boolean** value is `false`.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    foo = false
+    m.assert.isFalse(foo, "foo should be false")
+end sub)
+```
+
+#### `m.assert.isInvalid(value, errorMessage)`
+Checks to see if a value is `invalid`.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    foo = invalid
+    m.assert.isInvalid(foo, "foo should be invalid")
 end sub)
 ```
