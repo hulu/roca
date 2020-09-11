@@ -4,6 +4,7 @@ const path = require("path");
 const util = require("util");
 const TapMochaReporter = require("tap-mocha-reporter");
 const c = require("ansi-colors");
+const coverage = require("./coverage");
 
 async function findBrsFiles(sourceDir) {
     let searchDir = sourceDir || "source";
@@ -12,7 +13,9 @@ async function findBrsFiles(sourceDir) {
 }
 
 async function runTest(files, options) {
-    let { reporter, requireFilePath, forbidFocused } = options;
+    let { reporter, requireFilePath, forbidFocused, coverageReporters = [] } = options;
+    let coverageEnabled = coverageReporters.length > 0;
+
     let rocaFiles = [
         "tap.brs",
         "roca_lib.brs",
@@ -31,10 +34,15 @@ async function runTest(files, options) {
         let returnVals = await brs.execute(allTestFiles, {
             root: process.cwd(),
             stdout: reporterStream,
-            stderr: process.stderr
+            stderr: process.stderr,
+            generateCoverage: coverageEnabled
         });
 
         reporterStream.end();
+
+        if (coverageEnabled) {
+            coverage.report(coverageReporters);
+        }
 
         if (forbidFocused && returnVals.length > 0) {
             // iterate through return values and see if there are focused cases
