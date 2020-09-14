@@ -8,7 +8,8 @@
   "main": "src/index.js",
   "files": [
     "bin/",
-    "resources/"
+    "resources/",
+    "src"
   ],
   "scripts": {
     "test": "jest",
