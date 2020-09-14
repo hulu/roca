@@ -42,17 +42,38 @@ const argv = require('yargs')
                 sourceDir: argv.s,
                 reporter: argv.reporter,
                 requireFilePath: argv.r,
-                forbidFocused: argv.f
+                forbidFocused: argv.f,
+                coverageReporters: argv.c
             });
         }
     )
+    .help("h")
+    .alias("h", "help")
     .describe("s", "Path to brs files (if different from source/)")
     .alias("s", "source")
     .describe("r", "Path to a required setup file (will be run before unit tests)")
     .alias("r", "require")
     .describe("f", "Fail if focused test or suite is encountered")
     .alias("f", "forbid-focused")
-    .help("h")
-    .alias("h", "help")
+    .option("c", {
+        alias: "coverage-reporters",
+        describe: "The coverage reporters to use, via istanbul. If none are given, no coverage collection or reporting occurs.",
+        type: "array",
+        choices: [
+            "clover",
+            "cobertura",
+            "html",
+            "html-spa",
+            "json",
+            "json-summary",
+            "lcov",
+            "lcovonly",
+            "none",
+            "teamcity",
+            "text",
+            "text-lcov",
+            "text-summary"
+        ]
+    })
     .argv;
 
