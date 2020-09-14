@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.9",
-    "brs": "^0.27.0",
+    "brs": "^0.30.0",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "jest": "^26.3.0",
