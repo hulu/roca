@@ -35,7 +35,8 @@ async function runTest(files, options) {
             root: process.cwd(),
             stdout: reporterStream,
             stderr: process.stderr,
-            generateCoverage: coverageEnabled
+            generateCoverage: coverageEnabled,
+            componentDirs: ["test", "tests"]
         });
 
         reporterStream.end();
