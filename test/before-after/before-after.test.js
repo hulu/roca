@@ -1,4 +1,3 @@
-
 const { rocaInDir } = require("../util");
 
 describe("before-after", () => {
@@ -10,7 +9,7 @@ describe("before-after", () => {
             tests: 17,
             passes: 13,
             pending: 4,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -26,7 +25,10 @@ describe("before-after", () => {
             { fullTitle: "multiple-calls root case 1" },
             { fullTitle: "multiple-calls root case 2" },
             { fullTitle: "multiple-calls root case 3" },
-            { fullTitle: "order of execution second describe third describe case 1" },
+            {
+                fullTitle:
+                    "order of execution second describe third describe case 1",
+            },
         ]);
     });
 
@@ -38,7 +40,7 @@ describe("before-after", () => {
             tests: 18,
             passes: 14,
             pending: 4,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -54,8 +56,14 @@ describe("before-after", () => {
             { fullTitle: "multiple-calls root case 1" },
             { fullTitle: "multiple-calls root case 2" },
             { fullTitle: "multiple-calls root case 3" },
-            { fullTitle: "order of execution second describe third describe case 1" },
-            { fullTitle: "order of execution second describe third describe case 2" },
+            {
+                fullTitle:
+                    "order of execution second describe third describe case 1",
+            },
+            {
+                fullTitle:
+                    "order of execution second describe third describe case 2",
+            },
         ]);
     });
 
@@ -67,7 +75,7 @@ describe("before-after", () => {
             tests: 12,
             passes: 9,
             pending: 3,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([

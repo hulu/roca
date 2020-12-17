@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const testRunner = require('../src/');
-const argv = require('yargs')
+const testRunner = require("../lib/");
+const argv = require("yargs")
     .usage("Usage: $0 [command] [options]")
     .updateStrings({
         "Positionals:": "Available commands",
-        "Options:": "Other Options"
+        "Options:": "Other Options",
     })
     .command(
         ["$0", "run "],
@@ -32,10 +32,9 @@ const argv = require('yargs')
                     "silent",
                     "spec",
                     "tap",
-                    "xunit"
+                    "xunit",
                 ],
-            })
-
+            });
         },
         async (argv) => {
             await testRunner({
@@ -43,7 +42,7 @@ const argv = require('yargs')
                 reporter: argv.reporter,
                 requireFilePath: argv.r,
                 forbidFocused: argv.f,
-                coverageReporters: argv.c
+                coverageReporters: argv.c,
             });
         }
     )
@@ -51,13 +50,17 @@ const argv = require('yargs')
     .alias("h", "help")
     .describe("s", "Path to brs files (if different from source/)")
     .alias("s", "source")
-    .describe("r", "Path to a required setup file (will be run before unit tests)")
+    .describe(
+        "r",
+        "Path to a required setup file (will be run before unit tests)"
+    )
     .alias("r", "require")
     .describe("f", "Fail if focused test or suite is encountered")
     .alias("f", "forbid-focused")
     .option("c", {
         alias: "coverage-reporters",
-        describe: "The coverage reporters to use, via istanbul. If none are given, no coverage collection or reporting occurs.",
+        describe:
+            "The coverage reporters to use, via istanbul. If none are given, no coverage collection or reporting occurs.",
         type: "array",
         choices: [
             "clover",
@@ -72,8 +75,6 @@ const argv = require('yargs')
             "teamcity",
             "text",
             "text-lcov",
-            "text-summary"
-        ]
-    })
-    .argv;
-
+            "text-summary",
+        ],
+    }).argv;

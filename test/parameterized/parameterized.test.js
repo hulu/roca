@@ -9,7 +9,7 @@ describe("parameterized tests", () => {
             tests: 3,
             passes: 3,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -27,7 +27,7 @@ describe("parameterized tests", () => {
             tests: 3,
             passes: 3,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -45,7 +45,7 @@ describe("parameterized tests", () => {
             tests: 4,
             passes: 1,
             pending: 3,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([

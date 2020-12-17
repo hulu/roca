@@ -1,3 +1,7 @@
+# Output directory for compiled TS
+lib
+types
+
 # Logs
 logs
 *.log
