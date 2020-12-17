@@ -83,6 +83,8 @@ async function runTest(files: string[], options: Options) {
         console.error("Interpreter found an error: ", e);
         process.exitCode = 1;
     }
+
+    return reporterStream.runner.testResults;
 }
 
 /**
