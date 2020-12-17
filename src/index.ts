@@ -96,7 +96,10 @@ function checkForFocusedCases(elements: brs.types.BrsType[]) {
     for (let output of elements) {
         if (output instanceof brs.types.RoAssociativeArray) {
             let maybeFiles = output.getValue().get("fileswithfocusedcases");
-            let focusedFiles = maybeFiles instanceof brs.types.RoArray ? maybeFiles.getElements() : [];
+            let focusedFiles =
+                maybeFiles instanceof brs.types.RoArray
+                    ? maybeFiles.getElements()
+                    : [];
             if (focusedFiles.length > 0) {
                 let formattedList = focusedFiles
                     .map((brsStringPath) => `\t${brsStringPath.toString()}`)
@@ -116,7 +119,9 @@ function checkForFocusedCases(elements: brs.types.BrsType[]) {
     }
 }
 
-module.exports = async function (args: { sourceDir: string | undefined } & Options) {
+module.exports = async function (
+    args: { sourceDir: string | undefined } & Options
+) {
     let { sourceDir, ...options } = args;
     let files = await findBrsFiles(sourceDir);
     return await runTest(files, options);
