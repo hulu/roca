@@ -26,6 +26,9 @@
           }
         },
         { run: "npm ci" },
+        { run: "npm run build" },
+        { run: "npm run lint" },
+        { run: "npm run prettier" },
         { run: "npm test" },
       ],
       env: {
