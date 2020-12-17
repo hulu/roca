@@ -4,6 +4,58 @@ Rather than writing tests for `@hulu/roca` that run in `@hulu/roca` (sometimes k
 This approach enables each of the top-level directories within `test/` to be executed in parallel, and allows the individual micro-projects to also be used as samples for consumers.
 
 # Running
+
+## The build-test-clean dance
+### Build
+This project is written in TypeScript, so it needs to be compiled before it can be executed.  `npm run build` compiles files in `src/` into JavaScript and TypeScript declarations, and puts them in `lib/` and `types/` respectively.
+
+```shell
+$ npm run build
+
+$ ls lib/
+index.js (and friends)
+
+$ ls types/
+index.d.ts (and friends)
+```
+
+Alternatively, you can run the build step in "watch" mode. This will run `npm run build` for you automatically, every time it detects source file changes:
+```shell
+$ npm run watch
+```
+This is often useful for testing that local changes work in your BrightScript project, without having to run `npm run build` over and over.
+
+### Testing
+Tests are written in plain-old JavaScript with [Facebook's Jest](http://facebook.github.io/jest/), and can be run with the `test` target:
+
+```shell
+$ npm run test
+
+# tests start running
+```
+
+Note that only test files ending in `.test.js` will be executed by `npm run test`.
+
+### Cleaning
+Compiled output in `lib/` and `types/` can be removed with the `clean` target:
+
+```shell
+$ npm run clean
+
+$ ls lib/
+ls: cannot access 'lib': No such file or directory
+
+$ ls types/
+ls: cannot access 'types': No such file or directory
+```
+
+### All Together
+Thanks to the [npm-run-all](https://www.npmjs.com/package/npm-run-all) package, it's trivially easy to combine these into a sequence of tasks without relying on shell semantics:
+
+```shell
+$ npm run run-s clean build test
+```
+
 ## Everything
 To run all tests, use `npm run test` as you would for a normal JavaScript project.
 

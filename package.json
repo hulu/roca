@@ -14,12 +14,13 @@
   ],
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
+    "clean": "rimraf ./lib ./types",
     "lint": "tslint --project .",
-    "test": "jest",
     "prettier:write": "prettier --write \"{bin,src,test}/**/*.{js,ts}\"",
     "prettier": "prettier --check \"{bin,src,test}/**/*.{js,ts}\"",
-    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand -- "
+    "test": "jest",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand -- ",
+    "watch": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -52,6 +53,7 @@
     "jest": "^26.3.0",
     "lint-staged": "^10.2.11",
     "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.9.7"
