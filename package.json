@@ -47,7 +47,7 @@
     "@types/long": "^4.0.1",
     "@types/memory-fs": "^0.3.2",
     "@types/xmldoc": "^1.1.5",
-    "brs": "^0.39.0",
+    "brs": "^0.40.1",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "jest": "^26.3.0",
