@@ -9,7 +9,7 @@ describe("selection", () => {
             tests: 3,
             passes: 3,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.tests).toMatchObject([
@@ -27,7 +27,7 @@ describe("selection", () => {
             tests: 6,
             passes: 3,
             pending: 3,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -44,7 +44,7 @@ describe("selection", () => {
             tests: 1,
             passes: 1,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -59,7 +59,7 @@ describe("selection", () => {
             tests: 8,
             passes: 7,
             pending: 1,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -80,13 +80,13 @@ describe("selection", () => {
             tests: 3,
             passes: 1,
             pending: 2,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.tests).toMatchObject([
             { fullTitle: "root suite 2 case 2.3" },
             { fullTitle: "root suite 3 suite 3.2 case 3.2.1" },
-            { fullTitle: "root suite 3 case 3.1" }
+            { fullTitle: "root suite 3 case 3.1" },
         ]);
 
         expect(results.passes).toMatchObject([

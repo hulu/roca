@@ -9,18 +9,12 @@ describe("simple-suites", () => {
             tests: 3,
             passes: 1,
             pending: 1,
-            failures: 1
+            failures: 1,
         });
 
-        expect(results.passes).toMatchObject([
-            { fullTitle: "suite case 1" },
-        ]);
-        expect(results.pending).toMatchObject([
-            { fullTitle: "suite case 2" },
-        ]);
-        expect(results.failures).toMatchObject([
-            { fullTitle: "suite case 3" },
-        ]);
+        expect(results.passes).toMatchObject([{ fullTitle: "suite case 1" }]);
+        expect(results.pending).toMatchObject([{ fullTitle: "suite case 2" }]);
+        expect(results.failures).toMatchObject([{ fullTitle: "suite case 3" }]);
     });
 
     test("nested", async () => {
@@ -30,7 +24,7 @@ describe("simple-suites", () => {
             tests: 11,
             passes: 11,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.passes).toMatchObject([
@@ -55,7 +49,7 @@ describe("simple-suites", () => {
             tests: 4,
             passes: 4,
             pending: 0,
-            failures: 0
+            failures: 0,
         });
 
         expect(results.tests).toMatchObject([
@@ -80,7 +74,7 @@ describe("simple-suites", () => {
             suites: 1,
             passes: 1, // a suite counts as a test, and therefore passes
             pending: 0,
-            failures: 0
+            failures: 0,
         });
     });
 });
