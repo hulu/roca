@@ -40,6 +40,11 @@ async function findBrsFiles(sourceDir: string | undefined) {
     return globPromise(pattern);
 }
 
+/**
+ * Generates an execution scope and runs the tests.
+ * @param files List of filenames to load into the execution scope
+ * @param options BRS interpreter options
+ */
 async function run(files: string[], options: Options) {
     let {
         reporter,
@@ -49,12 +54,13 @@ async function run(files: string[], options: Options) {
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
+    // Get the list of files that we should load into the execution scope. Loading them
+    // here ensures that they only get lexed/parsed once.
     let rocaFiles = [
         path.join("hasFocusedCases", "hasFocusedCases.brs"),
         "roca_lib.brs",
         "assert_lib.brs",
     ].map((basename) => path.join(__dirname, "..", "resources", basename));
-
     let inScopeFiles = [...rocaFiles];
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
@@ -62,6 +68,8 @@ async function run(files: string[], options: Options) {
     inScopeFiles.push(...files);
 
     let reporterStream = new TapMochaReporter(reporter);
+
+    // Create the execution scope
     let execute: brs.ExecuteWithScope;
     try {
         execute = await brs.createExecuteWithScope(inScopeFiles, {
@@ -85,6 +93,7 @@ async function run(files: string[], options: Options) {
         reportCoverage(coverageReporters);
     }
 
+    // Fail if we find focused test cases and there weren't supposed to be any.
     if (forbidFocused && focusedCasesDetected) {
         let formattedList = testFiles
             .map((filename) => `\t${filename}`)
@@ -109,6 +118,7 @@ async function run(files: string[], options: Options) {
  * @param focusedCasesDetected Whether or not focused cases were detected
  */
 async function runTestFiles(execute: brs.ExecuteWithScope, testFiles: string[], focusedCasesDetected: boolean) {
+    // Create an instance of the BrightScript TAP object so we can pass it to the tests for reporting.
     let tap = execute(
         [path.join(__dirname, "..", "resources", "tap.brs")],
         [new brs.types.Int32(testFiles.length)]
@@ -116,6 +126,7 @@ async function runTestFiles(execute: brs.ExecuteWithScope, testFiles: string[], 
     let runArgs = generateRunArgs(tap, focusedCasesDetected);
     let indexString = new brs.types.BrsString("index");
 
+    // Run each test. Fail if we encounter a runtime exception.
     testFiles.forEach((filename, index) => {
         try {
             execute([filename], [runArgs]);
@@ -129,6 +140,7 @@ async function runTestFiles(execute: brs.ExecuteWithScope, testFiles: string[], 
 
 /**
  * Returns the appropriate set of *.test.brs files, depending on whether it detects any focused tests.
+ * Runs through the entire test suite (in non-exec mode) to determine this.
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
  */
@@ -152,8 +164,12 @@ async function getTestFiles(execute: brs.ExecuteWithScope) {
     );
     testFiles.forEach((filename) => {
         try {
+            // Run the file in non-exec mode.
             let suite = execute([filename], [emptyRunArgs]);
+            // It's easier to check nested BrightScript objects in BrightScript, rather than Typescript.
             let hasFocusedCases = execute([scriptPath], [suite]);
+
+            // Keep track of which files have focused cases.
             if (
                 brs.types.isBrsBoolean(hasFocusedCases) &&
                 hasFocusedCases.toBoolean()
