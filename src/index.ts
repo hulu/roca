@@ -1,3 +1,4 @@
+import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
 import { glob } from "glob";
 import * as path from "path";
 import * as util from "util";
@@ -5,7 +6,6 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import TapMochaReporter = require("tap-mocha-reporter");
 import { reportCoverage } from "./coverage";
-import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
 
 const {
     BrsBoolean,
@@ -121,8 +121,8 @@ async function run(files: string[], options: Options) {
 }
 
 /**
- * Loops through the given test files and executes each one. If an interpreter exception is encountered,
- * then it exits with status code 1.
+ * Loops through the given test files and executes each one. If an interpreter exception is
+ * encountered, then it exits with status code 1.
  * @param execute The function to execute each file with
  * @param testFiles The files to execute
  * @param focusedCasesDetected Whether or not focused cases were detected
@@ -138,7 +138,7 @@ async function runTestFiles(
         [new Int32(testFiles.length)]
     );
 
-    // Run each test. Fail if we encounter a runtime exception.
+    // Run each test and fail if we encounter a runtime exception.
     let runArgs = generateRunArgs(tap, focusedCasesDetected);
     let indexString = new BrsString("index");
     testFiles.forEach((filename, index) => {
