@@ -4,38 +4,11 @@ import * as path from "path";
 import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
-import TapMochaReporter = require("tap-mocha-reporter");
 import { reportCoverage } from "./coverage";
-import { TestRunner } from "./TestRunner";
+import { TestRunner, MochaReporter } from "./TestRunner";
 
-const {
-    BrsBoolean,
-    BrsString,
-    Int32,
-    isBrsBoolean,
-    isBrsString,
-    RoArray,
-    RoAssociativeArray,
-} = types;
+const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
-
-type MochaReporter =
-    | "classic"
-    | "doc"
-    | "dot"
-    | "dump"
-    | "json"
-    | "jsonstream"
-    | "landing"
-    | "list"
-    | "markdown"
-    | "min"
-    | "nyan"
-    | "progress"
-    | "silent"
-    | "spec"
-    | "tap"
-    | "xunit";
 
 interface Options {
     reporter: MochaReporter;
@@ -96,7 +69,6 @@ async function run(files: string[], options: Options) {
     }
 
     let { testFiles, focusedCasesDetected } = await getTestFiles(execute);
-
     testRunner.run(execute, testFiles, focusedCasesDetected);
     testRunner.reporterStream.end();
 
