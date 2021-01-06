@@ -1,4 +1,3 @@
-import * as brs from "brs";
 import { glob } from "glob";
 import * as path from "path";
 import * as util from "util";
@@ -6,7 +5,17 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import TapMochaReporter = require("tap-mocha-reporter");
 import { reportCoverage } from "./coverage";
+import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
 
+const {
+    BrsBoolean,
+    BrsString,
+    Int32,
+    isBrsBoolean,
+    isBrsString,
+    RoArray,
+    RoAssociativeArray,
+} = types;
 const globPromise = util.promisify(glob);
 
 type MochaReporter =
@@ -54,13 +63,11 @@ async function run(files: string[], options: Options) {
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
-    // Get the list of files that we should load into the execution scope. Loading them
-    // here ensures that they only get lexed/parsed once.
-    let rocaFiles = [
-        path.join("hasFocusedCases", "hasFocusedCases.brs"),
-        "roca_lib.brs",
-        "assert_lib.brs",
-    ].map((basename) => path.join(__dirname, "..", "resources", basename));
+    // Get the list of files that we should load into the execution scope.
+    // Loading them here ensures that they only get lexed/parsed once.
+    let rocaFiles = ["roca_lib.brs", "assert_lib.brs"].map((basename) =>
+        path.join(__dirname, "..", "resources", basename)
+    );
     let inScopeFiles = [...rocaFiles];
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
@@ -69,10 +76,10 @@ async function run(files: string[], options: Options) {
 
     let reporterStream = new TapMochaReporter(reporter);
 
-    // Create the execution scope
-    let execute: brs.ExecuteWithScope;
+    // Create an execution scope using the project source files and roca files.
+    let execute: ExecuteWithScope;
     try {
-        execute = await brs.createExecuteWithScope(inScopeFiles, {
+        execute = await createExecuteWithScope(inScopeFiles, {
             root: process.cwd(),
             stdout: reporterStream,
             stderr: process.stderr,
@@ -80,7 +87,10 @@ async function run(files: string[], options: Options) {
             componentDirs: ["test", "tests"],
         });
     } catch (e) {
-        console.error("Interpreter found an error: ", e);
+        console.error(
+            "Stopping execution. Interpreter encountered an error: ",
+            e
+        );
         process.exit(1);
     }
 
@@ -117,22 +127,29 @@ async function run(files: string[], options: Options) {
  * @param testFiles The files to execute
  * @param focusedCasesDetected Whether or not focused cases were detected
  */
-async function runTestFiles(execute: brs.ExecuteWithScope, testFiles: string[], focusedCasesDetected: boolean) {
+async function runTestFiles(
+    execute: ExecuteWithScope,
+    testFiles: string[],
+    focusedCasesDetected: boolean
+) {
     // Create an instance of the BrightScript TAP object so we can pass it to the tests for reporting.
     let tap = execute(
         [path.join(__dirname, "..", "resources", "tap.brs")],
-        [new brs.types.Int32(testFiles.length)]
+        [new Int32(testFiles.length)]
     );
-    let runArgs = generateRunArgs(tap, focusedCasesDetected);
-    let indexString = new brs.types.BrsString("index");
 
     // Run each test. Fail if we encounter a runtime exception.
+    let runArgs = generateRunArgs(tap, focusedCasesDetected);
+    let indexString = new BrsString("index");
     testFiles.forEach((filename, index) => {
         try {
             execute([filename], [runArgs]);
-            runArgs.set(indexString, new brs.types.Int32(index));
+            // Update the index so that our TAP reporting is correct.
+            runArgs.set(indexString, new Int32(index + 1));
         } catch (e) {
-            console.error(`Interpreter found an error in ${filename}: `, e);
+            console.error(
+                `Stopping execution. Interpreter encountered an error in ${filename}.`
+            );
             process.exit(1);
         }
     });
@@ -144,7 +161,7 @@ async function runTestFiles(execute: brs.ExecuteWithScope, testFiles: string[], 
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
  */
-async function getTestFiles(execute: brs.ExecuteWithScope) {
+async function getTestFiles(execute: ExecuteWithScope) {
     let testsPattern = path.join(
         process.cwd(),
         `{test,tests,source,components}`,
@@ -154,26 +171,16 @@ async function getTestFiles(execute: brs.ExecuteWithScope) {
     let testFiles: string[] = await globPromise(testsPattern);
 
     let focusedSuites: string[] = [];
-    let emptyRunArgs = new brs.types.RoAssociativeArray([]);
-    let scriptPath = path.join(
-        __dirname,
-        "..",
-        "resources",
-        "hasFocusedCases",
-        "main.brs"
-    );
+    let emptyRunArgs = new RoAssociativeArray([]);
     testFiles.forEach((filename) => {
         try {
             // Run the file in non-exec mode.
             let suite = execute([filename], [emptyRunArgs]);
-            // It's easier to check nested BrightScript objects in BrightScript, rather than Typescript.
-            let hasFocusedCases = execute([scriptPath], [suite]);
 
             // Keep track of which files have focused cases.
-            if (
-                brs.types.isBrsBoolean(hasFocusedCases) &&
-                hasFocusedCases.toBoolean()
-            ) {
+            let subSuites =
+                suite instanceof RoArray ? suite.getElements() : [suite];
+            if (hasFocusedCases(subSuites)) {
                 focusedSuites.push(filename);
             }
         } catch {
@@ -189,29 +196,57 @@ async function getTestFiles(execute: brs.ExecuteWithScope) {
 }
 
 /**
+ * Checks to see if any suites in a given array of suites are focused.
+ * @param subSuites An array of Roca suite objects to check
+ */
+function hasFocusedCases(subSuites: types.BrsType[]): boolean {
+    for (let subSuite of subSuites) {
+        if (!(subSuite instanceof RoAssociativeArray)) continue;
+
+        let mode = subSuite.elements.get("mode");
+        if (mode && isBrsString(mode) && mode.value === "focus") {
+            return true;
+        }
+
+        let state = subSuite.elements.get("__state");
+        if (state instanceof RoAssociativeArray) {
+            let hasFocusedDescendants = state.elements.get(
+                "hasfocuseddescendants"
+            );
+            if (
+                hasFocusedDescendants &&
+                isBrsBoolean(hasFocusedDescendants) &&
+                hasFocusedDescendants.toBoolean()
+            ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
  * Generates the run arguments for roca, to pass to test files when executing them.
  * @param tap The return value from tap.brs (an instance of the Tap object)
  * @param focusedCasesDetected Whether or not there are focused cases in this run
  */
-function generateRunArgs(
-    tap: brs.types.BrsType,
-    focusedCasesDetected: boolean
-) {
-    return new brs.types.RoAssociativeArray([
+function generateRunArgs(tap: types.BrsType, focusedCasesDetected: boolean) {
+    return new types.RoAssociativeArray([
         {
-            name: new brs.types.BrsString("exec"),
-            value: brs.types.BrsBoolean.from(true),
+            name: new BrsString("exec"),
+            value: BrsBoolean.from(true),
         },
         {
-            name: new brs.types.BrsString("focusedCasesDetected"),
-            value: brs.types.BrsBoolean.from(focusedCasesDetected),
+            name: new BrsString("focusedCasesDetected"),
+            value: BrsBoolean.from(focusedCasesDetected),
         },
         {
-            name: new brs.types.BrsString("index"),
-            value: new brs.types.Int32(0),
+            name: new BrsString("index"),
+            value: new Int32(0),
         },
         {
-            name: new brs.types.BrsString("tap"),
+            name: new BrsString("tap"),
             value: tap,
         },
     ]);
