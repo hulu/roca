@@ -6,6 +6,7 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import TapMochaReporter = require("tap-mocha-reporter");
 import { reportCoverage } from "./coverage";
+import { TestRunner } from "./TestRunner";
 
 const {
     BrsBoolean,
@@ -74,14 +75,14 @@ async function run(files: string[], options: Options) {
     }
     inScopeFiles.push(...files);
 
-    let reporterStream = new TapMochaReporter(reporter);
+    let testRunner = new TestRunner(reporter);
 
     // Create an execution scope using the project source files and roca files.
     let execute: ExecuteWithScope;
     try {
         execute = await createExecuteWithScope(inScopeFiles, {
             root: process.cwd(),
-            stdout: reporterStream,
+            stdout: testRunner.reporterStream,
             stderr: process.stderr,
             generateCoverage: coverageEnabled,
             componentDirs: ["test", "tests"],
@@ -95,9 +96,9 @@ async function run(files: string[], options: Options) {
     }
 
     let { testFiles, focusedCasesDetected } = await getTestFiles(execute);
-    await runTestFiles(execute, testFiles, focusedCasesDetected);
 
-    reporterStream.end();
+    testRunner.run(execute, testFiles, focusedCasesDetected);
+    testRunner.reporterStream.end();
 
     if (coverageEnabled) {
         reportCoverage(coverageReporters);
@@ -117,42 +118,7 @@ async function run(files: string[], options: Options) {
         );
     }
 
-    return reporterStream.runner?.testResults;
-}
-
-/**
- * Loops through the given test files and executes each one. If an interpreter exception is
- * encountered, then it exits with status code 1.
- * @param execute The function to execute each file with
- * @param testFiles The files to execute
- * @param focusedCasesDetected Whether or not focused cases were detected
- */
-async function runTestFiles(
-    execute: ExecuteWithScope,
-    testFiles: string[],
-    focusedCasesDetected: boolean
-) {
-    // Create an instance of the BrightScript TAP object so we can pass it to the tests for reporting.
-    let tap = execute(
-        [path.join(__dirname, "..", "resources", "tap.brs")],
-        [new Int32(testFiles.length)]
-    );
-
-    // Run each test and fail if we encounter a runtime exception.
-    let runArgs = generateRunArgs(tap, focusedCasesDetected);
-    let indexString = new BrsString("index");
-    testFiles.forEach((filename, index) => {
-        try {
-            execute([filename], [runArgs]);
-            // Update the index so that our TAP reporting is correct.
-            runArgs.set(indexString, new Int32(index + 1));
-        } catch (e) {
-            console.error(
-                `Stopping execution. Interpreter encountered an error in ${filename}.`
-            );
-            process.exit(1);
-        }
-    });
+    return testRunner.reporterStream.runner?.testResults;
 }
 
 /**
@@ -224,32 +190,6 @@ function hasFocusedCases(subSuites: types.BrsType[]): boolean {
     }
 
     return false;
-}
-
-/**
- * Generates the run arguments for roca, to pass to test files when executing them.
- * @param tap The return value from tap.brs (an instance of the Tap object)
- * @param focusedCasesDetected Whether or not there are focused cases in this run
- */
-function generateRunArgs(tap: types.BrsType, focusedCasesDetected: boolean) {
-    return new types.RoAssociativeArray([
-        {
-            name: new BrsString("exec"),
-            value: BrsBoolean.from(true),
-        },
-        {
-            name: new BrsString("focusedCasesDetected"),
-            value: BrsBoolean.from(focusedCasesDetected),
-        },
-        {
-            name: new BrsString("index"),
-            value: new Int32(0),
-        },
-        {
-            name: new BrsString("tap"),
-            value: tap,
-        },
-    ]);
 }
 
 module.exports = async function (
