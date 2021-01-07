@@ -5,7 +5,7 @@ import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
-import { TestRunner, MochaReporter } from "./TestRunner";
+import { TestRunner, MochaReporter } from "./runner/TestRunner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
@@ -62,8 +62,7 @@ async function run(files: string[], options: Options) {
         });
     } catch (e) {
         console.error(
-            "Stopping execution. Interpreter encountered an error: ",
-            e
+            `Stopping execution. Interpreter encountered an error:\n\t${e}`
         );
         process.exit(1);
     }
