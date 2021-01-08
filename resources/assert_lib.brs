@@ -102,6 +102,8 @@ end sub
 function __roca_deepEquals(lhs as object, rhs as object) as boolean
     isEqual = true
 
+    if type(lhs) <> type(rhs) then return false
+
     if __roca_isArray(lhs) and __roca_isArray(rhs) then
         ' base case
         if lhs.count() <> rhs.count() then return false
