@@ -462,10 +462,10 @@ sub __util_fail(metadata = invalid)
         end if
 
         ' tap-mocha-reporter expects a string for the stack, so let's generate it
-        if GetInterface(metadata.stackFrames, "ifArray") <> invalid then
-            funcName = ""
-            if metadata.funcName <> invalid then funcName = metadata.funcName
-            metadata.stack = funcName + " (" + metadata.stackFrames[0] + ")"
+        metadata.stack = ""
+        if metadata.funcName <> invalid then metadata.stack = metadata.funcName
+        if GetInterface(metadata.stackFrames, "ifArray") <> invalid and metadata.stackFrames.count() > 0 then
+            metadata.stack += " (" + metadata.stackFrames[0] + ")"
         end if
 
         m.__state.success = false
