@@ -82,9 +82,18 @@ function __formatError(error)
     ' Get the stack trace where the failed test is, filtering out any roca frames
     fileFilters = ["roca"]
     numStackFrames = 3
-    error.stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
+    stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
 
-    return error
+    ' Format this into the object that tap-mocha-reporter expects
+    return {
+        error: {
+            name: error.funcName,
+            message: error.message,
+            stackFrames: stackFrames
+        },
+        wanted: error.expected,
+        found: error.actual
+    }
 end function
 
 sub __deepEquals(actual, expected, error)
