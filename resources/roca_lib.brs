@@ -167,13 +167,13 @@ end sub
 sub __roca_addContext(ctx as object)
     if type(ctx) <> "roAssociativeArray" then
         print "[roca.brs] Error: addContext only accepts a 'roAssociativeArray' - got '" type(ctx) "'"
-    ' called from roca object
+        ' called from roca object
     else if m.__ctx <> invalid then
         m.__ctx.append(ctx)
 
         ' make context immediately accessible in roca object
         m.append(ctx)
-    ' called in suite
+        ' called in suite
     else
         m.__suite.__ctx.append(ctx)
 
@@ -237,7 +237,7 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         mode: mode,
         __state: {
             success: invalid
-            metadata: invalid
+            metadata: {}
         },
         description: description,
         func: func,
@@ -448,6 +448,17 @@ end sub
 ' to preserve the previous failure.
 sub __util_fail(metadata = invalid)
     if m.__state.success <> false
+        ' Supplement the metadata with error information
+        if metadata = invalid
+            metadata = {
+                stack: _brs_.getStackTrace(2, ["roca"])
+                expected: "pass"
+                actual: "fail"
+                message: "m.fail() was called"
+                funcName: "m.fail"
+            }
+        end if
+
         m.__state.success = false
         m.__state.metadata = metadata
     end if

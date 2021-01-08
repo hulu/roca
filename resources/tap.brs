@@ -11,7 +11,7 @@ function Tap() as object
         fail: __tap_fail,
         diagnostic: __tap_diagnostic,
         formatTitle: __tap_formatTitle,
-        printExtras: __tap_printExtras
+        printExtras: __tap_printExtras,
         enterSubTest: __tap_enterSubTest,
         exitSubTest: __tap_exitSubTest,
         indent: __tap_indent,
@@ -92,6 +92,13 @@ sub __tap_printExtras(extra = {}, level = 0)
             level = level + 1
             m.printExtras(extra[item], level)
             level = level - 1
+        else if type(extra[item]) = "roArray" then
+            print m.getIndent() item ":"
+            m.indent()
+            for each item in extra[item]
+                print m.getIndent() "- " item
+            end for
+            m.deindent()
         else if extra[item] <> invalid
             print m.getIndent() item ": " extra[item]
         end if
@@ -129,6 +136,6 @@ function __tap_getIndent()
     return indent
 end function
 
-function __tap_bail(msg="" as string)
+function __tap_bail(msg = "" as string)
     print "Bail out! " + msg
 end function
