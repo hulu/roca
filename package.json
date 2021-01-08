@@ -11,8 +11,7 @@
     "bin/",
     "resources/",
     "lib/",
-    "types/",
-    "src/"
+    "types/"
   ],
   "scripts": {
     "build": "tsc",
