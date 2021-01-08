@@ -17,6 +17,7 @@
     "build": "tsc",
     "clean": "rimraf ./lib ./types",
     "lint": "tslint --project .",
+    "prepublishOnly": "npm-run-all --serial clean build lint prettier test",
     "prettier": "prettier --check \"{bin,src,test}/**/*.{js,ts}\"",
     "prettier:write": "prettier --write \"{bin,src,test}/**/*.{js,ts}\"",
     "test": "jest",
