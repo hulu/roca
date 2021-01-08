@@ -5,12 +5,14 @@
   "bin": {
     "roca": "./bin/cli.js"
   },
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "typings": "./types/index.d.ts",
   "files": [
     "bin/",
     "resources/",
-    "src"
+    "lib/",
+    "types/",
+    "src/"
   ],
   "scripts": {
     "build": "tsc",
