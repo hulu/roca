@@ -17,7 +17,12 @@ sub __equal(actual, expected, error)
     if actual = expected then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: expected,
+            funcName: "m.assert.equal"
+        }))
     end if
 end sub
 
@@ -25,7 +30,12 @@ sub __notEqual(actual, expected, error)
     if actual <> expected then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: expected,
+            funcName: "m.assert.notEqual"
+        }))
     end if
 end sub
 
@@ -33,7 +43,12 @@ sub __isTrue(actual, error)
     if actual = true then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: true,
+            funcName: "m.assert.isTrue"
+        }))
     end if
 end sub
 
@@ -41,7 +56,12 @@ sub __isFalse(actual, error)
     if actual = false then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: false,
+            funcName: "m.assert.isFalse"
+        }))
     end if
 end sub
 
@@ -49,16 +69,30 @@ sub __isInvalid(actual, error)
     if actual = invalid then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: invalid,
+            funcName: "m.assert.isInvalid"
+        }))
     end if
 end sub
 
-function __formatError(errMessage)
+function __formatError(error)
+    ' Get the stack trace where the failed test is, filtering out any roca frames
+    fileFilters = ["roca"]
+    numStackFrames = 3
+    stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
+
+    ' Format this into the object that tap-mocha-reporter expects
     return {
         error: {
-            message: errMessage
+            name: error.funcName,
+            message: error.message,
+            stackFrames: stackFrames
         },
-        stack: {}
+        wanted: error.expected,
+        found: error.actual
     }
 end function
 
@@ -66,7 +100,10 @@ sub __deepEquals(actual, expected, error)
     if __roca_deepEquals(actual, expected) = true then
         m.__pass()
     else
-        m.__fail(m.formatError(error))
+        m.__fail(m.formatError({
+            message: error,
+            funcName: "m.deepEquals"
+        }))
     end if
 end sub
 

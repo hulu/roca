@@ -167,13 +167,13 @@ end sub
 sub __roca_addContext(ctx as object)
     if type(ctx) <> "roAssociativeArray" then
         print "[roca.brs] Error: addContext only accepts a 'roAssociativeArray' - got '" type(ctx) "'"
-    ' called from roca object
+        ' called from roca object
     else if m.__ctx <> invalid then
         m.__ctx.append(ctx)
 
         ' make context immediately accessible in roca object
         m.append(ctx)
-    ' called in suite
+        ' called in suite
     else
         m.__suite.__ctx.append(ctx)
 
@@ -275,7 +275,7 @@ function __case_execute()
         end if
     end for
 
-    if m.func_args <> invalid then 
+    if m.func_args <> invalid then
         withM.__func(m.func_args)
     else
         withM.__func()
@@ -448,6 +448,27 @@ end sub
 ' to preserve the previous failure.
 sub __util_fail(metadata = invalid)
     if m.__state.success <> false
+        ' Supplement the metadata with error information
+        if metadata = invalid
+            stackFrames = _brs_.getStackTrace(3, ["roca"])
+            metadata = {
+                error: {
+                    message: "m.fail() was called",
+                    name: "m.fail",
+                    stackFrames: stackFrames
+                }
+                wanted: "pass",
+                found: "fail"
+            }
+        end if
+
+        ' tap-mocha-reporter expects a string for the stack, so let's generate it
+        metadata.error.stack = ""
+        if metadata.error.name <> invalid then metadata.error.stack = metadata.error.name
+        if GetInterface(metadata.error.stackFrames, "ifArray") <> invalid and metadata.error.stackFrames.count() > 0 then
+            metadata.error.stack += " (" + metadata.error.stackFrames[0] + ")"
+        end if
+
         m.__state.success = false
         m.__state.metadata = metadata
     end if
