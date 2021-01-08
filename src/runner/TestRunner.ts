@@ -1,31 +1,8 @@
 import * as path from "path";
-import TapMochaReporter = require("tap-mocha-reporter");
 import { types as BrsTypes, ExecuteWithScope } from "brs";
 
-export type MochaReporter =
-    | "classic"
-    | "doc"
-    | "dot"
-    | "dump"
-    | "json"
-    | "jsonstream"
-    | "landing"
-    | "list"
-    | "markdown"
-    | "min"
-    | "nyan"
-    | "progress"
-    | "silent"
-    | "spec"
-    | "tap"
-    | "xunit";
-
 export class TestRunner {
-    readonly reporterStream: NodeJS.WriteStream & any;
-
-    constructor(reporterType: MochaReporter) {
-        this.reporterStream = new TapMochaReporter(reporterType);
-    }
+    constructor(readonly reporterStream: NodeJS.WriteStream & any) {}
 
     /**
      * Executes and reports a given list of test files.
