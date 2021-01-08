@@ -450,13 +450,22 @@ sub __util_fail(metadata = invalid)
     if m.__state.success <> false
         ' Supplement the metadata with error information
         if metadata = invalid
+            stackFrames = _brs_.getStackTrace(3, ["roca"])
             metadata = {
-                stack: _brs_.getStackTrace(2, ["roca"])
-                expected: "pass"
-                actual: "fail"
-                message: "m.fail() was called"
+                stackFrames: stackFrames,
+                stack: stackFrames[0],
+                expected: "pass",
+                actual: "fail",
+                message: "m.fail() was called",
                 funcName: "m.fail"
             }
+        end if
+
+        ' tap-mocha-reporter expects a string for the stack, so let's generate it
+        if GetInterface(metadata.stackFrames, "ifArray") <> invalid then
+            funcName = ""
+            if metadata.funcName <> invalid then funcName = metadata.funcName
+            metadata.stack = funcName + " (" + metadata.stackFrames[0] + ")"
         end if
 
         m.__state.success = false

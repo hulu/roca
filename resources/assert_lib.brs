@@ -81,8 +81,8 @@ end sub
 function __formatError(error)
     ' Get the stack trace where the failed test is, filtering out any roca frames
     fileFilters = ["roca"]
-    numStackFrames = 2
-    error.stack = _brs_.getStackTrace(numStackFrames, fileFilters)
+    numStackFrames = 3
+    error.stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
 
     return error
 end function
@@ -92,7 +92,8 @@ sub __deepEquals(actual, expected, error)
         m.__pass()
     else
         m.__fail(m.formatError({
-            message: error
+            message: error,
+            funcName: "m.deepEquals"
         }))
     end if
 end sub
