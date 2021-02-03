@@ -84,6 +84,15 @@ function __formatError(error)
     numStackFrames = 3
     stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
 
+    ' Convert to strings so we can see diffs
+    if GetInterface(error.expected, "ifString") = invalid then
+        error.expected = formatJson(error.expected)
+    end if
+
+    if GetInterface(error.actual, "ifString") = invalid then
+        error.actual = formatJson(error.actual)
+    end if
+
     ' Format this into the object that tap-mocha-reporter expects
     return {
         error: {
@@ -102,7 +111,9 @@ sub __deepEquals(actual, expected, error)
     else
         m.__fail(m.formatError({
             message: error,
-            funcName: "m.deepEquals"
+            funcName: "m.deepEquals",
+            expected: expected,
+            actual: actual
         }))
     end if
 end sub
