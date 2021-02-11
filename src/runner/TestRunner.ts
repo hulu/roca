@@ -1,5 +1,6 @@
 import * as path from "path";
 import { types as BrsTypes, ExecuteWithScope } from "brs";
+import { formatInterpreterError } from "../util";
 
 export class TestRunner {
     constructor(readonly reporterStream: NodeJS.WriteStream & any) {}
@@ -43,7 +44,9 @@ export class TestRunner {
                 execute([filename], [executeArgs]);
             } catch (e) {
                 console.error(
-                    `Stopping execution. Interpreter encountered an error in ${filename}:\n\t${e}`
+                    `Stopping execution. Interpreter encountered errors:\n\t${formatInterpreterError(
+                        e
+                    )}`
                 );
                 process.exit(1);
             }
@@ -55,7 +58,7 @@ export class TestRunner {
      * @param tap The return value from tap.brs (an instance of the Tap object)
      * @param focusedCasesDetected Whether or not there are focused cases in this run
      */
-    protected generateExecuteArgs(
+    private generateExecuteArgs(
         tap: BrsTypes.BrsType,
         focusedCasesDetected: boolean
     ) {

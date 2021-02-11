@@ -6,6 +6,7 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
 import { createTestRunner, MochaReporterType } from "./runner";
+import { formatInterpreterError } from "./util";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
@@ -62,18 +63,14 @@ async function run(files: string[], options: Options) {
         });
     } catch (e) {
         console.error(
-            `Stopping execution. Interpreter encountered an error:\n\t${e}`
+            `Stopping execution. Interpreter encountered errors:\n\t${formatInterpreterError(
+                e
+            )}`
         );
         process.exit(1);
     }
 
     let { testFiles, focusedCasesDetected } = await getTestFiles(execute);
-    testRunner.run(execute, testFiles, focusedCasesDetected);
-    testRunner.reporterStream.end();
-
-    if (coverageEnabled) {
-        reportCoverage(coverageReporters);
-    }
 
     // Fail if we find focused test cases and there weren't supposed to be any.
     if (forbidFocused && focusedCasesDetected) {
@@ -87,9 +84,18 @@ async function run(files: string[], options: Options) {
                 )} but found focused tests in these files:\n${formattedList}`
             )
         );
+
+        return {};
     }
 
-    return testRunner.reporterStream.runner?.testResults;
+    testRunner.run(execute, testFiles, focusedCasesDetected);
+    testRunner.reporterStream.end();
+
+    if (coverageEnabled) {
+        reportCoverage(coverageReporters);
+    }
+
+    return testRunner.reporterStream.runner?.testResults || {};
 }
 
 /**
