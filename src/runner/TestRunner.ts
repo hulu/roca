@@ -65,7 +65,7 @@ export class TestRunner {
         return new BrsTypes.RoAssociativeArray([
             {
                 name: new BrsTypes.BrsString("exec"),
-                value: BrsTypes.BrsBoolean.from(true),
+                value: BrsTypes.BrsBoolean.True,
             },
             {
                 name: new BrsTypes.BrsString("focusedCasesDetected"),

@@ -2,7 +2,7 @@ import * as c from "ansi-colors";
 
 export function formatInterpreterError(error: any) {
     if (!Array.isArray(error)) {
-        return `${error}`;
+        return `${error.toString()}`;
     }
 
     return error

@@ -40,10 +40,9 @@ async function run(files: string[], options: Options) {
 
     // Get the list of files that we should load into the execution scope.
     // Loading them here ensures that they only get lexed/parsed once.
-    let rocaFiles = ["roca_lib.brs", "assert_lib.brs"].map((basename) =>
+    let inScopeFiles = ["roca_lib.brs", "assert_lib.brs"].map((basename) =>
         path.join(__dirname, "..", "resources", basename)
     );
-    let inScopeFiles = [...rocaFiles];
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
     }
@@ -105,12 +104,7 @@ async function run(files: string[], options: Options) {
  * @param execute The scoped execution function to run with each file
  */
 async function getTestFiles(execute: ExecuteWithScope) {
-    let testsPattern = path.join(
-        process.cwd(),
-        `{test,tests,source,components}`,
-        "**",
-        "*.test.brs"
-    );
+    let testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
     let testFiles: string[] = await globPromise(testsPattern);
 
     let focusedSuites: string[] = [];
