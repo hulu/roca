@@ -1,6 +1,6 @@
 # Asserts
 
-You can directly call `m.pass()` or `m.fail()` within a test case to mark it as passed or failed. Alternatively, `roca` offers an `assert` library (similar to [Chai](https://www.chaijs.com/api/assert/)), available via `m.assert`. These methods will call `m.pass()` or `m.fail()` for you.
+You can directly call `m.pass()` or `m.fail()` within a test case to mark it as passed or failed. Alternatively, `roca` offers an `assert` library (similar to [Chai](https://www.chaijs.com/api/reference/assert/)), available via `m.assert`. These methods will call `m.pass()` or `m.fail()` for you.
 
 <br/>
 

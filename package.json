@@ -65,7 +65,7 @@
     "brs": "^0.42.0"
   },
   "lint-staged": {
-    "README.md": "doctoc",
+    "./README.md": "doctoc",
     "*.{ts,js}": [
       "prettier --write"
     ]

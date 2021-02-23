@@ -4,7 +4,7 @@
 Roca only has one global function &mdash; `roca` &mdash; used to initialize a new Roca test instance.  You probably want to call it only once.
 
 ### The `roca` object
-This is the return value of calling `roca(args)`. Note that each property is documented in [the test suites and cases section](api/test-suites-and-cases.md) in greater detail.
+This is the return value of calling `roca(args)`. Note that each property is documented in [the test suites and cases section](api/reference/test-suites-and-cases.md) in greater detail.
 ```brightscript
 {
     args: object, ' whatever was passed into the roca() call

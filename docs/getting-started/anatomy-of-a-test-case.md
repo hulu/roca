@@ -2,7 +2,7 @@
 
 Just like [Mocha](https://mochajs.org/) tests are written in JavaScript, roca tests are written in BrightScript.  Roca will recursively find and execute all files that match `*.test.brs` in any of the following directories: `source/`, `components/`, `tests/`, and `test/`.
 
-### Requirements
+## Requirements
 
 The smallest possible unit test must meet the following requirements:
 

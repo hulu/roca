@@ -1,10 +1,11 @@
 # Quick start
 
-This page is intended to get you up and running as fast as possible. For more examples and documentation, see the [API](api/) and [Guides](guides/) sections.
+This page is intended to get you up and running as fast as possible. If you want to play around with the framework, check out the [sandbox](getting-started/code-sandbox.md). For more examples and documentation, see the [API](api/reference/) and [Guides](guides/) sections.
 
 ## Installation
+ _Note: All examples use `npm`, but these steps should be easily adapted to [yarn](https://yarnpkg.com/), [pnpm](https://pnpm.js.org/), and many other JavaScript package managers._
 
-Roca requires the [brs](https://github.com/sjbarag/brs/) runtime, which runs on [node.js](https://nodejs.org/en/).  If needed, initialize an NPM project with:
+Roca requires the [brs](https://github.com/sjbarag/brs/) runtime, which runs on [node.js](https://nodejs.org/en/). If needed, initialize an NPM project with:
 
 ```bash
 npm init
@@ -29,8 +30,9 @@ Add an NPM hook to your `package.json` file. This will allow you to run your tes
 
 ## Create a test
 
-Create a folder called `tests` as a sibling to your `source/` and `components/` folder, and create a file inside it called `helloWorld.test.brs`. \
 _Note: `roca` should be called from the same directory as your `manifest` file.  If you keep your entire source tree in a subdirectory, you'll want to `cd` into that before executing `roca`._
+
+Create a folder called `tests` as a sibling to your `source/` and `components/` folder, and create a file inside it called `helloWorld.test.brs`.
 
 ```
 .
@@ -65,6 +67,6 @@ end function
 
 ## Run it
 
-In your terminal, run the command `npm test`. \
+In your terminal, run the command `npm test`.
 
 Congrats! You just wrote and ran your first passing test case! :tada:

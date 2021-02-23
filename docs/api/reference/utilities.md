@@ -1,6 +1,6 @@
 # Extensions
 
-In addition to [mocking capabilities](api/mocks.md), there are a few other helpful extensions available on the global `_brs_` object.
+In addition to [mocking capabilities](api/reference/mocks.md), there are a few other helpful extensions available on the global `_brs_` object.
 
 ## \_brs_.getStackTrace(numFrames = 10, excludePatterns = [])
 
