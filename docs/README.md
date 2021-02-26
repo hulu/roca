@@ -8,9 +8,9 @@ There are two libraries that make the magic happen: [`brs`](https://github.com/s
 
 Essentially, the flow is:
 1. You tell `roca` to find and run your tests.
-1. `roca` tells `brs` to parse and interpret all of your source files to create an execution scope.
-1. `roca` sends each test file to `brs`, which parses/interprets/executes the test, reports it back to `roca`.
-1. `roca` gathers all of the results, and reports them back to you.
+1. `roca` tells `brs` to parse and interpret all of your source files to create an execution scope that each test will run in.
+1. `roca` sends each test file to `brs`, which parses/interprets/executes the test.
+1. Based on the [asserts](api/reference/asserts.md) in each test, `roca` reports the results in [TAP output](https://testanything.org/), which gets automatically parsed and reported back to you in the format of whichever [Mocha reporter](api/cli-options.md) you choose.
 
 ## How do I use it?
 
