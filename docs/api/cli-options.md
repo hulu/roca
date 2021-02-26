@@ -29,7 +29,7 @@ Then in your code, you'd have:
 ```brightscript
 ' inside myProject/tests/MyTestFile.test.brs
 ...
-m.it("adds local and remote login buttons to page", sub()
+m.it("calls a globally-defined test function", sub()
     print callMeAnywhere() ' => 123
 end sub)
 ```
