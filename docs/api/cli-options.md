@@ -10,7 +10,7 @@ Other output formats are available!  See `roca --help` for more details.
 | `-s`/`--source`         | Path to brs files (if different from `source/`) |
 | `-R`/`--reporter`       | The mocha reporter to use. See [the `mocha` docs](https://mochajs.org/#reporters) for a full list of reporters and example output. _Note: we use the [`tap-mocha-reporter`](https://github.com/tapjs/tap-mocha-reporter) NPM package for reporting._  |
 | `-r`/`--require` | Path to a required setup file. This file will be run before unit tests. See [the `--require` section](#-r-require) for more details.|
-| `-f`/`--forbid-focused` | Fails if focused test or suite is detected. Useful for preventing focused tests from being merged. |
+| `-f`/`--forbid-focused` | Fails if focused test or suite is detected. Useful for use on CI systems to prevent focused tests from being merged. |
 | `-c`/`--coverage-reporters` | The `istanbul` coverage reporters to use. Passing in reporter(s) will enable coverage collection and reporting. Otherwise, it is disabled. See `--help` for options, and [`istanbul`'s docs](https://istanbul.js.org/docs/advanced/alternative-reporters/) for descriptions of the reporters. |
 
 ### -r/--require
