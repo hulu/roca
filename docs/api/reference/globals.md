@@ -1,7 +1,7 @@
 
 # Globals
 ## roca(args = {})
-Roca only has one global function &mdash; `roca` &mdash; used to initialize a new Roca test instance.  You probably want to call it only once.
+Roca only has one global function &mdash; `roca` &mdash; used to initialize a new Roca test instance.  You probably want to call it only once per test file.
 
 ### The `roca` object
 This is the return value of calling `roca(args)`. Note that each property is documented in [the test suites and cases section](api/reference/test-suites-and-cases.md) in greater detail.

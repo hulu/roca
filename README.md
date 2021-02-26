@@ -23,14 +23,9 @@ If you spot a bug or want a feature, please feel free to file an issue. If you w
 
 ### Modifying the docs site
 
-We use [docsify](https://docsify.js.org) to build our site, and [Github pages](https://pages.github.com/) to deploy it. To run the documentation site locally, first install docsify:
+We use [docsify](https://docsify.js.org) to build our site, and [Github pages](https://pages.github.com/) to deploy it. To run the documentation site locally, simply run:
 ```shell
-$ npm i docsify-cli -g
+$ npm run serve-docs
 ```
 
-Then run a local server using the `docs/` directory:
-```shell
-$ docsify serve ./docs
-```
-
-Any changes you make to files in the `docs/` directory will cause the server to automatically reload.
+Any changes you make to files in the `docs/` directory will cause the server to automatically reload the page.
