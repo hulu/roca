@@ -20,6 +20,7 @@
     "prepublishOnly": "npm-run-all --serial clean build lint prettier test",
     "prettier": "prettier --check \"{bin,src,test}/**/*.{js,ts}\"",
     "prettier:write": "prettier --write \"{bin,src,test}/**/*.{js,ts}\"",
+    "serve-docs": "docsify serve ./docs",
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand -- ",
     "watch": "tsc -w"
@@ -50,6 +51,7 @@
     "@types/memory-fs": "^0.3.2",
     "@types/xmldoc": "^1.1.5",
     "brs": "^0.42.0",
+    "docsify-cli": "^4.4.2",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
     "jest": "^26.3.0",
@@ -65,7 +67,7 @@
     "brs": "^0.42.0"
   },
   "lint-staged": {
-    "README.md": "doctoc",
+    "./README.md": "doctoc",
     "*.{ts,js}": [
       "prettier --write"
     ]
