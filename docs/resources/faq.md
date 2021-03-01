@@ -7,9 +7,9 @@ All code that lives in the `source/` directory is automatically pulled in-scope 
 
 --------------
 
-## Why did my tests stop running?
+## Why didn't my tests finish running?
 
-This generally indicates that there was a runtime error in your code. There should be a readable error printed out to the console that looks something like this:
+If your tests stopped partway through without finishing, this generally indicates that there was a runtime error in your code. There should be a readable error printed out to the console that looks something like this:
 
 ```
 /path/to/project/source/foo/bar.brs(5,42-43): 'baz' is not a function and cannot be called.
