@@ -4,7 +4,7 @@ In addition to [mocking capabilities](api/reference/mocks.md), there are a few o
 
 ## \_brs_.getStackTrace(numFrames = 10, excludePatterns = [])
 
-Prints out a given number of stack trace frames, where each frame is a string in the format `<file>:<line number>:<column number>`.
+Prints out a given number of stack trace frames, where each frame is a string in the format `<file>:<line number>:<column number>`. This can be helpful for debugging. Note that because `_brs_` is globally accessible, you can add this in your source code as well as test code -- if you do, just make sure to remove it before committing your code!
 
 ### Parameters
 **numFrames** `number` _optional_ \

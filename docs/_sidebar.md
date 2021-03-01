@@ -7,8 +7,9 @@
     * [API Reference](api/reference/)
     * [CLI Options](api/cli-options.md)
 
-* FAQs
-    * [Testing private functions](faq/testing-private-functions.md)
+* Resources
+    * [FAQs](resources/faq.md)
 
 * Guides
     * [Setting up and cleaning up tests](guides/test-setup.md)
+    * [Testing private functions](faq/testing-private-functions.md)
