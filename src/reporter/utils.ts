@@ -70,17 +70,15 @@ export function createFailureMessage(diag: Diag) {
         wanted,
         found,
     } = diag;
+
     let diff: string | null = null;
-    process.stderr.write(JSON.stringify(diag, null, 2));
-    if (wanted && found) {
-        diff = printDiffOrStringify(
-            wanted,
-            found,
-            "Expected",
-            "Received",
-            /* expand */ false
-        );
-    }
+    diff = printDiffOrStringify(
+        wanted,
+        found,
+        "Expected",
+        "Received",
+        /* expand */ false
+    );
 
     let formattedStackTrace = stackframes
         .map((line, index) => {
