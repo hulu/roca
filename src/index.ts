@@ -5,13 +5,9 @@ import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
-<<<<<<< HEAD
-import { createTestRunner, MochaReporterType } from "./runner";
 import { formatInterpreterError } from "./util";
-=======
 import { createTestRunner } from "./runner";
 import { MochaReporterType } from "./reporter";
->>>>>>> 6b27bc9 (feat(reporter): implement jest reporter)
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);

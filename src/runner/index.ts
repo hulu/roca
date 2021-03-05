@@ -6,26 +6,6 @@ import Parser = require("tap-parser");
 import TapMochaReporter = require("tap-mocha-reporter");
 import { TestRunner } from "./TestRunner";
 
-const mochaReporterTypes = [
-    "classic",
-    "doc",
-    "dot",
-    "dump",
-    "json",
-    "jsonstream",
-    "landing",
-    "list",
-    "markdown",
-    "min",
-    "nyan",
-    "progress",
-    "silent",
-    "spec",
-    "tap",
-    "xunit",
-] as const;
-export type MochaReporterType = typeof mochaReporterTypes[number];
-
 function isJestReporter(
     reporterName: ReporterType
 ): reporterName is JestReporterType {
