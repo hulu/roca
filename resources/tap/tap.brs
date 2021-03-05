@@ -2,13 +2,6 @@
 ' intended to be consumed by any known TAP stream consumer for further prettification.
 '
 ' Adapted in part from https://github.com/mochajs/mocha/blob/5f8df0848aa52bb0f7a0844bcd3715012a6ecfd6/lib/reporters/tap.js
-function main(numSuites)
-    tapInstance = tap()
-    tapInstance.version()
-    tapInstance.plan(numSuites)
-    return tapInstance
-end function
-
 function Tap() as object
     return {
         version: __tap_version,

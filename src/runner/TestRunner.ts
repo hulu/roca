@@ -18,7 +18,7 @@ export class TestRunner {
     ) {
         // Create an instance of the BrightScript TAP object so we can pass it to the tests for reporting.
         let tap = execute(
-            [path.join(__dirname, "..", "..", "resources", "tap.brs")],
+            [path.join(__dirname, "..", "..", "resources", "tap", "main.brs")],
             [new BrsTypes.Int32(testFiles.length)]
         );
         let executeArgs = this.generateExecuteArgs(tap, focusedCasesDetected);
