@@ -36,12 +36,20 @@
   },
   "homepage": "https://github.com/hulu/roca#readme",
   "dependencies": {
+    "@jest/reporters": "^26.6.2",
+    "@jest/test-result": "^26.6.2",
+    "@jest/types": "^26.6.2",
     "ansi-colors": "^4.1.1",
+    "chalk": "^4.1.0",
     "glob": "^7.1.4",
     "istanbul-lib-coverage": "^3.0.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.0.2",
+    "jest-config": "^26.6.3",
+    "jest-matcher-utils": "^26.6.2",
+    "jest-message-util": "^26.6.2",
     "tap-mocha-reporter": "^5.0.0",
+    "tap-parser": "^10.1.0",
     "yargs": "^13.2.4"
   },
   "devDependencies": {

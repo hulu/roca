@@ -58,7 +58,7 @@ export class TestRunner {
      * @param tap The return value from tap.brs (an instance of the Tap object)
      * @param focusedCasesDetected Whether or not there are focused cases in this run
      */
-    private generateExecuteArgs(
+    protected generateExecuteArgs(
         tap: BrsTypes.BrsType,
         focusedCasesDetected: boolean
     ) {

@@ -1,6 +1,10 @@
-declare module "tap-mocha-reporter" {
-    class TapMochaReporter implements NodeJS.WriteStream {
-        constructor(reporter: string);
+type SocketConnectOpts = import("net").SocketConnectOpts;
+type AddressInfo = import("net").AddressInfo;
+type Direction = import("tty").Direction;
+
+declare module "tap-parser" {
+    class TapParser implements NodeJS.WriteStream {
+        constructor();
         addListener(event: string, listener: (...args: any[]) => void): this;
         addListener(event: "resize", listener: () => void): this;
         emit(event: string | symbol, ...args: any[]): boolean;
@@ -149,5 +153,5 @@ declare module "tap-mocha-reporter" {
             testResults: any;
         };
     }
-    export = TapMochaReporter;
+    export = TapParser;
 }

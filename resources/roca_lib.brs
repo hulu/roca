@@ -237,7 +237,7 @@ sub __suite_registerCase(mode as string, description as string, suite as object,
         mode: mode,
         __state: {
             success: invalid
-            metadata: invalid
+            metadata: {}
         },
         description: description,
         func: func,

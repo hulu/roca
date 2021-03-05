@@ -5,8 +5,13 @@ import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
+<<<<<<< HEAD
 import { createTestRunner, MochaReporterType } from "./runner";
 import { formatInterpreterError } from "./util";
+=======
+import { createTestRunner } from "./runner";
+import { MochaReporterType } from "./reporter";
+>>>>>>> 6b27bc9 (feat(reporter): implement jest reporter)
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
@@ -50,7 +55,7 @@ async function run(files: string[], options: Options) {
     }
     inScopeFiles.push(...files);
 
-    let testRunner = createTestRunner(reporter);
+    let testRunner = await createTestRunner(reporter);
 
     // Create an execution scope using the project source files and roca files.
     let execute: ExecuteWithScope;
