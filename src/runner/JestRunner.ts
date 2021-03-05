@@ -42,7 +42,5 @@ export class JestRunner extends TestRunner {
             // Update the index so that our TAP reporting is correct.
             executeArgs.elements.set("index", new BrsTypes.Int32(index + 1));
         });
-
-        this.reporter.onRunComplete();
     }
 }

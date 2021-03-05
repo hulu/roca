@@ -14,7 +14,7 @@ function isJestReporter(
 
 export async function createTestRunner(reporterType: ReporterType) {
     if (isJestReporter(reporterType)) {
-        // Let Jest generate the global and project that it'll use for reporting.
+        // Let Jest generate the configs that it'll use for reporting.
         let { projectConfig, globalConfig } = await readConfig(
             {} as Config.Argv,
             process.cwd()

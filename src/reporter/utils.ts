@@ -6,11 +6,13 @@ import type { ProjectConfig } from "@jest/types/build/Config";
 
 export interface Diag {
     [key: string]: unknown;
-    stack: string[];
-    message: string;
-    expected?: string;
-    actual?: string;
-    funcname?: string;
+    error: {
+        name: string;
+        message: string;
+        stackframes: string[];
+    };
+    wanted: string;
+    found: string;
 }
 
 export interface Assert {
@@ -63,22 +65,27 @@ export function createAssertionResult(
  * @param diag The diagnostics object from an assert
  */
 export function createFailureMessage(diag: Diag) {
-    let { stack, expected, actual, message, funcname } = diag;
+    let {
+        error: { stackframes, message, name },
+        wanted,
+        found,
+    } = diag;
     let diff: string | null = null;
-    if (expected && actual) {
+    process.stderr.write(JSON.stringify(diag, null, 2));
+    if (wanted && found) {
         diff = printDiffOrStringify(
-            expected,
-            actual,
+            wanted,
+            found,
             "Expected",
             "Received",
             /* expand */ false
         );
     }
 
-    let formattedStackTrace = stack
+    let formattedStackTrace = stackframes
         .map((line, index) => {
-            if (index === 0 && funcname) {
-                return "at " + funcname + " (" + line + ")";
+            if (index === 0 && name) {
+                return "at " + name + " (" + line + ")";
             } else {
                 return "at " + line;
             }

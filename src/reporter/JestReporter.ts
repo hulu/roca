@@ -63,7 +63,7 @@ export class JestReporter {
         parser.on("fail", this.onTestFailure.bind(this));
         parser.on("child", this.subscribeToParser.bind(this));
 
-        parser.on("comment", (comment) => {
+        parser.on("comment", (comment: string) => {
             let [
                 maybeSubtestString,
                 maybeSubtestName,
@@ -141,6 +141,8 @@ export class JestReporter {
     public onFileExecError(filename: string, index: number, reason: any) {
         // If we get an array of errors, report the first one.
         reason = Array.isArray(reason) ? reason[0] : reason;
+
+        process.stderr.write("&&&&&&&&&&&&&& REASON", reason);
 
         // If it's a BrsError, use those fields.
         if (reason.location && reason.message) {
