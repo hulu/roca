@@ -6,8 +6,7 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
 import { formatInterpreterError } from "./util";
-import { createTestRunner } from "./runner";
-import { MochaReporterType } from "./reporter";
+import { createTestRunner, MochaReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);

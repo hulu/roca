@@ -1,6 +1,6 @@
 import { Config } from "@jest/types";
 import { ExecuteWithScope, types as BrsTypes } from "brs";
-import { JestReporter } from "../reporter";
+import { JestReporter } from "../reporter/JestReporter";
 import { TestRunner } from "./TestRunner";
 
 export class JestRunner extends TestRunner {
