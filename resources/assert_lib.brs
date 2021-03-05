@@ -78,20 +78,29 @@ sub __isInvalid(actual, error)
     end if
 end sub
 
+' Convert a value to a multiline string that's human-readable.
+' Converting every value to a string ensures that the diff will _always_ show up in the output.
+function __asReadableValue(value)
+    readable = { _roca_isMultilineString: true }
+    if GetInterface(value, "ifSGNodeDict") <> invalid then
+        readable.value = "[RoSGNode: " + value.subtype() + "]"
+    else if GetInterface(value, "ifAssociativeArray") <> invalid then
+        readable.value = formatJson(value)
+    else
+        readable.value = value
+    end if
+
+    return readable
+end function
+
 function __formatError(error)
     ' Get the stack trace where the failed test is, filtering out any roca frames
     fileFilters = ["roca"]
     numStackFrames = 3
     stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
 
-    ' Convert to strings so we can see diffs
-    if GetInterface(error.expected, "ifString") = invalid then
-        error.expected = formatJson(error.expected)
-    end if
-
-    if GetInterface(error.actual, "ifString") = invalid then
-        error.actual = formatJson(error.actual)
-    end if
+    error.expected = __asReadableValue(error.expected)
+    error.actual = __asReadableValue(error.actual)
 
     ' Format this into the object that tap-mocha-reporter expects
     return {
