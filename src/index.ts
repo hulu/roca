@@ -40,9 +40,11 @@ async function run(files: string[], options: Options) {
 
     // Get the list of files that we should load into the execution scope.
     // Loading them here ensures that they only get lexed/parsed once.
-    let inScopeFiles = ["roca_lib.brs", "assert_lib.brs"].map((basename) =>
-        path.join(__dirname, "..", "resources", basename)
-    );
+    let inScopeFiles = [
+        "roca_lib.brs",
+        "assert_lib.brs",
+        path.join("tap", "tap.brs"),
+    ].map((basename) => path.join(__dirname, "..", "resources", basename));
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
     }

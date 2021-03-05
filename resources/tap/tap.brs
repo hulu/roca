@@ -2,13 +2,6 @@
 ' intended to be consumed by any known TAP stream consumer for further prettification.
 '
 ' Adapted in part from https://github.com/mochajs/mocha/blob/5f8df0848aa52bb0f7a0844bcd3715012a6ecfd6/lib/reporters/tap.js
-function main(numSuites)
-    tapInstance = tap()
-    tapInstance.version()
-    tapInstance.plan(numSuites)
-    return tapInstance
-end function
-
 function Tap() as object
     return {
         version: __tap_version,
@@ -95,9 +88,16 @@ sub __tap_printExtras(extra = {}, level = 0)
     m.indent()
     for each item in extra
         if type(extra[item]) = "roAssociativeArray" then
-            print m.getIndent() item ":"
             level = level + 1
-            m.printExtras(extra[item], level)
+            if extra[item]._roca_isMultilineString = true
+                print m.getIndent() item ": >-"
+                m.indent()
+                print m.getIndent() extra[item].value
+                m.deindent()
+            else
+                print m.getIndent() item ":"
+                m.printExtras(extra[item], level)
+            end if
             level = level - 1
         else if type(extra[item]) = "roArray" then
             print m.getIndent() item ":"
