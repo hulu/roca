@@ -32,7 +32,7 @@ describe("before-after", () => {
         ]);
     });
 
-    test.only("after-each", async () => {
+    test("after-each", async () => {
         let results = await rocaInDir(__dirname, "after-each");
 
         expect(results.stats).toMatchObject({
