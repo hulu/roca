@@ -45,16 +45,15 @@ export function createContext(config: ProjectConfig): Context {
 export function createAssertionResult(
     status: Status,
     name: string,
-    ancestorTitles: string[],
     failureMessage?: string
 ): AssertionResult {
     return {
         status,
-        ancestorTitles,
         title: name,
         fullName: name,
         failureMessages: failureMessage ? [failureMessage] : [],
         failureDetails: [],
+        ancestorTitles: [],
         numPassingAsserts: 0,
     };
 }

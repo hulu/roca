@@ -36,9 +36,6 @@ export class JestReporter {
     /** The results from the test file that is currently being run. */
     private currentResults: TestResult = createEmptyTestResult();
 
-    /** The hierarchy of suite names for the current test. */
-    private suiteNames: string[] = [];
-
     /** List of Jest reporters to use. */
     private reporters: BaseReporter[];
 
@@ -70,22 +67,6 @@ export class JestReporter {
     protected subscribeToParser(parser: Parser) {
         parser.on("fail", this.onTestFailure.bind(this));
         parser.on("child", this.subscribeToParser.bind(this));
-
-        parser.on("comment", (comment: string) => {
-            // Keep track of the suite hierarchy for reporting
-            let [
-                maybeSubtestString,
-                maybeSubtestName,
-            ] = (comment as string).trim().slice(2).split(":");
-            if (maybeSubtestString === "Subtest") {
-                this.suiteNames.push(maybeSubtestName.trim());
-            }
-        });
-
-        parser.on("complete", (results) => {
-            // Keep track of the suite hierarchy for reporting
-            this.suiteNames.pop();
-        });
 
         parser.on("pass", (assert: Assert) => {
             this.currentResults.numPassingTests++;
@@ -173,7 +154,6 @@ export class JestReporter {
      * @param filePath The path to the file that is starting its run.
      */
     public onFileStart(filePath: string) {
-        this.suiteNames = [];
         this.currentResults = createEmptyTestResult();
         this.currentResults.testFilePath = path.join(process.cwd(), filePath);
         this.currentResults.perfStats.start = Date.now();
@@ -246,7 +226,7 @@ export class JestReporter {
     protected addNonFailureTestResult(assert: Assert, status: Status) {
         this.currentResults.numPassingTests++;
         this.currentResults.testResults.push(
-            createAssertionResult(status, assert.name, this.suiteNames)
+            createAssertionResult(status, assert.name)
         );
     }
 
@@ -262,12 +242,7 @@ export class JestReporter {
         // Add the failed test case to our ongoing results.
         this.currentResults.numFailingTests++;
         this.currentResults.testResults.push(
-            createAssertionResult(
-                "failed",
-                assert.name,
-                this.suiteNames,
-                failureMessage
-            )
+            createAssertionResult("failed", assert.name, failureMessage)
         );
     }
 }
