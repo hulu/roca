@@ -71,6 +71,11 @@ export function createFailureMessage(diag: Diag) {
         found,
     } = diag;
 
+    try {
+        wanted = JSON.parse(wanted);
+        found = JSON.parse(found);
+    } catch {}
+
     let diff: string | null = null;
     diff = printDiffOrStringify(
         wanted,
