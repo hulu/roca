@@ -22,14 +22,23 @@ import {
     createFailureMessage,
 } from "./utils";
 import type { Config } from "@jest/types";
+import { BrsError } from "brs/types/Error";
+
+function isBrsError(error: Error | BrsError): error is BrsError {
+    let maybeBrsError = error as BrsError;
+    return !!maybeBrsError.location && !!maybeBrsError.message;
+}
 
 export class JestReporter {
     /** Aggregated results from all test files. */
     private aggregatedResults: AggregatedResult;
+
     /** The results from the test file that is currently being run. */
     private currentResults: TestResult = createEmptyTestResult();
+
     /** The hierarchy of suite names for the current test. */
     private suiteNames: string[] = [];
+
     /** List of Jest reporters to use. */
     private reporters: BaseReporter[];
 
@@ -63,6 +72,7 @@ export class JestReporter {
         parser.on("child", this.subscribeToParser.bind(this));
 
         parser.on("comment", (comment: string) => {
+            // Keep track of the suite hierarchy for reporting
             let [
                 maybeSubtestString,
                 maybeSubtestName,
@@ -73,7 +83,7 @@ export class JestReporter {
         });
 
         parser.on("complete", (results) => {
-            // Pop the name of this subtest off our list of suite names
+            // Keep track of the suite hierarchy for reporting
             this.suiteNames.pop();
         });
 
@@ -136,19 +146,22 @@ export class JestReporter {
      * @param index The TAP index of the file
      * @param reason The error that was thrown to cause the execution error
      */
-    public onFileExecError(filename: string, index: number, reason: any) {
+    public onFileExecError(
+        filename: string,
+        index: number,
+        reason: Error | BrsError | BrsError[]
+    ) {
         // If we get an array of errors, report the first one.
         reason = Array.isArray(reason) ? reason[0] : reason;
 
-        // If it's a BrsError, use those fields.
-        if (reason.location && reason.message) {
+        if (isBrsError(reason)) {
             this.currentResults.testExecError = {
                 stack: `\nat ${reason.location.file}:${reason.location.start.line}:${reason.location.start.column}`,
                 message: reason.message,
             };
         } else {
             this.currentResults.testExecError = {
-                stack: `\nat ${reason.location.file}:${reason.location.start.line}:${reason.location.start.column}`,
+                stack: reason.stack,
                 message: reason.message,
             };
         }
