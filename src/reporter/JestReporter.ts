@@ -155,7 +155,7 @@ export class JestReporter {
      */
     public onFileStart(filePath: string) {
         this.currentResults = createEmptyTestResult();
-        this.currentResults.testFilePath = path.join(process.cwd(), filePath);
+        this.currentResults.testFilePath = filePath;
         this.currentResults.perfStats.start = Date.now();
     }
 
