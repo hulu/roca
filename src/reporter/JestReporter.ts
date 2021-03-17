@@ -20,7 +20,6 @@ import {
     createAssertionResult,
     createContext,
     createFailureMessage,
-    Diag,
 } from "./utils";
 import type { Config } from "@jest/types";
 
@@ -113,10 +112,9 @@ export class JestReporter {
         this.aggregatedResults.startTime = Date.now();
         this.aggregatedResults.numTotalTestSuites = numSuites;
 
-        // Tell the reporters we're starting our test run.
         this.reporters.forEach((reporter) => {
             reporter.onRunStart(this.aggregatedResults, {
-                estimatedTime: 0,
+                estimatedTime: 0, // TODO: estimate this maybe?
                 showStatus: false,
             });
         });
@@ -141,8 +139,6 @@ export class JestReporter {
     public onFileExecError(filename: string, index: number, reason: any) {
         // If we get an array of errors, report the first one.
         reason = Array.isArray(reason) ? reason[0] : reason;
-
-        process.stderr.write("&&&&&&&&&&&&&& REASON", reason);
 
         // If it's a BrsError, use those fields.
         if (reason.location && reason.message) {
@@ -175,8 +171,8 @@ export class JestReporter {
      * file to the aggregated results, and tells each Jest reporter that this file has completed.
      */
     public onFileComplete() {
-        // Flatten console output because tap-parser splits output by newline,
-        // so we don't know which lines are supposed to go together.
+        // Flatten console output because tap-parser splits output by newline.
+        // We don't know which lines are supposed to go together, so just print them all together.
         if (this.currentResults.console) {
             this.currentResults.console = [
                 {
