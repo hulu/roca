@@ -173,7 +173,7 @@ export class JestReporter {
                         .map((entry) => entry.message)
                         .join(""),
                     origin: "", // TODO: figure out how to get the stack trace
-                    type: "log",
+                    type: "print" as any, // a little hack because brightscript uses `print` instead of `console.log`
                 },
             ];
         }
