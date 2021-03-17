@@ -108,7 +108,7 @@ export class JestReporter {
             }
             this.currentResults.console.push({
                 message: extra,
-                origin: "",
+                origin: "", // TODO: figure out how to get the stack
                 type: "info",
             });
         });
@@ -184,7 +184,7 @@ export class JestReporter {
      * file to the aggregated results, and tells each Jest reporter that this file has completed.
      */
     public onFileComplete() {
-        // Flatten console output because tap-parser splits output by newline.
+        // Flatten console output because tap-parser splits output by newline in the "extra" event.
         // We don't know which lines are supposed to go together, so just print them all together.
         if (this.currentResults.console) {
             this.currentResults.console = [
@@ -192,7 +192,7 @@ export class JestReporter {
                     message: this.currentResults.console
                         .map((entry) => entry.message)
                         .join(""),
-                    origin: "",
+                    origin: "", // TODO: figure out how to get the stack trace
                     type: "log",
                 },
             ];
