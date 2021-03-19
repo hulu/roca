@@ -5,7 +5,7 @@ import Parser = require("tap-parser");
 import TapMochaReporter = require("tap-mocha-reporter");
 import { TestRunner } from "./TestRunner";
 
-export type MochaReporterType =
+type MochaReporterType =
     | "classic"
     | "doc"
     | "dot"
@@ -22,7 +22,7 @@ export type MochaReporterType =
     | "spec"
     | "tap"
     | "xunit";
-export type JestReporterType = "jest" | "jest-verbose";
+type JestReporterType = "jest" | "jest-verbose";
 export type ReporterType = JestReporterType | MochaReporterType;
 
 function isJestReporter(

@@ -6,13 +6,13 @@ import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
 import { formatInterpreterError } from "./util";
-import { createTestRunner, MochaReporterType } from "./runner";
+import { createTestRunner, ReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
 
 interface Options {
-    reporter: MochaReporterType;
+    reporter: ReporterType;
     requireFilePath: string | undefined;
     forbidFocused: boolean;
     coverageReporters?: (keyof ReportOptions)[];

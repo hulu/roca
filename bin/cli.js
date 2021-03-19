@@ -14,7 +14,8 @@ const argv = require("yargs")
                 // use capital-R for reporter selection to match mocha
                 alias: "R",
                 type: "string",
-                describe: "The mocha reporter to use, via tap-mocha-reporter",
+                describe:
+                    "The test reporter to use (mocha reporters are provided via tap-mocha-reporter)",
                 default: "jest",
                 choices: [
                     "classic",

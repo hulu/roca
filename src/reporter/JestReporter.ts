@@ -1,4 +1,3 @@
-import * as path from "path";
 import Parser = require("tap-parser");
 import {
     DefaultReporter,
