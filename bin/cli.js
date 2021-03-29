@@ -16,7 +16,7 @@ const argv = require("yargs")
                 type: "string",
                 describe:
                     "The test reporter to use (mocha reporters are provided via tap-mocha-reporter)",
-                default: "jest",
+                default: "spec",
                 choices: [
                     "classic",
                     "doc",

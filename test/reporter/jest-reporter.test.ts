@@ -192,7 +192,7 @@ describe("JestReporter.ts", () => {
             });
         });
 
-        it.skip("adds failing test to results with formatted message diagnostics exist", () => {
+        it("adds failing test to results with formatted message diagnostics", () => {
             jestReporter.onTestFailure({
                 ok: false,
                 id: 111,
@@ -221,6 +221,14 @@ describe("JestReporter.ts", () => {
                     },
                 ],
             });
+
+            expect(results.testResults[0].failureMessages?.length).toEqual(1);
+
+            let failureMessage = results.testResults[0].failureMessages[0];
+            expect(failureMessage).toContain("mock message name");
+            expect(failureMessage).toContain("mock:stack:frame");
+            expect(failureMessage).toContain("foo");
+            expect(failureMessage).toContain("bar");
         });
     });
 });
