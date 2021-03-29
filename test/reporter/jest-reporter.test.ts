@@ -1,4 +1,3 @@
-import { mocked } from "ts-jest/utils";
 import { Config } from "@jest/types";
 import { PassThrough } from "stream";
 import { JestReporter } from "../../src/reporter/JestReporter";
@@ -13,14 +12,6 @@ type SummaryReporterMock = jest.Mocked<Reporters.SummaryReporter>;
 
 jest.mock("@jest/test-result");
 let TestResultMock = TestResult as jest.Mocked<typeof TestResult>;
-TestResultMock.makeEmptyAggregatedTestResult.mockReturnValue(
-    {} as Reporters.AggregatedResult
-);
-TestResultMock.createEmptyTestResult.mockReturnValue({
-    perfStats: {},
-    numFailingTests: 0,
-    testResults: [] as TestResult.AssertionResult[],
-} as Reporters.TestResult);
 
 describe("JestReporter.ts", () => {
     let jestReporter: JestReporter;
@@ -37,6 +28,14 @@ describe("JestReporter.ts", () => {
 
         TestResultMock.makeEmptyAggregatedTestResult.mockClear();
         TestResultMock.createEmptyTestResult.mockClear();
+        TestResultMock.makeEmptyAggregatedTestResult.mockReturnValue(
+            {} as Reporters.AggregatedResult
+        );
+        TestResultMock.createEmptyTestResult.mockReturnValue({
+            perfStats: {},
+            numFailingTests: 0,
+            testResults: [] as TestResult.AssertionResult[],
+        } as Reporters.TestResult);
 
         Date.now = jest.fn().mockReturnValue(12345);
 
@@ -169,6 +168,10 @@ describe("JestReporter.ts", () => {
     });
 
     describe("onTestFailure", () => {
+        beforeEach(() => {
+            jestReporter.onFileStart("/fake/path");
+        });
+
         it("adds failing test to results with generic message when no diagnostics exist", () => {
             jestReporter.onTestFailure({
                 ok: false,
@@ -214,12 +217,12 @@ describe("JestReporter.ts", () => {
 
             expect(results).toMatchObject({
                 numFailingTests: 1,
-                testResults: [
-                    {
+                testResults: expect.arrayContaining([
+                    expect.objectContaining({
                         status: "failed",
                         title: "mock name",
-                    },
-                ],
+                    }),
+                ]),
             });
 
             expect(results.testResults[0].failureMessages?.length).toEqual(1);
