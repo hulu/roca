@@ -5,14 +5,14 @@ import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
-import { createTestRunner, MochaReporterType } from "./runner";
 import { formatInterpreterError } from "./util";
+import { createTestRunner, ReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
 const globPromise = util.promisify(glob);
 
 interface Options {
-    reporter: MochaReporterType;
+    reporter: ReporterType;
     requireFilePath: string | undefined;
     forbidFocused: boolean;
     coverageReporters?: (keyof ReportOptions)[];
@@ -50,7 +50,7 @@ async function run(files: string[], options: Options) {
     }
     inScopeFiles.push(...files);
 
-    let testRunner = createTestRunner(reporter);
+    let testRunner = await createTestRunner(reporter);
 
     // Create an execution scope using the project source files and roca files.
     let execute: ExecuteWithScope;

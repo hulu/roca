@@ -1,6 +1,6 @@
 # Output directory for compiled TS
 lib
-types
+/types
 
 # Logs
 logs
