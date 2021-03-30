@@ -315,11 +315,11 @@ print mock.getMockName() ' => "fooBar"
 ------------
 
 ## mock.mockReturnValue(value)
-Returns the name of the mocked function.
+Sets a new return value for a mocked function. This overwrites any existing mock implementation.
 
 ### Parameters
-**funcName** `string` \
-The name of the function to overwrite. 
+**value** `dynamic` \
+The value that this mocked function should return.
 ------------
 
 ### Return value
