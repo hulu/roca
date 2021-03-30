@@ -1,3 +1,0 @@
-# Testing private functions
-
-TODO
