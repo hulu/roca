@@ -53,8 +53,8 @@ If `FooComponent` uses the `foo` function as a callback:
         <!-- Field with a callback we want to test -->
         <field id="myField" type="string" onChange="foo" />
 
-        <!-- Field with a callback we want to test -->
-        <field id="sideEffectField" type="string">
+        <!-- Field that gets modified as a side-effect of the `foo` function -->
+        <field id="sideEffectField" type="string" value="bar">
     </interface>
 </component>
 ```
