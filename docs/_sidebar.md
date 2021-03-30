@@ -11,5 +11,6 @@
     * [FAQs](resources/faq.md)
 
 * Guides
+    * [About](guides/)
     * [Setting up and cleaning up tests](guides/test-setup.md)
-    * [Testing private functions](faq/testing-private-functions.md)
+    * [Testing functions](guides/testing-functions.md)

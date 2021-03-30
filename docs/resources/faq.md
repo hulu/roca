@@ -3,6 +3,16 @@
 
 All code that lives in the `source/` directory is automatically pulled in-scope when you're executing code in any of the tests. So if you're testing functions from `source/`, then you can just call them directly from the test case.
 
+Check out our [Testing functions guide](guides/testing-functions.md) for more detailed information.
+
+<br />
+
+--------------
+
+## How do I test functions that are in the `components/` directory?
+
+Check out our [Testing functions guide](guides/testing-functions.md) for strategies to test `components/` functions.
+
 <br />
 
 --------------
