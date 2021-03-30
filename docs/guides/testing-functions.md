@@ -35,7 +35,8 @@ The best way to test `.brs` files in the `components/` tree is to write componen
 For example, if we have this file: `<project root>/components/foo-workflow/foo.brs`
 ```brightscript
 function foo()
-    return "foo"
+    m.top.sideEffectField = "foo"
+    return m.top.sideEffectField
 end function
 ```
 
@@ -49,7 +50,11 @@ If `FooComponent` uses the `foo` function as a callback:
 <component name="FooComponent">
     <script type="text/brightscript" uri="pkg:/components/foo-workflow/foo.brs" />
     <interface>
+        <!-- Field with a callback we want to test -->
         <field id="myField" type="string" onChange="foo" />
+
+        <!-- Field with a callback we want to test -->
+        <field id="sideEffectField" type="string">
     </interface>
 </component>
 ```
@@ -68,6 +73,9 @@ m.it("calls foo when myField is modified", sub()
 
     ' assert that it was called
     m.assert.equal(spy.calls.count(), 1, "expected foo to be called once")
+
+    ' assert on the side effect
+    m.assert.equal(component.sideEffectField, "foo", "expected sideEffectField value to be 'foo'")
 end sub)
 ```
 
@@ -98,6 +106,9 @@ m.it("calls foo", sub()
 
     ' assert that it was called
     m.assert.equal(spy.calls.count(), 1, "expected foo to be called once")
+
+    ' assert on the side effect
+    m.assert.equal(component.sideEffectField, "foo", "expected sideEffectField value to be 'foo'")
 end sub)
 ```
 
@@ -114,7 +125,8 @@ The easiest way to test private functions (functions that are not exposed in the
 For example, if we have this file: `<project root>/components/foo-workflow/foo.brs`
 ```brightscript
 function foo()
-    return "foo"
+    m.top.sideEffectField = "foo"
+    return m.top.sideEffectField
 end function
 ```
 
@@ -143,6 +155,9 @@ m.it("calls foo", sub()
 
     ' assert that it was called
     m.assert.equal(spy.calls.count(), 1, "expected foo to be called once")
+
+    ' assert on the side effect
+    m.assert.equal(component.sideEffectField, "foo", "expected sideEffectField value to be 'foo'")
 end sub)
 ```
 
