@@ -53,7 +53,7 @@ The function implementation. If omitted, a default implementation will be create
 Original function definition:
 ```brightscript
 function myFunc(requiredArg as string)
-    return "myFunc: " requiredArg
+    return "myFunc: " + requiredArg
 end function
 ```
 
