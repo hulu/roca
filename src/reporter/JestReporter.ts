@@ -223,7 +223,6 @@ export class JestReporter {
      * @param status The test result status
      */
     protected addNonFailureTestResult(assert: Assert, status: Status) {
-        this.currentResults.numPassingTests++;
         this.currentResults.testResults.push(
             createAssertionResult(status, assert.name)
         );
