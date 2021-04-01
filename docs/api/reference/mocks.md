@@ -42,18 +42,37 @@ Dynamically overwrite a function's implementation, and spy on the mocked impleme
 **funcName** `string` \
 The name of the function to overwrite. 
 ------------
-**impl** `function` \
-The function implementation
+**impl** `function` _optional_ \
+The function implementation. If omitted, a default implementation will be created that accepts any number of arguments (up to 10) and returns `invalid`.
 ------------
 
 ### Return value 
 [Mock function](#mock-function-api)
 
 ### Usage 
+Original function definition:
 ```brightscript
-mock = _brs_.mockFunction("FunctionName", sub()
-    print "foobar"
-end sub)
+function myFunc(requiredArg as string)
+    return "myFunc: " + requiredArg
+end function
+```
+
+Test case:
+```brightscript
+' original implementation
+print myFunc("foo") ' => "myFunc: foo"
+
+' mocked with a custom implementation
+mock = _brs_.mockFunction("myFunc", function()
+    return "foobar"
+end function)
+print myFunc() ' => "foobar"
+print myFunc("foo") ' => runtime error because the signatures don't match
+
+' implicitly mocked -- can be called with or without args
+mock = _brs_.mockFunction("myFunc")
+print myFunc() ' => invalid
+print myFunc(123, {}, "foo") ' => invalid
 ```
 <br/>
 
@@ -290,6 +309,31 @@ mock = _brs_.mockFunction("fooBar", function()
 end function)
 
 print mock.getMockName() ' => "fooBar"
+```
+<br/>
+
+------------
+
+## mock.mockReturnValue(value)
+Sets a new return value for a mocked function. This overwrites any existing mock implementation.
+
+### Parameters
+**value** `dynamic` \
+The value that this mocked function should return.
+------------
+
+### Return value
+None.
+
+### Usage
+```brightscript
+mock = _brs_.mockFunction("fooBar", function()
+    return "hello, world"
+end function)
+print fooBar() ' => "hello, world"
+
+mock.mockReturnValue(123)
+print fooBar() ' => 123
 ```
 <br/>
 
