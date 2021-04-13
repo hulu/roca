@@ -57,6 +57,7 @@ These extensions are all available on a global associative array called `_brs_`:
 {
     getStackTrace: function,
     global: associative array,
+    testData: associative array,
     mockComponent: function,
     mockComponentPartial: function,
     mockFunction: function,

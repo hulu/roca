@@ -57,6 +57,26 @@ print _brs_.global
 
 ------------
 
+## \_brs_.testData
+
+A reference to the temporary associative array, so that you can access it from everywhere inside your brs code. Mostly used for saving/accessing some test-specific data. Clears before running each test file.
+
+### Usage
+```brightscript
+_brs_.testData._isFooAvailable = false
+_brs_.mockFunction("isFooAvailable", sub()
+    return _brs_.testData._isFooAvailable
+end sub)
+
+isFooAvailable() ' => false
+
+_brs_.testData._isFooAvailable = true ' something happened and now it is available
+isFooAvailable() ' => true
+```
+<br/>
+
+------------
+
 # \_brs_.process
 
 Allows you to access the command line arguments and locale.
