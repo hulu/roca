@@ -72,8 +72,8 @@ describe("before-after", () => {
 
         expect(results.stats).toMatchObject({
             suites: 4,
-            tests: 12,
-            passes: 9,
+            tests: 14,
+            passes: 11,
             pending: 3,
             failures: 0,
         });
@@ -85,9 +85,11 @@ describe("before-after", () => {
             { fullTitle: "nested root case 1" },
             { fullTitle: "nested root case 2" },
             { fullTitle: "nested root case 3" },
+            { fullTitle: "nested root check _brs_.testData" },
             { fullTitle: "single-level root case 1" },
             { fullTitle: "single-level root case 2" },
             { fullTitle: "single-level root case 3" },
+            { fullTitle: "single-level root check _brs_.testData" },
         ]);
     });
 });
