@@ -7,6 +7,7 @@ function Assert(passFunc, failFunc, state) as object
         notEqual: __notEqual,
         isTrue: __isTrue,
         isFalse: __isFalse,
+        isValid: __isValid,
         isInvalid: __isInvalid,
         formatError: __formatError,
         deepEquals: __deepEquals
@@ -61,6 +62,19 @@ sub __isFalse(actual, error)
             actual: actual,
             expected: false,
             funcName: "m.assert.isFalse"
+        }))
+    end if
+end sub
+
+sub __isValid(actual, error)
+    if actual <> invalid then
+        m.__pass()
+    else
+        m.__fail(m.formatError({
+            message: error,
+            actual: actual,
+            expected: "non-invalid",
+            funcName: "m.assert.isValid"
         }))
     end if
 end sub
