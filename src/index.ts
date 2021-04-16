@@ -20,7 +20,8 @@ interface CliOptions {
     coverageReporters?: (keyof ReportOptions)[];
     /** The directory where we should load source files from, if not 'source'. */
     sourceDir?: string;
-    /** A list of strings to match files against, specified in the command
+    /**
+     * A list of strings to match files against, specified in the command.
      * If empty, we will test/search for all *.test.brs files.
      */
     fileMatches: string[];
