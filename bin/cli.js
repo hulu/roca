@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 const testRunner = require("../lib/");
 const argv = require("yargs")
-    .usage("Usage: $0 [command] [options] [files] ")
+    .usage("Usage: $0 [command] [options] [file names and/or matches] ")
     .updateStrings({
         "Positionals:": "Available commands",
         "Options:": "Other Options",
     })
     .command(
         ["$0", "run "],
-        "Runs given .test.brs files. If no files are given, discovers and executes all .test.brs tests in the current directory",
+        "Finds .brs files that match given file names/matches. If no names/matches are given, discovers and executes all .test.brs tests in the current directory",
         (yargs) => {
             yargs.option("reporter", {
                 // use capital-R for reporter selection to match mocha
@@ -46,7 +46,7 @@ const argv = require("yargs")
                 requireFilePath: argv.r,
                 forbidFocused: argv.f,
                 coverageReporters: argv.c,
-                testFiles: argv._,
+                fileMatches: argv._,
             });
         }
     )

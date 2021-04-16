@@ -21,7 +21,7 @@ interface CliOptions {
     /** The directory where we should load source files from, if not 'source'. */
     sourceDir?: string;
     /** Test files specified in the command (if empty, we will test/search for all *.test.brs files) */
-    testFiles: string[];
+    fileMatches: string[];
 }
 
 async function findBrsFiles(sourceDir?: string) {
@@ -41,7 +41,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
         requireFilePath,
         forbidFocused,
         coverageReporters = [],
-        testFiles,
+        fileMatches,
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
@@ -78,14 +78,14 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
         process.exit(1);
     }
 
-    let { filteredTestFiles, focusedCasesDetected } = await getTestFiles(
+    let { testFiles, focusedCasesDetected } = await getTestFiles(
         execute,
-        testFiles
+        fileMatches
     );
 
     // Fail if we find focused test cases and there weren't supposed to be any.
     if (forbidFocused && focusedCasesDetected) {
-        let formattedList = filteredTestFiles
+        let formattedList = testFiles
             .map((filename) => `\t${filename}`)
             .join("\n");
         console.error(
@@ -99,7 +99,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
         return {};
     }
 
-    testRunner.run(execute, filteredTestFiles, focusedCasesDetected);
+    testRunner.run(execute, testFiles, focusedCasesDetected);
     testRunner.reporterStream.end();
 
     if (coverageEnabled) {
@@ -116,11 +116,11 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
  * @param execute The scoped execution function to run with each file
  */
 async function getTestFiles(execute: ExecuteWithScope, testMatches: string[]) {
-    let filteredTestFiles = await globMatchFiles(testMatches);
+    let testFiles = await globMatchFiles(testMatches);
 
     let focusedSuites: string[] = [];
     let emptyRunArgs = new RoAssociativeArray([]);
-    filteredTestFiles.forEach((filename) => {
+    testFiles.forEach((filename) => {
         try {
             // Run the file in non-exec mode.
             let suite = execute([filename], [emptyRunArgs]);
@@ -139,9 +139,7 @@ async function getTestFiles(execute: ExecuteWithScope, testMatches: string[]) {
     let focusedCasesDetected = focusedSuites.length > 0;
     return {
         focusedCasesDetected,
-        filteredTestFiles: focusedCasesDetected
-            ? focusedSuites
-            : filteredTestFiles,
+        testFiles: focusedCasesDetected ? focusedSuites : testFiles,
     };
 }
 
