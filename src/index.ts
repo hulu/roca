@@ -1,7 +1,6 @@
 import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
-import { glob } from "glob";
+import fg from "fast-glob";
 import * as path from "path";
-import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
@@ -9,19 +8,26 @@ import { formatInterpreterError } from "./util";
 import { createTestRunner, ReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
-const globPromise = util.promisify(glob);
 
-interface Options {
+interface CliOptions {
+    /** The test reporter to use. */
     reporter: ReporterType;
+    /** A path to a file that we should load into global exec scope prior to test run. */
     requireFilePath: string | undefined;
-    forbidFocused: boolean;
+    /** Whether or not to fail the test run if focused cases are detected. */
+    forbidFocused?: boolean;
+    /** The istanbul coverage reporters to use. */
     coverageReporters?: (keyof ReportOptions)[];
+    /** The directory where we should load source files from, if not 'source'. */
+    sourceDir?: string;
+    /** Test files specified in the command (if empty, we will test/search for all *.test.brs files) */
+    testFiles: string[];
 }
 
-async function findBrsFiles(sourceDir: string | undefined) {
+async function findBrsFiles(sourceDir?: string) {
     let searchDir = sourceDir || "source";
     const pattern = path.join(process.cwd(), searchDir, "**", "*.brs");
-    return globPromise(pattern);
+    return fg.sync(pattern);
 }
 
 /**
@@ -29,12 +35,13 @@ async function findBrsFiles(sourceDir: string | undefined) {
  * @param files List of filenames to load into the execution scope
  * @param options BRS interpreter options
  */
-async function run(files: string[], options: Options) {
+async function run(brsSourceFiles: string[], options: CliOptions) {
     let {
         reporter,
         requireFilePath,
         forbidFocused,
         coverageReporters = [],
+        testFiles,
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
@@ -48,7 +55,7 @@ async function run(files: string[], options: Options) {
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
     }
-    inScopeFiles.push(...files);
+    inScopeFiles.push(...brsSourceFiles);
 
     let testRunner = await createTestRunner(reporter);
 
@@ -71,11 +78,14 @@ async function run(files: string[], options: Options) {
         process.exit(1);
     }
 
-    let { testFiles, focusedCasesDetected } = await getTestFiles(execute);
+    let { filteredTestFiles, focusedCasesDetected } = await getTestFiles(
+        execute,
+        testFiles
+    );
 
     // Fail if we find focused test cases and there weren't supposed to be any.
     if (forbidFocused && focusedCasesDetected) {
-        let formattedList = testFiles
+        let formattedList = filteredTestFiles
             .map((filename) => `\t${filename}`)
             .join("\n");
         console.error(
@@ -89,7 +99,7 @@ async function run(files: string[], options: Options) {
         return {};
     }
 
-    testRunner.run(execute, testFiles, focusedCasesDetected);
+    testRunner.run(execute, filteredTestFiles, focusedCasesDetected);
     testRunner.reporterStream.end();
 
     if (coverageEnabled) {
@@ -105,13 +115,12 @@ async function run(files: string[], options: Options) {
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
  */
-async function getTestFiles(execute: ExecuteWithScope) {
-    let testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
-    let testFiles: string[] = await globPromise(testsPattern);
+async function getTestFiles(execute: ExecuteWithScope, testMatches: string[]) {
+    let filteredTestFiles = await globMatchFiles(testMatches);
 
     let focusedSuites: string[] = [];
     let emptyRunArgs = new RoAssociativeArray([]);
-    testFiles.forEach((filename) => {
+    filteredTestFiles.forEach((filename) => {
         try {
             // Run the file in non-exec mode.
             let suite = execute([filename], [emptyRunArgs]);
@@ -130,8 +139,39 @@ async function getTestFiles(execute: ExecuteWithScope) {
     let focusedCasesDetected = focusedSuites.length > 0;
     return {
         focusedCasesDetected,
-        testFiles: focusedCasesDetected ? focusedSuites : testFiles,
+        filteredTestFiles: focusedCasesDetected
+            ? focusedSuites
+            : filteredTestFiles,
     };
+}
+
+/**
+ * Finds all the test files that match a given list of strings. If the list is empty,
+ * it finds all *.test.brs files.
+ * @param testMatches A list of file path matches from the command line
+ */
+async function globMatchFiles(testMatches: string[]) {
+    testMatches = testMatches.map((match) => {
+        if (path.parse(match).ext === ".brs") {
+            // If the string is a brs file, use it directly.
+            return match;
+        } else {
+            // If the string is not already a brs file, do partial matches on brs files
+            // that contain the string, and also treat the string as a directory.
+            return `{*${match}*.brs,*${match}*/**/*.brs}`;
+        }
+    });
+
+    let testsPattern: string;
+    if (testMatches.length === 0) {
+        testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
+    } else if (testMatches.length === 1) {
+        testsPattern = `${process.cwd()}/**/${testMatches[0]}`;
+    } else {
+        testsPattern = `${process.cwd()}/**/{${testMatches.join(",")}}`;
+    }
+
+    return fg.sync(testsPattern);
 }
 
 /**
@@ -165,9 +205,7 @@ function hasFocusedCases(subSuites: types.BrsType[]): boolean {
     return false;
 }
 
-module.exports = async function (
-    args: { sourceDir: string | undefined } & Options
-) {
+module.exports = async function (args: CliOptions) {
     let { sourceDir, ...options } = args;
     let files = await findBrsFiles(sourceDir);
     return await run(files, options);
