@@ -20,7 +20,9 @@ interface CliOptions {
     coverageReporters?: (keyof ReportOptions)[];
     /** The directory where we should load source files from, if not 'source'. */
     sourceDir?: string;
-    /** Test file matches specified in the command (if empty, we will test/search for all *.test.brs files) */
+    /** A list of strings to match files against, specified in the command
+     * If empty, we will test/search for all *.test.brs files.
+     */
     fileMatches: string[];
 }
 
@@ -114,6 +116,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
  * Runs through the entire test suite (in non-exec mode) to determine this.
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
+ * @param fileMatches A list of strings to match files against
  */
 async function getTestFiles(execute: ExecuteWithScope, fileMatches: string[]) {
     let testFiles = await globMatchFiles(fileMatches);
@@ -146,7 +149,7 @@ async function getTestFiles(execute: ExecuteWithScope, fileMatches: string[]) {
 /**
  * Finds all the test files that match a given list of strings. If the list is empty,
  * it finds all *.test.brs files.
- * @param testMatches A list of file path matches from the command line
+ * @param fileMatches A list of file path matches from the command line
  */
 async function globMatchFiles(fileMatches: string[]) {
     fileMatches = fileMatches.map((match) => {
