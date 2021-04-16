@@ -20,7 +20,7 @@ interface CliOptions {
     coverageReporters?: (keyof ReportOptions)[];
     /** The directory where we should load source files from, if not 'source'. */
     sourceDir?: string;
-    /** Test files specified in the command (if empty, we will test/search for all *.test.brs files) */
+    /** Test file matches specified in the command (if empty, we will test/search for all *.test.brs files) */
     fileMatches: string[];
 }
 
@@ -115,8 +115,8 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
  */
-async function getTestFiles(execute: ExecuteWithScope, testMatches: string[]) {
-    let testFiles = await globMatchFiles(testMatches);
+async function getTestFiles(execute: ExecuteWithScope, fileMatches: string[]) {
+    let testFiles = await globMatchFiles(fileMatches);
 
     let focusedSuites: string[] = [];
     let emptyRunArgs = new RoAssociativeArray([]);
@@ -148,8 +148,8 @@ async function getTestFiles(execute: ExecuteWithScope, testMatches: string[]) {
  * it finds all *.test.brs files.
  * @param testMatches A list of file path matches from the command line
  */
-async function globMatchFiles(testMatches: string[]) {
-    testMatches = testMatches.map((match) => {
+async function globMatchFiles(fileMatches: string[]) {
+    fileMatches = fileMatches.map((match) => {
         if (path.parse(match).ext === ".brs") {
             // If the string is a brs file, use it directly.
             return match;
@@ -161,12 +161,12 @@ async function globMatchFiles(testMatches: string[]) {
     });
 
     let testsPattern: string;
-    if (testMatches.length === 0) {
+    if (fileMatches.length === 0) {
         testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
-    } else if (testMatches.length === 1) {
-        testsPattern = `${process.cwd()}/**/${testMatches[0]}`;
+    } else if (fileMatches.length === 1) {
+        testsPattern = `${process.cwd()}/**/${fileMatches[0]}`;
     } else {
-        testsPattern = `${process.cwd()}/**/{${testMatches.join(",")}}`;
+        testsPattern = `${process.cwd()}/**/{${fileMatches.join(",")}}`;
     }
 
     return fg.sync(testsPattern);
