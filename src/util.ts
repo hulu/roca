@@ -41,7 +41,7 @@ export async function globMatchFiles(filePatterns: string[]) {
     let testsPattern: string;
     if (parsedPatterns.length === 0) {
         // If the user didn't specify any pattern, just look for .test.brs files.
-        testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
+        testsPattern = `${process.cwd()}/**/*.test.brs`;
     } else if (parsedPatterns.length === 1) {
         testsPattern = `${process.cwd()}/**/${parsedPatterns[0]}`;
     } else {

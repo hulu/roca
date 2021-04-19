@@ -22,9 +22,7 @@ describe("globMatchFiles", () => {
         await globMatchFiles([]);
 
         expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith(
-            "cwd/{test,tests,source,components}/**/*.test.brs"
-        );
+        expect(mockFastGlob.sync).toBeCalledWith("cwd/**/*.test.brs");
     });
 
     it("Looks for a file suffix when given a .brs extension", async () => {
