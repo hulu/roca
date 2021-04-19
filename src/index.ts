@@ -4,7 +4,7 @@ import * as path from "path";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
-import { formatInterpreterError } from "./util";
+import { formatInterpreterError, globMatchFiles } from "./util";
 import { createTestRunner, ReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
@@ -145,35 +145,6 @@ async function getTestFiles(execute: ExecuteWithScope, fileMatches: string[]) {
         focusedCasesDetected,
         testFiles: focusedCasesDetected ? focusedSuites : testFiles,
     };
-}
-
-/**
- * Finds all the test files that match a given list of strings. If the list is empty,
- * it finds all *.test.brs files.
- * @param fileMatches A list of file path matches from the command line
- */
-async function globMatchFiles(fileMatches: string[]) {
-    fileMatches = fileMatches.map((match) => {
-        if (path.parse(match).ext === ".brs") {
-            // If the string is a brs file, use it directly.
-            return match;
-        } else {
-            // If the string is not already a brs file, do partial matches on brs files
-            // that contain the string, and also treat the string as a directory.
-            return `{*${match}*.brs,*${match}*/**/*.brs}`;
-        }
-    });
-
-    let testsPattern: string;
-    if (fileMatches.length === 0) {
-        testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
-    } else if (fileMatches.length === 1) {
-        testsPattern = `${process.cwd()}/**/${fileMatches[0]}`;
-    } else {
-        testsPattern = `${process.cwd()}/**/{${fileMatches.join(",")}}`;
-    }
-
-    return fg.sync(testsPattern);
 }
 
 /**
