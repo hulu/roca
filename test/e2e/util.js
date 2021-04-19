@@ -17,7 +17,7 @@ exports.rocaInDir = async function (...workingDirParts) {
         .mockImplementation(() => path.join(...workingDirParts));
 
     try {
-        return await roca({ reporter: "json", fileMatches: [] });
+        return await roca({ reporter: "json", filePatterns: [] });
     } finally {
         cwd.mockRestore();
         stdout.mockRestore();
