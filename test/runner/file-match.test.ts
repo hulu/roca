@@ -22,14 +22,18 @@ describe("globMatchFiles", () => {
         await globMatchFiles([]);
 
         expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith("cwd/**/*.test.brs");
+        expect(mockFastGlob.sync).toBeCalledWith(
+            expect.arrayContaining(["cwd/**/*.test.brs"])
+        );
     });
 
     it("Looks for a file suffix when given a .brs extension", async () => {
         await globMatchFiles(["foo.test.brs"]);
 
         expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith("cwd/**/*foo.test.brs");
+        expect(mockFastGlob.sync).toBeCalledWith(
+            expect.arrayContaining(["cwd/**/*foo.test.brs"])
+        );
     });
 
     it("Looks for both partial directory and file matches when not given a .brs extension", async () => {
@@ -37,7 +41,9 @@ describe("globMatchFiles", () => {
 
         expect(mockFastGlob.sync).toBeCalledTimes(1);
         expect(mockFastGlob.sync).toBeCalledWith(
-            "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs}"
+            expect.arrayContaining([
+                "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs}",
+            ])
         );
     });
 
@@ -46,7 +52,9 @@ describe("globMatchFiles", () => {
 
         expect(mockFastGlob.sync).toBeCalledTimes(1);
         expect(mockFastGlob.sync).toBeCalledWith(
-            "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs,*bar.test.brs}"
+            expect.arrayContaining([
+                "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs,*bar.test.brs}",
+            ])
         );
     });
 });

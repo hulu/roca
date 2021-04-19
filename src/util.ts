@@ -38,15 +38,16 @@ export async function globMatchFiles(filePatterns: string[]) {
         }
     });
 
-    let testsPattern: string;
+    let testsPattern: string = `${process.cwd()}/**/`;
     if (parsedPatterns.length === 0) {
         // If the user didn't specify any pattern, just look for .test.brs files.
-        testsPattern = `${process.cwd()}/**/*.test.brs`;
+        testsPattern += "*.test.brs";
     } else if (parsedPatterns.length === 1) {
-        testsPattern = `${process.cwd()}/**/${parsedPatterns[0]}`;
+        testsPattern += parsedPatterns[0];
     } else {
-        testsPattern = `${process.cwd()}/**/{${parsedPatterns.join(",")}}`;
+        testsPattern += `{${parsedPatterns.join(",")}}`;
     }
 
-    return fg.sync(testsPattern);
+    // exclude node_modules from the test search
+    return fg.sync([testsPattern, `!${process.cwd()}/node_modules/**/*`]);
 }
