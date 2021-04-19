@@ -24,7 +24,7 @@ interface CliOptions {
      * A list of strings to match files against, specified in the command.
      * If empty, we will test/search for all *.test.brs files.
      */
-    fileMatches: string[];
+    filePatterns: string[];
 }
 
 async function findBrsFiles(sourceDir?: string) {
@@ -44,7 +44,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
         requireFilePath,
         forbidFocused,
         coverageReporters = [],
-        fileMatches,
+        filePatterns,
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
@@ -83,7 +83,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
 
     let { testFiles, focusedCasesDetected } = await getTestFiles(
         execute,
-        fileMatches
+        filePatterns
     );
 
     // Fail if we find focused test cases and there weren't supposed to be any.
@@ -117,10 +117,10 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
  * Runs through the entire test suite (in non-exec mode) to determine this.
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
- * @param fileMatches A list of strings to match files against
+ * @param filePatterns A list of strings to match files against
  */
-async function getTestFiles(execute: ExecuteWithScope, fileMatches: string[]) {
-    let testFiles = await globMatchFiles(fileMatches);
+async function getTestFiles(execute: ExecuteWithScope, filePatterns: string[]) {
+    let testFiles = await globMatchFiles(filePatterns);
 
     let focusedSuites: string[] = [];
     let emptyRunArgs = new RoAssociativeArray([]);

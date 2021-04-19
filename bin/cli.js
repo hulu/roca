@@ -46,7 +46,7 @@ const argv = require("yargs")
                 requireFilePath: argv.r,
                 forbidFocused: argv.f,
                 coverageReporters: argv.c,
-                fileMatches: argv._,
+                filePatterns: argv._,
             });
         }
     )
