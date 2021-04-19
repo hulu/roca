@@ -24,26 +24,28 @@ export function formatInterpreterError(error: any) {
  * @param fileMatches A list of file path matches from the command line
  */
 export async function globMatchFiles(fileMatches: string[]) {
-    fileMatches = fileMatches.map((match) => {
+    let parsedMatches: string[] = [];
+    fileMatches.forEach((match) => {
         if (path.parse(match).ext === ".brs") {
-            // If the string is a brs file, use it directly.
-            return match;
+            // If the string is a brs file, match anything that ends with this file name.
+            parsedMatches.push(`*${match}`);
         } else {
-            // If the string is not already a brs file, do partial matches on brs files
-            // that contain the string, and also treat the string as a directory.
-            // This allows us to match all files/directories that contain the string.
-            return `{*${match}*.brs,*${match}*/**/*.brs}`;
+            // Do a partial match on any files with this string in their name.
+            parsedMatches.push(`*${match}*.test.brs`);
+
+            // Do a partial match on any directories with this string in their name.
+            parsedMatches.push(`*${match}*/**/*.test.brs`);
         }
     });
 
     let testsPattern: string;
-    if (fileMatches.length === 0) {
+    if (parsedMatches.length === 0) {
         // If the user didn't specify any pattern, just look for .test.brs files.
         testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
-    } else if (fileMatches.length === 1) {
-        testsPattern = `${process.cwd()}/**/${fileMatches[0]}`;
+    } else if (parsedMatches.length === 1) {
+        testsPattern = `${process.cwd()}/**/${parsedMatches[0]}`;
     } else {
-        testsPattern = `${process.cwd()}/**/{${fileMatches.join(",")}}`;
+        testsPattern = `${process.cwd()}/**/{${parsedMatches.join(",")}}`;
     }
 
     return fg.sync(testsPattern);
