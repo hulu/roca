@@ -1,6 +1,6 @@
 import * as c from "ansi-colors";
 import * as path from "path";
-import fg from "fast-glob";
+import fastGlob from "fast-glob";
 
 export function formatInterpreterError(error: any) {
     if (!Array.isArray(error)) {
@@ -49,5 +49,5 @@ export async function globMatchFiles(filePatterns: string[]) {
     }
 
     // exclude node_modules from the test search
-    return fg.sync([testsPattern, `!${process.cwd()}/node_modules/**/*`]);
+    return fastGlob([testsPattern, `!${process.cwd()}/node_modules/**/*`]);
 }

@@ -1,5 +1,5 @@
 import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
-import fg from "fast-glob";
+import fastGlob from "fast-glob";
 import * as path from "path";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
@@ -30,7 +30,7 @@ interface CliOptions {
 async function findBrsFiles(sourceDir?: string) {
     let searchDir = sourceDir || "source";
     const pattern = path.join(process.cwd(), searchDir, "**", "*.brs");
-    return fg.sync(pattern);
+    return fastGlob(pattern);
 }
 
 /**
