@@ -1,4 +1,4 @@
-# Testing Approach
+# E2E Testing Approach
 Rather than writing tests for `@hulu/roca` that run in `@hulu/roca` (sometimes known as "[self-hosting](https://en.wikipedia.org/wiki/Self-hosting_(compilers))"), `@hulu/roca` is tested in an "end-to-end" fashion.  Each directory in this `test/` tree contains a set of related micro-projects that each exercise a specific piece of `roca` functionality.  These must be working integrations with `@hulu/roca`, including a `tests/` directory with one or more `.test.brs` files to be executed.  Each micro-project is executed in JavaScript (via the JavaScript interface to `roca`), with tests orchestrated by [jest](https://jestjs.io).
 
 This approach enables each of the top-level directories within `test/` to be executed in parallel, and allows the individual micro-projects to also be used as samples for consumers.
