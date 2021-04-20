@@ -38,6 +38,8 @@ export class TestRunner {
         testFiles: string[]
     ) {
         testFiles.forEach((filename, index) => {
+            // Don't allow test files to pollute each other
+            _brs_.resetMocks();
             // Set the index so that our TAP reporting is correct.
             executeArgs.elements.set("index", new BrsTypes.Int32(index));
             try {
