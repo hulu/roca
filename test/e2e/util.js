@@ -1,4 +1,4 @@
-const roca = require("../lib/");
+const roca = require("../../lib");
 const path = require("path");
 
 /**
