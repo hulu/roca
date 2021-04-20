@@ -37,6 +37,11 @@ describe("globMatchFiles", () => {
         ]);
     });
 
+    it("Can handle a full path to a file", async () => {
+        let results = await wrappedGlobMatchFiles(["bar/bar.test.brs"]);
+        expect(results).toEqual(["bar/bar.test.brs"]);
+    });
+
     it("Can handle asterisks in pattern", async () => {
         let results = await wrappedGlobMatchFiles(["bar*.test.brs"]);
         expect(results).toEqual([
