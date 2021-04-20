@@ -70,3 +70,32 @@ end function
 In your terminal, run the command `npm test`.
 
 Congrats! You just wrote and ran your first passing test case! :tada:
+
+## Running from the command line
+
+You can also run `roca` directly from the CLI (note: `roca` will need to be on your `PATH`, either via a global install, e.g. `yarn global add roca`/`npm install -g roca`, or by using [npx](https://docs.npmjs.com/cli/v7/commands/npx)).
+
+Here's an example for how to run Jest on files matching `foo`, given this structure:
+
+```
+my-brightscript-project/
+  |__ test/
+    |__ foo/
+      |__ bar.test.brs
+    |__ fly-you-fools.test.brs
+```
+_(["Fly, you fools"](https://lotr.fandom.com/wiki/Gandalf#Fall_in_Mines_of_Moria))_
+
+We could then run:
+```shell
+$ roca foo # if roca is globally installed
+$ npx roca foo # if roca is locally installed
+```
+
+And `roca` will run all of the above tests. If, instead, we wanted to run just one of those tests, we could run:
+
+```shell
+$ roca bar # this will run bar.test.brs
+$ roca fly # this will run fly-you-fools.test.brs
+$ roca foo/ # this will run everything in foo/ (i.e. bar.test.brs)
+```
