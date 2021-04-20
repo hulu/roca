@@ -1,60 +1,76 @@
-import * as fg from "fast-glob";
 import { globMatchFiles } from "../../src/util";
 
-jest.mock("fast-glob");
-let mockFastGlob = fg as jest.Mocked<typeof fg>;
-mockFastGlob.sync.mockImplementation((args) => args as any);
+let wrappedGlobMatchFiles = async (filePatterns: string[]) => {
+    let results = await globMatchFiles(filePatterns);
+    return results.map((result) => result.split(__dirname + "/resources/")[1]);
+};
 
 describe("globMatchFiles", () => {
     let spy: jest.SpyInstance;
 
     beforeEach(() => {
-        mockFastGlob.sync.mockClear();
         spy = jest.spyOn(process, "cwd");
-        spy.mockReturnValue("cwd");
+        spy.mockReturnValue(__dirname + "/resources");
     });
 
     afterEach(() => {
         spy.mockRestore();
     });
 
-    it("Looks in the default folders when given no strings", async () => {
-        await globMatchFiles([]);
-
-        expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith(
-            expect.arrayContaining(["cwd/**/*.test.brs"])
-        );
+    it("Finds all .test.brs files when not given patterns", async () => {
+        let results = await wrappedGlobMatchFiles([]);
+        expect(results).toEqual([
+            "fly-you-fools.test.brs",
+            "bar/bar-suffix.test.brs",
+            "bar/bar.test.brs",
+            "bar/prefix-bar.test.brs",
+            "foo/main.test.brs",
+            "foo2/main.test.brs",
+        ]);
     });
 
-    it("Looks for a file suffix when given a .brs extension", async () => {
-        await globMatchFiles(["foo.test.brs"]);
+    it("Partially matches on filename suffix when given a .brs extension", async () => {
+        let results = await wrappedGlobMatchFiles(["bar.test.brs"]);
+        expect(results).toEqual([
+            "bar/bar.test.brs",
+            "bar/prefix-bar.test.brs",
+        ]);
+    });
 
-        expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith(
-            expect.arrayContaining(["cwd/**/*foo.test.brs"])
-        );
+    it("Can handle asterisks in pattern", async () => {
+        let results = await wrappedGlobMatchFiles(["bar*.test.brs"]);
+        expect(results).toEqual([
+            "bar/bar-suffix.test.brs",
+            "bar/bar.test.brs",
+            "bar/prefix-bar.test.brs",
+        ]);
     });
 
     it("Looks for both partial directory and file matches when not given a .brs extension", async () => {
-        await globMatchFiles(["foo"]);
-
-        expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith(
-            expect.arrayContaining([
-                "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs}",
-            ])
-        );
+        let results = await wrappedGlobMatchFiles(["foo"]);
+        expect(results).toEqual([
+            "fly-you-fools.test.brs",
+            "foo/main.test.brs",
+            "foo2/main.test.brs",
+        ]);
     });
 
-    it("Looks for all strings that are passed in", async () => {
-        await globMatchFiles(["foo", "bar.test.brs"]);
+    it("Excludes files when handling directories", async () => {
+        let results = await wrappedGlobMatchFiles(["foo/"]);
+        expect(results).toEqual(["foo/main.test.brs"]);
+    });
 
-        expect(mockFastGlob.sync).toBeCalledTimes(1);
-        expect(mockFastGlob.sync).toBeCalledWith(
-            expect.arrayContaining([
-                "cwd/**/{*foo*.test.brs,*foo*/**/*.test.brs,*bar.test.brs}",
-            ])
-        );
+    it("Handles a .brs file without .test if explicitly told to", async () => {
+        let results = await wrappedGlobMatchFiles(["no-test-ext.brs"]);
+        expect(results).toEqual(["no-test-ext.brs"]);
+    });
+
+    it("Handles multiple patterns", async () => {
+        let results = await wrappedGlobMatchFiles(["main", "prefix"]);
+        expect(results).toEqual([
+            "bar/prefix-bar.test.brs",
+            "foo/main.test.brs",
+            "foo2/main.test.brs",
+        ]);
     });
 });
