@@ -1,5 +1,5 @@
 import { Config } from "@jest/types";
-import { resetTestData, ExecuteWithScope, types as BrsTypes } from "brs";
+import { ExecuteWithScope, types as BrsTypes } from "brs";
 import { JestReporter } from "../reporter/JestReporter";
 import { TestRunner } from "./TestRunner";
 
@@ -33,7 +33,6 @@ export class JestRunner extends TestRunner {
         testFiles.forEach((filename, index) => {
             this.reporter.onFileStart(filename);
             try {
-                resetTestData();
                 execute([filename], [executeArgs]);
             } catch (reason) {
                 this.reporter.onFileExecError(filename, index, reason);

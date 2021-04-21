@@ -1,5 +1,5 @@
 import * as path from "path";
-import { resetTestData, types as BrsTypes, ExecuteWithScope } from "brs";
+import { types as BrsTypes, ExecuteWithScope } from "brs";
 import { formatInterpreterError } from "../util";
 
 export class TestRunner {
@@ -41,7 +41,6 @@ export class TestRunner {
             // Set the index so that our TAP reporting is correct.
             executeArgs.elements.set("index", new BrsTypes.Int32(index));
             try {
-                resetTestData();
                 execute([filename], [executeArgs]);
             } catch (e) {
                 console.error(
