@@ -25,11 +25,11 @@
             node-version: "${{ matrix.node_version }}"
           }
         },
-        { run: "npm ci" },
-        { run: "npm run build" },
-        { run: "npm run lint" },
-        { run: "npm run prettier" },
-        { run: "npm test" },
+        { run: "yarn --frozen-lockfile" },
+        { run: "yarn build" },
+        { run: "yarn lint" },
+        { run: "yarn prettier" },
+        { run: "yarn test" },
       ],
       env: {
         CI: true
