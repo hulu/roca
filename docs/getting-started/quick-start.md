@@ -70,3 +70,39 @@ end function
 In your terminal, run the command `npm test`.
 
 Congrats! You just wrote and ran your first passing test case! :tada:
+
+## Running from the command line
+
+You can also run `roca` directly from the CLI (note: `roca` will need to be on your `PATH`, either via a global install, e.g. `yarn global add roca`/`npm install -g roca`, or by using [npx](https://docs.npmjs.com/cli/v7/commands/npx)).
+
+We use a similar file matching rules as [Jest](https://jestjs.io/docs/getting-started#running-from-command-line). Here's an example showing how to run `roca` on files matching `foo`, given this structure:
+
+```
+my-brightscript-project/
+  |__ test/
+    |__ fly-you-fools.test.brs
+    |__ foo/
+      |__ bar.test.brs
+      |__ another-bar.test.brs
+```
+_(["Fly, you fools"](https://lotr.fandom.com/wiki/Gandalf#Fall_in_Mines_of_Moria))_
+
+We could then run:
+```shell
+$ roca foo     # if roca is globally installed
+$ npx roca foo # if roca is locally installed
+```
+
+And `roca` will run:
+- `bar.test.brs` and `another-bar.test.brs` because they're in a folder (`foo/`) that contains the string `foo`
+- `fly-you-fools.test.brs` because `foo` is part of the file name
+
+Here are some examples of other subsets we could run:
+
+```shell
+$ roca bar              # runs: bar.test.brs, another-bar.test.brs
+$ roca bar.test.brs     # runs: bar.test.brs, another-bar.test.brs
+$ roca foo/bar.test.brs # runs: bar.test.brs
+$ roca another fly      # runs: another-bar.test.brs, fly-you-fools.test.brs
+$ roca foo/             # runs: everything in foo/ (i.e. bar.test.brs and another-bar.test.brs)
+```

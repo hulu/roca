@@ -184,6 +184,32 @@ end sub)
 ------------
 
 
+## m.assert.isValid(value, errorMessage)
+Checks to see if a value is not `invalid`.
+
+### Parameters 
+**value** `dynamic` \
+The value that was calculated in your test case.
+------------
+**errorMessage** `string` \
+The error message to display if the value is invalid.
+------------
+
+### Return value 
+None.
+
+Usage:
+```brightscript
+m.it("test case", sub()
+    foo = {}
+    m.assert.isValid(foo, "whoops, foo should not be invalid")
+end sub)
+```
+<br/>
+
+------------
+
+
 ## m.assert.isInvalid(value, errorMessage)
 Checks to see if a value is `invalid`.
 

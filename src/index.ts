@@ -1,27 +1,36 @@
 import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
-import { glob } from "glob";
+import fastGlob from "fast-glob";
 import * as path from "path";
-import * as util from "util";
 import * as c from "ansi-colors";
 import { ReportOptions } from "istanbul-reports";
 import { reportCoverage } from "./coverage";
-import { formatInterpreterError } from "./util";
+import { formatInterpreterError, globMatchFiles } from "./util";
 import { createTestRunner, ReporterType } from "./runner";
 
 const { isBrsBoolean, isBrsString, RoArray, RoAssociativeArray } = types;
-const globPromise = util.promisify(glob);
 
-interface Options {
+interface CliOptions {
+    /** The test reporter to use. */
     reporter: ReporterType;
+    /** A path to a file that we should load into global exec scope prior to test run. */
     requireFilePath: string | undefined;
-    forbidFocused: boolean;
+    /** Whether or not to fail the test run if focused cases are detected. */
+    forbidFocused?: boolean;
+    /** The istanbul coverage reporters to use. */
     coverageReporters?: (keyof ReportOptions)[];
+    /** The directory where we should load source files from, if not 'source'. */
+    sourceDir?: string;
+    /**
+     * A list of strings to match files against, specified in the command.
+     * If empty, we will test/search for all *.test.brs files.
+     */
+    filePatterns: string[];
 }
 
-async function findBrsFiles(sourceDir: string | undefined) {
+async function findBrsFiles(sourceDir?: string) {
     let searchDir = sourceDir || "source";
     const pattern = path.join(process.cwd(), searchDir, "**", "*.brs");
-    return globPromise(pattern);
+    return fastGlob(pattern);
 }
 
 /**
@@ -29,12 +38,13 @@ async function findBrsFiles(sourceDir: string | undefined) {
  * @param files List of filenames to load into the execution scope
  * @param options BRS interpreter options
  */
-async function run(files: string[], options: Options) {
+async function run(brsSourceFiles: string[], options: CliOptions) {
     let {
         reporter,
         requireFilePath,
         forbidFocused,
         coverageReporters = [],
+        filePatterns,
     } = options;
     let coverageEnabled = coverageReporters.length > 0;
 
@@ -48,7 +58,7 @@ async function run(files: string[], options: Options) {
     if (requireFilePath) {
         inScopeFiles.push(requireFilePath);
     }
-    inScopeFiles.push(...files);
+    inScopeFiles.push(...brsSourceFiles);
 
     let testRunner = await createTestRunner(reporter);
 
@@ -71,7 +81,10 @@ async function run(files: string[], options: Options) {
         process.exit(1);
     }
 
-    let { testFiles, focusedCasesDetected } = await getTestFiles(execute);
+    let { testFiles, focusedCasesDetected } = await getTestFiles(
+        execute,
+        filePatterns
+    );
 
     // Fail if we find focused test cases and there weren't supposed to be any.
     if (forbidFocused && focusedCasesDetected) {
@@ -104,10 +117,10 @@ async function run(files: string[], options: Options) {
  * Runs through the entire test suite (in non-exec mode) to determine this.
  * Also returns a boolean indicating whether focused tests were found.
  * @param execute The scoped execution function to run with each file
+ * @param filePatterns A list of strings to match files against
  */
-async function getTestFiles(execute: ExecuteWithScope) {
-    let testsPattern = `${process.cwd()}/{test,tests,source,components}/**/*.test.brs`;
-    let testFiles: string[] = await globPromise(testsPattern);
+async function getTestFiles(execute: ExecuteWithScope, filePatterns: string[]) {
+    let testFiles = await globMatchFiles(filePatterns);
 
     let focusedSuites: string[] = [];
     let emptyRunArgs = new RoAssociativeArray([]);
@@ -165,9 +178,7 @@ function hasFocusedCases(subSuites: types.BrsType[]): boolean {
     return false;
 }
 
-module.exports = async function (
-    args: { sourceDir: string | undefined } & Options
-) {
+module.exports = async function (args: CliOptions) {
     let { sourceDir, ...options } = args;
     let files = await findBrsFiles(sourceDir);
     return await run(files, options);

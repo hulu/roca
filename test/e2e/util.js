@@ -1,4 +1,4 @@
-const roca = require("../lib/");
+const roca = require("../../lib");
 const path = require("path");
 
 /**
@@ -17,7 +17,7 @@ exports.rocaInDir = async function (...workingDirParts) {
         .mockImplementation(() => path.join(...workingDirParts));
 
     try {
-        return await roca({ reporter: "json" });
+        return await roca({ reporter: "json", filePatterns: [] });
     } finally {
         cwd.mockRestore();
         stdout.mockRestore();
