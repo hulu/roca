@@ -42,7 +42,7 @@ function main(args as object) as object
             m.assert.isTrue(_brs_.testData <> invalid, "_brs_.testData should be presented")
             m.assert.isTrue(_brs_.testData.count() = 0, "by default _brs_.testData should be equal to {}")
             
-            ' change value to check wheter it clear between different test files
+            ' change value to check whether it clears between different test files
             _brs_.testData = {
                 ctx: "file 1"
             }
