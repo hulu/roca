@@ -36,6 +36,7 @@ export class JestRunner extends TestRunner {
                 execute([filename], [executeArgs]);
             } catch (reason) {
                 this.reporter.onFileExecError(filename, index, reason);
+                process.exitCode = 1;
             }
             this.reporter.onFileComplete();
 
