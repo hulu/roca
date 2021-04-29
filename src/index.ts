@@ -99,7 +99,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
             )
         );
 
-        return {};
+        process.exit(1);
     }
 
     testRunner.run(execute, testFiles, focusedCasesDetected);

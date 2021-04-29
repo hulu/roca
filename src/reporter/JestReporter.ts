@@ -242,5 +242,6 @@ export class JestReporter {
         this.currentResults.testResults.push(
             createAssertionResult("failed", assert.name, failureMessage)
         );
+        process.exitCode = 1;
     }
 }
