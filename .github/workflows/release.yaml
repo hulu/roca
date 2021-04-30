@@ -23,9 +23,9 @@
             node-version: "12"
           }
         },
-        { run: "npm ci" },
+        { run: "yarn ci" },
         {
-          run: "npm publish",
+          run: "yarn publish",
           env: {
             NODE_AUTH_TOKEN: "${{ secrets.NPM_PUBLISH_TOKEN }}"
           }
