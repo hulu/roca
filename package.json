@@ -58,7 +58,7 @@
     "@types/long": "^4.0.1",
     "@types/memory-fs": "^0.3.2",
     "@types/xmldoc": "^1.1.5",
-    "brs": "^0.42.0",
+    "brs": "^0.43.0",
     "docsify-cli": "^4.4.2",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
@@ -73,7 +73,7 @@
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "brs": "^0.42.0"
+    "brs": "^0.43.0"
   },
   "lint-staged": {
     "./README.md": "doctoc",

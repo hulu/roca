@@ -1144,10 +1144,10 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-brs@^0.42.0:
-  version "0.42.0"
-  resolved "https://registry.yarnpkg.com/brs/-/brs-0.42.0.tgz#ede25655e1c4a131038bf1914a2720f137bf0c69"
-  integrity sha512-gLwsizqnmUVFhRCSjr6d/Rs1s3yAfj4GnWHxVdCeRLXB8pk2+i/xK4S9a3tuREadXXeqsRarJ4gqTxU0gzKu/w==
+brs@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/brs/-/brs-0.43.0.tgz#a56b95d845ff51473558bb723d2512a0cb9b5c46"
+  integrity sha512-1Wc6be3ZdqUAON2Y5gS6/n8knwj8xP9ZUJ4d2+t++WyDQCfqcjzRerWZgltS50YZWi35uDnnaYKtmoBFXyeihg==
   dependencies:
     commander "^2.12.2"
     decompress "^4.2.1"
