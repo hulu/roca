@@ -23,7 +23,7 @@
             node-version: "12"
           }
         },
-        { run: "yarn ci" },
+        { run: "yarn" },
         {
           run: "yarn publish",
           env: {
