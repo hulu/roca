@@ -9,7 +9,7 @@ export interface Diag {
     error: {
         name: string;
         message: string;
-        stackframes: string[];
+        stack_frames: string[];
     };
     wanted: string;
     found: string;
@@ -65,7 +65,7 @@ export function createAssertionResult(
  */
 export function createFailureMessage(diag: Diag) {
     let {
-        error: { stackframes, message, name },
+        error: { stack_frames, message, name },
         wanted,
         found,
     } = diag;
@@ -84,7 +84,7 @@ export function createFailureMessage(diag: Diag) {
         /* expand */ false
     );
 
-    let formattedStackTrace = stackframes
+    let formattedStackTrace = stack_frames
         .map((line, index) => {
             if (index === 0 && name) {
                 return "at " + name + " (" + line + ")";

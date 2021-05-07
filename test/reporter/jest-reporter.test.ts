@@ -205,7 +205,7 @@ describe("JestReporter.ts", () => {
                     error: {
                         name: "mock error name",
                         message: "mock message name",
-                        stackframes: ["mock:stack:frame"],
+                        stack_frames: ["mock:stack:frame"],
                     },
                     wanted: "foo",
                     found: "bar",
