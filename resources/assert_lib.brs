@@ -111,7 +111,7 @@ function __formatError(error)
     ' Get the stack trace where the failed test is, filtering out any roca frames
     fileFilters = ["roca"]
     numStackFrames = 3
-    stackFrames = _brs_.getStackTrace(numStackFrames, fileFilters)
+    stack_frames = _brs_.getStackTrace(numStackFrames, fileFilters)
 
     error.expected = __asReadableValue(error.expected)
     error.actual = __asReadableValue(error.actual)
@@ -121,7 +121,8 @@ function __formatError(error)
         error: {
             name: error.funcName,
             message: error.message,
-            stackFrames: stackFrames
+            ' use snake case so we don't have to worry about case-sensitivity
+            stack_frames: stack_frames
         },
         wanted: error.expected,
         found: error.actual
