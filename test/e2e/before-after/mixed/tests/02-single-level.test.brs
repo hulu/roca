@@ -37,15 +37,5 @@ function main(args as object) as object
             m.assert.isInvalid(m.counterB, "afterEach state must not spread to sibling suites")
             m.assert.equal(m.counterA, 5, "counterA must be incremented for each test case")
         end sub)
-        
-        m.it("check _brs_.testData", sub()
-            m.assert.isTrue(_brs_.testData <> invalid, "_brs_.testData should be presented")
-            m.assert.isTrue(_brs_.testData.count() = 0, "by default _brs_.testData should be equal to {}")
-            
-            ' change value to check whether it clears between different test files
-            _brs_.testData = {
-                ctx: "file 1"
-            }
-        end sub)
     end sub)
 end function
