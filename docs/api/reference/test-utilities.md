@@ -64,9 +64,9 @@ A reference to the temporary associative array, so that you can access it from e
 ### Usage
 ```brightscript
 _brs_.testData._isFooAvailable = false
-_brs_.mockFunction("isFooAvailable", sub()
+_brs_.mockFunction("isFooAvailable", function()
     return _brs_.testData._isFooAvailable
-end sub)
+end function)
 
 isFooAvailable() ' => false
 
