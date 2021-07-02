@@ -19,9 +19,9 @@ None.
 ' Mock a custom component
 _brs_.mockComponent("ComponentName", {
     someField: "foobar",
-    someFunc: sub()
+    someFunc: function()
       return 123
-    end sub
+    end function
 })
 
 ' Mock a built-in component
