@@ -3,21 +3,17 @@ const { rocaInDir } = require("../util");
 describe("assert", () => {
     test("mock-function-calls", async () => {
         let results = await rocaInDir(__dirname, "mock-function-calls");
-        debugger;
-
-        expect(results.stats).toMatchObject({
-            suites: 6,
-            tests: 8,
-            passes: 4,
-            pending: 0,
-            failures: 4,
-        });
 
         expect(results.passes).toMatchObject([
             { fullTitle: "hasBeenCalled success" },
             { fullTitle: "hasBeenCalledTimes success 0" },
             { fullTitle: "hasBeenCalledTimes success 1" },
             { fullTitle: "hasBeenCalledTimes success 10" },
+            { fullTitle: "hasBeenCalledWith success no args" },
+            { fullTitle: "hasBeenCalledWith success primitive arg" },
+            { fullTitle: "hasBeenCalledWith success complex arg" },
+            { fullTitle: "hasBeenCalledWith success multiple args" },
+            { fullTitle: "hasBeenCalledWith success multiple calls" },
         ]);
 
         expect(results.failures).toMatchObject([
@@ -59,6 +55,57 @@ describe("assert", () => {
                     message:
                         "Expected mock function 'fakeFunc' to have been called 6 times",
                     name: "m.assert.hasBeenCalledTimes",
+                },
+            },
+            {
+                fullTitle: "hasBeenCalledWith failure not called",
+                err: {
+                    actual: "",
+                    expected: "(foo)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (foo)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle: "hasBeenCalledWith failure incorrect arg",
+                err: {
+                    actual: "(foo)",
+                    expected: "(bar)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (bar)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle: "hasBeenCalledWith failure too many actual args",
+                err: {
+                    actual: "(foo, 123)",
+                    expected: "(123)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (123)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle: "hasBeenCalledWith failure too few actual args",
+                err: {
+                    actual: "(foo)",
+                    expected: "(foo, 123)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (foo, 123)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle:
+                    "hasBeenCalledWith failure multiple calls, no matches",
+                err: {
+                    actual: '(["foo","bar"], 123) or ([], 456)',
+                    expected: '(["baz"], 456)',
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args ([\"baz\"], 456)",
+                    name: "m.assert.hasBeenCalledWith",
                 },
             },
         ]);

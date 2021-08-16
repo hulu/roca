@@ -101,12 +101,14 @@ end sub
 ' Converting every value to a string ensures that the diff will _always_ show up in the output.
 function __asReadableValue(value)
     readable = { _roca_isMultilineString: true }
-    if GetInterface(value, "ifSGNodeDict") <> invalid then
-        readable.value = "[RoSGNode: " + value.subtype() + "]"
-    else if GetInterface(value, "ifAssociativeArray") <> invalid then
-        readable.value = formatJson(value)
-    else
+    if __roca_isString(value) then
         readable.value = value
+    else if __roca_isNumeric(value) then
+        readable.value = stri(value).trim()
+    else if __roca_isRoSGNode(value) then
+        readable.value = "[RoSGNode: " + type(value) + "]"
+    else
+        readable.value = formatJson(value)
     end if
 
     return readable
@@ -294,6 +296,15 @@ sub __roca_reportMockFunctionError(actualArg, funcName)
     }))
 end sub
 
+' Takes an array and turns it into a comma-separated string value
+function __roca_arrayToString(array)
+    stringArray = []
+    for each item in array
+        stringArray.push(__asReadableValue(item).value)
+    end for
+    return stringArray.join(", ")
+end function
+
 sub __roca_hasBeenCalled(mock as object, error = invalid)
     if not __roca_isMockFunction(mock) then
         m.__reportMockFunctionError(mock, "m.assert.hasBeenCalled")
@@ -316,7 +327,7 @@ sub __roca_hasBeenCalled(mock as object, error = invalid)
     end if
 end sub
 
-function __roca_hasBeenCalledTimes(mock as object, count as integer, error = invalid)
+sub __roca_hasBeenCalledTimes(mock as object, count as integer, error = invalid)
     if not __roca_isMockFunction(mock) then
         m.__reportMockFunctionError(mock, "m.assert.hasBeenCalledTimes")
         return
@@ -336,37 +347,49 @@ function __roca_hasBeenCalledTimes(mock as object, count as integer, error = inv
             funcName: "m.assert.hasBeenCalledTimes"
         }))
     end if
-end function
+end sub
 
-sub __roca_hasBeenCalledWith(mock as object, argsArray as object)
+sub __roca_hasBeenCalledWith(mock as object, argsArray as object, error = invalid)
     if not __roca_isMockFunction(mock) then
         m.__reportMockFunctionError(mock, "m.assert.hasBeenCalledWith")
         return
-    end
-    
-    if not __roca_isArray(argsArray) then
-        m.__fail(m.formatError({
-            message: error,
-            actual: argsArray
-            expected: "<roArray>",
-            funcName: "m.assert.hasBeenCalledWith"
-        }))
+    end if
+
+    actualArgs = []
+    for each funcCall in mock.calls
+        if __roca_deepEquals(funcCall, argsArray) then
+            m.__pass()
+            return
+        end if
+        actualArgs.push("(" + __roca_arrayToString(funcCall) + ")")
+    end for
+
+    stringArgsArray = "(" + __roca_arrayToString(argsArray) + ")"
+    if error = invalid then
+        error = "Expected mock function '" + mock.getMockName() + "' to have been called with args " + stringArgsArray
+    end if
+
+    m.__fail(m.formatError({
+        message: error,
+        actual: actualArgs.join(" or "),
+        expected: stringArgsArray,
+        funcName: "m.assert.hasBeenCalledWith"
+    }))
+end sub
+
+sub __roca_hasBeenNthCalledWith(mock as object, n as integer, argsArray as object, error = invalid)
+    if not __roca_isMockFunction(mock) then
+        m.__reportMockFunctionError(mock, "m.assert.hasBeenNthCalledWith")
         return
     end if
 
-    for each funcCall in mock.calls
-        if funcCall.count() = argsArray.count() then
-            allArgsMatch = true
-            for i = 0 to argsArray.count()
-                if funcCall[i] <> argsArray[i] then allArgsMatch = false
-            end for
-
-            if allArgsMatch = true then
-                m.__pass()
-                return
-            end if
+    allArgsMatch = true
+    if mock.calls.count() >= n then
+        funcCall = mock.calls[n - 1]
+        if __roca_deepEquals(funcCall, argsArray) then
+            m.__pass()
         end if
-    end for
+    end if
 
     if error = invalid then
         error = "Expected mock function '" + mock.getMockName() + "' to have been called with args: " + argsArray.join(", ")
@@ -374,46 +397,8 @@ sub __roca_hasBeenCalledWith(mock as object, argsArray as object)
 
     m.__fail(m.formatError({
         message: error,
-        actual: mock.calls.count(),
-        expected: count,
-        funcName: "m.assert.hasBeenCalledWith"
+        actual: argsArray
+        expected: "<roArray>",
+        funcName: "m.assert.hasBeenNthCalledWith"
     }))
-end function
-
-function __roca_hasBeenNthCalledWith(mock as object, n as integer, argsArray as object, error = invalid)
-    if not __roca_isMockFunction(mock) then
-        m.__reportMockFunctionError(mock, "m.assert.hasBeenNthCalledWith")
-        return
-    end
-    
-    if not __roca_isArray(argsArray) then
-        m.__fail(m.formatError({
-            message: error,
-            actual: argsArray
-            expected: "<roArray>",
-            funcName: "m.assert.hasBeenNthCalledWith"
-        }))
-        return
-    end if
-
-    funcCall = mock.calls[n - 1]
-    allArgsMatch = true
-    for i = 0 to argsArray.count()
-        if funcCall[i] <> argsArray[i] then allArgsMatch = false
-    end for
-
-    if allArgsMatch then
-        m.__pass()
-    else
-        if error = invalid then
-            error = "Expected mock function '" + mock.getMockName() + "' to have been called with args: " + argsArray.join(", ")
-        end if
-
-        m.__fail(m.formatError({
-            message: error,
-            actual: argsArray
-            expected: "<roArray>",
-            funcName: "m.assert.hasBeenNthCalledWith"
-        }))
-    end if
-end function
+end sub

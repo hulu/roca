@@ -43,6 +43,7 @@ export class TestRunner {
             try {
                 execute([filename], [executeArgs]);
             } catch (e) {
+                debugger;
                 console.error(
                     `Stopping execution. Interpreter encountered errors:\n\t${formatInterpreterError(
                         e
