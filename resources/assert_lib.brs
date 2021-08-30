@@ -14,8 +14,7 @@ function Assert(passFunc, failFunc, state) as object
         deepEquals: __deepEquals,
         hasBeenCalled: __roca_hasBeenCalled,
         hasBeenCalledTimes: __roca_hasBeenCalledTimes,
-        hasBeenCalledWith: __roca_hasBeenCalledWith,
-        hasBeenNthCalledWith: __roca_hasBeenNthCalledWith,
+        hasBeenCalledWith: __roca_hasBeenCalledWith
     }
 end function
 
@@ -374,31 +373,5 @@ sub __roca_hasBeenCalledWith(mock as object, argsArray as object, error = invali
         actual: actualArgs.join(" or "),
         expected: stringArgsArray,
         funcName: "m.assert.hasBeenCalledWith"
-    }))
-end sub
-
-sub __roca_hasBeenNthCalledWith(mock as object, n as integer, argsArray as object, error = invalid)
-    if not __roca_isMockFunction(mock) then
-        m.__reportMockFunctionError(mock, "m.assert.hasBeenNthCalledWith")
-        return
-    end if
-
-    allArgsMatch = true
-    if mock.calls.count() >= n then
-        funcCall = mock.calls[n - 1]
-        if __roca_deepEquals(funcCall, argsArray) then
-            m.__pass()
-        end if
-    end if
-
-    if error = invalid then
-        error = "Expected mock function '" + mock.getMockName() + "' to have been called with args: " + argsArray.join(", ")
-    end if
-
-    m.__fail(m.formatError({
-        message: error,
-        actual: argsArray
-        expected: "<roArray>",
-        funcName: "m.assert.hasBeenNthCalledWith"
     }))
 end sub
