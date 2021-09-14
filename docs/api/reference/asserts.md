@@ -103,8 +103,96 @@ end sub)
 
 ------------
 
+## m.assert.hasBeenCalled(mock, errorMessage = invalid)
 
-## m.assert.notEqual(actual, expected, errorMessage)`
+Verifies that a [mock function](api/reference/mocks?id=mock-function-api) has been called at least one time.
+
+### Parameters 
+**mock** `object` \
+The mock function that was returned from [`_brs_.mockFunction`](api/reference/mocks?id=_brs_mockfunctionfuncname-impl).
+------------
+**errorMessage** `string` _optional_ \
+The error message to display if the mock was not called. If you don't pass an error message, one will automatically be created for you.
+------------
+
+### Return value 
+None.
+
+### Usage 
+```brightscript
+m.it("test case", sub()
+    mock = _brs_.mockFunction("foo")
+    foo()
+    m.assert.hasBeenCalled(mock)
+end sub)
+```
+<br/>
+
+------------
+
+## m.assert.hasBeenCalledTimes(mock, callCount, errorMessage = invalid)
+
+Verifies that a [mock function](api/reference/mocks?id=mock-function-api) has been called a certain number of times.
+
+### Parameters 
+**mock** `object` \
+The mock function that was returned from [`_brs_.mockFunction`](api/reference/mocks?id=_brs_mockfunctionfuncname-impl).
+------------
+**callCount** `integer` \
+The number of times this mock should have been called.
+------------
+**errorMessage** `string` _optional_ \
+The error message to display if the mock was not called. If you don't pass an error message, one will automatically be created for you.
+------------
+
+### Return value 
+None.
+
+### Usage 
+```brightscript
+m.it("test case", sub()
+    mock = _brs_.mockFunction("foo")
+    foo()
+    foo()
+    m.assert.hasBeenCalledTimes(mock, 2)
+end sub)
+```
+<br/>
+
+------------
+
+## m.assert.hasBeenCalledWith(mock, argsArray, errorMessage = invalid)
+
+Verifies that a [mock function](api/reference/mocks.md?id=mock-function-api) has been called with certain arguments. Note that this will check against every call to the mock function.
+
+### Parameters 
+**mock** `object` \
+The mock function that was returned from [`_brs_.mockFunction`](api/reference/mocks?id=_brs_mockfunctionfuncname-impl).
+------------
+**argsArray** `array` \
+An array of arguments to check against.
+------------
+**errorMessage** `string` _optional_ \
+The error message to display if the mock was not called. If you don't pass an error message, one will automatically be created for you.
+------------
+
+### Return value 
+None.
+
+### Usage 
+```brightscript
+m.it("test case", sub()
+    mock = _brs_.mockFunction("foo")
+    foo("bar", 123, { baz: 456 })
+    m.assert.hasBeenCalledWith(mock, ["bar", 123, { baz: 456 }])
+end sub)
+```
+<br/>
+
+
+------------
+
+## m.assert.notEqual(actual, expected, errorMessage)
 Opposite of [`m.assert.equal`](#massertequalactual-expected-errormessage). Compares two **primitive** values.
 
 ### Parameters 

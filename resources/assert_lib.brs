@@ -3,6 +3,7 @@ function Assert(passFunc, failFunc, state) as object
         __pass: passFunc,
         __fail: failFunc,
         __state: state
+        __reportMockFunctionError: __roca_reportMockFunctionError
         equal: __equal,
         notEqual: __notEqual,
         isTrue: __isTrue,
@@ -10,7 +11,10 @@ function Assert(passFunc, failFunc, state) as object
         isValid: __isValid,
         isInvalid: __isInvalid,
         formatError: __formatError,
-        deepEquals: __deepEquals
+        deepEquals: __deepEquals,
+        hasBeenCalled: __roca_hasBeenCalled,
+        hasBeenCalledTimes: __roca_hasBeenCalledTimes,
+        hasBeenCalledWith: __roca_hasBeenCalledWith
     }
 end function
 
@@ -96,12 +100,14 @@ end sub
 ' Converting every value to a string ensures that the diff will _always_ show up in the output.
 function __asReadableValue(value)
     readable = { _roca_isMultilineString: true }
-    if GetInterface(value, "ifSGNodeDict") <> invalid then
-        readable.value = "[RoSGNode: " + value.subtype() + "]"
-    else if GetInterface(value, "ifAssociativeArray") <> invalid then
-        readable.value = formatJson(value)
-    else
+    if __roca_isString(value) then
         readable.value = value
+    else if __roca_isNumeric(value) then
+        readable.value = stri(value).trim()
+    else if __roca_isRoSGNode(value) then
+        readable.value = "[RoSGNode: " + type(value) + "]"
+    else
+        readable.value = formatJson(value)
     end if
 
     return readable
@@ -275,3 +281,97 @@ end function
 function __roca_isRoDateTime(obj as dynamic) as boolean
     return obj <> invalid and type(obj) = "roDateTime"
 end function
+
+function __roca_isMockFunction(mock)
+    return __roca_isAssociativeArray(mock) and __roca_isArray(mock.calls) and mock.getMockName <> invalid
+end function
+
+sub __roca_reportMockFunctionError(actualArg, funcName)
+    m.__fail(m.formatError({
+        message: "You must pass a mock function (created via `_brs_.mockFunction`) as the argument.",
+        actual: actualArg,
+        expected: "[Mock Function]",
+        funcName: funcName
+    }))
+end sub
+
+' Takes an array and turns it into a comma-separated string value
+function __roca_arrayToString(array)
+    stringArray = []
+    for each item in array
+        stringArray.push(__asReadableValue(item).value)
+    end for
+    return stringArray.join(", ")
+end function
+
+sub __roca_hasBeenCalled(mock as object, error = invalid)
+    if not __roca_isMockFunction(mock) then
+        m.__reportMockFunctionError(mock, "m.assert.hasBeenCalled")
+        return
+    end if
+
+    if mock.calls.count() > 0 then
+        m.__pass()
+    else
+        if error = invalid then
+            error = "Expected mock function '" + mock.getMockName() + "' to have been called"
+        end if
+
+        m.__fail(m.formatError({
+            message: error,
+            actual: 0,
+            expected: "> 0",
+            funcName: "m.assert.hasBeenCalled"
+        }))
+    end if
+end sub
+
+sub __roca_hasBeenCalledTimes(mock as object, count as integer, error = invalid)
+    if not __roca_isMockFunction(mock) then
+        m.__reportMockFunctionError(mock, "m.assert.hasBeenCalledTimes")
+        return
+    end if
+
+    if mock.calls.count() = count
+        m.__pass()
+    else
+        if error = invalid then
+            error = "Expected mock function '" + mock.getMockName() + "' to have been called" + stri(count) + " times"
+        end if
+
+        m.__fail(m.formatError({
+            message: error,
+            actual: mock.calls.count(),
+            expected: count,
+            funcName: "m.assert.hasBeenCalledTimes"
+        }))
+    end if
+end sub
+
+sub __roca_hasBeenCalledWith(mock as object, argsArray as object, error = invalid)
+    if not __roca_isMockFunction(mock) then
+        m.__reportMockFunctionError(mock, "m.assert.hasBeenCalledWith")
+        return
+    end if
+
+    actualArgs = []
+    for each funcCall in mock.calls
+        if __roca_deepEquals(funcCall, argsArray) then
+            m.__pass()
+            return
+        end if
+        actualArgs.push("(" + __roca_arrayToString(funcCall) + ")")
+    end for
+
+    stringArgsArray = "(" + __roca_arrayToString(argsArray) + ")"
+    if error = invalid then
+        error = "Expected mock function '" + mock.getMockName() + "' to have been called with args " + stringArgsArray
+    end if
+
+    m.__fail(m.formatError({
+        message: error,
+        actual: actualArgs.join(" or "),
+        expected: stringArgsArray,
+        funcName: "m.assert.hasBeenCalledWith"
+    }))
+end sub
