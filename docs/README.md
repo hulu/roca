@@ -14,4 +14,4 @@ Essentially, the flow is:
 
 ## How do I use it?
 
-See the [Quick start](getting-started/quick-start.md.md) page for a guide to installing and writing your first test case.
+See the [Quick start](getting-started/quick-start.md) page for a guide to installing and writing your first test case.
