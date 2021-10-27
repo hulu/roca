@@ -35,6 +35,64 @@ _brs_.mockComponent("roDateTime", {
 
 ------------
 
+## \_brs_.mockComponentPartial(componentName, impl)
+Dynamically overwrite specific functions and fields that exist in a component's scope. Any functions/fields that are _not_ specified in the mock will use the original implementation.
+
+### Parameters 
+**componentName** `string` \
+The name of the component to partially mock. 
+------------
+**impl** `associative array` \
+Fields and functions that will be available as properties on any future component instances. If the function/field exists on the source component already, the mocked version will overwrite the source.
+------------
+
+### Return value 
+None.
+
+### Usage 
+Source component XML:
+```xml
+<component name="FooComponent">
+    <interface>
+        <field id="foo" type="string" value="source!" />
+        <function name="triggerInScope"/>
+    </interface>
+    <script type="text/brightscript" uri="./FooComponent.brs" />
+</component>
+```
+
+`FooComponent.brs`:
+```brightscript
+sub triggerInScope()
+    inScopeFunc()
+end sub
+
+sub inScopeFunc()
+    print "inScopeFunc - source!"
+end sub
+```
+
+Test code:
+```brightscript
+' Mock a custom component
+_brs_.mockComponentPartial("FooComponent", {
+    foo: "mocked!",
+    inScopeFunc: sub()
+      print "inScopeFunc - mocked!"
+    end sub
+})
+
+node = createObject("RoSGNode", "FooComponent")
+print node.foo ' => "mocked!"
+
+' This will call the _real_ implementation of `triggerInScope`,
+' which calls `inScopeFunc`, which has been mocked.
+node.callFunc("triggerInScope") ' => "inScopeFunc - mocked!"
+```
+<br/>
+
+------------
+
 ## \_brs_.mockFunction(funcName, impl)
 Dynamically overwrite a function's implementation, and spy on the mocked implementation.
 
