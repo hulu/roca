@@ -29,7 +29,9 @@ interface CliOptions {
 
 async function findBrsFiles(sourceDir?: string) {
     let searchDir = sourceDir || "source";
-    const pattern = path.join(process.cwd(), searchDir, "**", "*.brs");
+    const pattern = path
+        .join(process.cwd(), searchDir, "**", "*.brs")
+        .replace(/\\/g, "/");
     return fastGlob(pattern);
 }
 
