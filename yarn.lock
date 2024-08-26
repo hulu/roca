@@ -598,6 +598,23 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
+"@rokucommunity/brs@^0.45.0":
+  version "0.45.5"
+  resolved "https://registry.yarnpkg.com/@rokucommunity/brs/-/brs-0.45.5.tgz#4f0bb78aa7c9361913c097787bb143ea35df32db"
+  integrity sha512-xX+tWVclVPDkus33M4o807VVl6aX2C/nRBoQ9XmKWg6gxGUY9NQVceQIH1DGZpJEE2wSM57gUsaUXXMknY6Bmg==
+  dependencies:
+    commander "^2.12.2"
+    dayjs "^1.11.10"
+    decompress "^4.2.1"
+    fast-glob "^3.0.1"
+    long "^3.2.0"
+    memory-fs "^0.4.1"
+    nanomatch "^1.2.13"
+    p-settle "^2.1.0"
+    sanitize-filename "^1.6.3"
+    uuid "^8.3.0"
+    xmldoc "^1.1.2"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -1144,23 +1161,6 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-brs@^0.43.0:
-  version "0.43.0"
-  resolved "https://registry.yarnpkg.com/brs/-/brs-0.43.0.tgz#a56b95d845ff51473558bb723d2512a0cb9b5c46"
-  integrity sha512-1Wc6be3ZdqUAON2Y5gS6/n8knwj8xP9ZUJ4d2+t++WyDQCfqcjzRerWZgltS50YZWi35uDnnaYKtmoBFXyeihg==
-  dependencies:
-    commander "^2.12.2"
-    decompress "^4.2.1"
-    fast-glob "^3.0.1"
-    long "^3.2.0"
-    luxon "^1.8.3"
-    memory-fs "^0.4.1"
-    nanomatch "^1.2.13"
-    p-settle "^2.1.0"
-    sanitize-filename "^1.6.3"
-    uuid "^8.3.0"
-    xmldoc "^1.1.2"
-
 bs-logger@0.x:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/bs-logger/-/bs-logger-0.2.6.tgz#eb7d365307a72cf974cc6cda76b68354ad336bd8"
@@ -1626,6 +1626,11 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
+
+dayjs@^1.11.10:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@2.6.9, debug@^2.1.3, debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
@@ -3926,11 +3931,6 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
-
-luxon@^1.8.3:
-  version "1.26.0"
-  resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.26.0.tgz#d3692361fda51473948252061d0f8561df02b578"
-  integrity sha512-+V5QIQ5f6CDXQpWNICELwjwuHdqeJM1UenlZWx5ujcRMc9venvluCjFb4t5NYLhb6IhkbMVOxzVuOqkgMxee2A==
 
 make-dir@^1.0.0:
   version "1.3.0"
