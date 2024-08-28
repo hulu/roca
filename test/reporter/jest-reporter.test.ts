@@ -3,7 +3,7 @@ import { PassThrough } from "stream";
 import { JestReporter } from "../../src/reporter/JestReporter";
 import * as Reporters from "@jest/reporters";
 import * as TestResult from "@jest/test-result";
-import { BrsError } from "brs/types/Error";
+import { BrsError } from "@rokucommunity/brs/types/Error";
 
 jest.mock("@jest/reporters");
 let ReportersMock = Reporters as jest.Mocked<typeof Reporters>;
