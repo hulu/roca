@@ -1,5 +1,5 @@
 import { Config } from "@jest/types";
-import { ExecuteWithScope, types as BrsTypes } from "brs";
+import { ExecuteWithScope, types as BrsTypes } from "@rokucommunity/brs";
 import { JestReporter } from "../reporter/JestReporter";
 import { TestRunner } from "./TestRunner";
 
