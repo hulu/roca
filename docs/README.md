@@ -5,6 +5,8 @@ Unit testing. BrightScript. **Without a device**. Yep, you read that right.
 ## How does it work?
 
 There are two libraries that make the magic happen: [`brs`](https://github.com/sjbarag/brs) and [`roca`](https://github.com/hulu/roca). `brs` is an interpreter for the BrightScript language, and `roca` is a test runner (think: [mocha](https://mochajs.org/) for BrightScript).
+Update: [`brs`](https://github.com/sjbarag/brs) has been deprecated and is now maintained at [`rokucommunity/brs`](https://github.com/rokucommunity/brs)
+
 
 Essentially, the flow is:
 1. You tell `roca` to find and run your tests.
