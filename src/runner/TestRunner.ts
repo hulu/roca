@@ -1,5 +1,5 @@
 import * as path from "path";
-import { types as BrsTypes, ExecuteWithScope } from "brs";
+import { types as BrsTypes, ExecuteWithScope } from "@rokucommunity/brs";
 import { formatInterpreterError } from "../util";
 
 export class TestRunner {
