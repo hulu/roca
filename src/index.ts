@@ -1,8 +1,4 @@
-import {
-    types,
-    ExecuteWithScope,
-    createExecuteWithScope,
-} from "@rokucommunity/brs";
+import { types, ExecuteWithScope, createExecuteWithScope } from "brs";
 import fastGlob from "fast-glob";
 import * as path from "path";
 import * as c from "ansi-colors";
