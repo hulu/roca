@@ -1,7 +1,7 @@
 import { createContext } from "istanbul-lib-report";
 import { create as createReport, ReportOptions } from "istanbul-reports";
 import { createCoverageMap } from "istanbul-lib-coverage";
-import { getCoverageResults } from "@rokucommunity/brs";
+import { getCoverageResults } from "brs";
 
 /*
  * Generates coverage reports using the given list of reporters.
