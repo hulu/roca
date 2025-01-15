@@ -72,7 +72,9 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.9.7"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@rokucommunity/brs": "^0.45.2"
+  },
   "lint-staged": {
     "./README.md": "doctoc",
     "*.{ts,js}": [
