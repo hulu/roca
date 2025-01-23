@@ -32,21 +32,23 @@ end sub
 ' Prints a TAP testing plan in the form of "1..${numberOfTests}"
 ' @param {integer} numberOfTests - the number of test cases being run
 sub __tap_plan(numberOfTests as integer)
-    print m.getIndent() "1.." numberOfTests
+    print m.getIndent() "1.." numberOfTests.toStr().trim()
 end sub
 
 ' Prints a "test case passed" message to the TAP stream
 ' @param {integer} index - the zero-based index of the test that passed
 ' @param {string} rawTitle - the unsanitized title of the test that passed
 sub __tap_pass(index as integer, rawTitle as string)
-    print m.getIndent() "ok " index + 1 " - " m.formatTitle(rawTitle)
+    index += 1
+    print m.getIndent() "ok " index.toStr().trim() " - " m.formatTitle(rawTitle)
 end sub
 
 ' Prints a "test case skipped" message to the TAP stream
 ' @param {integer} index - the zero-based index of the test that was skipped
 ' @param {string} rawTitle - the unsanitized title of the test that was skipped
 sub __tap_skip(index as integer, rawTitle as string)
-    print m.getIndent() "ok " index + 1 " - " m.formatTitle(rawTitle) " # skip"
+    index += 1
+    print m.getIndent() "ok " index.toStr().trim() " - " m.formatTitle(rawTitle) " # skip"
 end sub
 
 ' Prints a "test case failed" message to the TAP stream
@@ -54,7 +56,8 @@ end sub
 ' @param {string} rawTitle - the unsanitized title of the test that failed
 ' @param {assocarray} [metadata] - blob of data to be printed in an indented YAML block
 sub __tap_fail(index as integer, rawTitle as string, metadata = invalid as object)
-    print m.getIndent() "not ok " index + 1 " - " m.formatTitle(rawTitle)
+    index += 1
+    print m.getIndent() "not ok " index.toStr().trim() " - " m.formatTitle(rawTitle)
     if metadata <> invalid then
         m.printExtras(metadata)
     end if
