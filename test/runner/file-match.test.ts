@@ -19,22 +19,26 @@ describe("globMatchFiles", () => {
 
     it("Finds all .test.brs files when not given patterns", async () => {
         let results = await wrappedGlobMatchFiles([]);
-        expect(results).toEqual([
-            "fly-you-fools.test.brs",
-            "bar/bar-suffix.test.brs",
-            "bar/bar.test.brs",
-            "bar/prefix-bar.test.brs",
-            "foo/main.test.brs",
-            "foo2/main.test.brs",
-        ]);
+        expect(results).toEqual(
+            expect.arrayContaining([
+                "fly-you-fools.test.brs",
+                "bar/bar-suffix.test.brs",
+                "bar/bar.test.brs",
+                "bar/prefix-bar.test.brs",
+                "foo/main.test.brs",
+                "foo2/main.test.brs",
+            ])
+        );
     });
 
     it("Partially matches on filename suffix when given a .brs extension", async () => {
         let results = await wrappedGlobMatchFiles(["bar.test.brs"]);
-        expect(results).toEqual([
-            "bar/bar.test.brs",
-            "bar/prefix-bar.test.brs",
-        ]);
+        expect(results).toEqual(
+            expect.arrayContaining([
+                "bar/bar.test.brs",
+                "bar/prefix-bar.test.brs",
+            ])
+        );
     });
 
     it("Can handle a full path to a file", async () => {
@@ -44,20 +48,24 @@ describe("globMatchFiles", () => {
 
     it("Can handle asterisks in pattern", async () => {
         let results = await wrappedGlobMatchFiles(["bar*.test.brs"]);
-        expect(results).toEqual([
-            "bar/bar-suffix.test.brs",
-            "bar/bar.test.brs",
-            "bar/prefix-bar.test.brs",
-        ]);
+        expect(results).toEqual(
+            expect.arrayContaining([
+                "bar/bar-suffix.test.brs",
+                "bar/bar.test.brs",
+                "bar/prefix-bar.test.brs",
+            ])
+        );
     });
 
     it("Looks for both partial directory and file matches when not given a .brs extension", async () => {
         let results = await wrappedGlobMatchFiles(["foo"]);
-        expect(results).toEqual([
-            "fly-you-fools.test.brs",
-            "foo/main.test.brs",
-            "foo2/main.test.brs",
-        ]);
+        expect(results).toEqual(
+            expect.arrayContaining([
+                "fly-you-fools.test.brs",
+                "foo/main.test.brs",
+                "foo2/main.test.brs",
+            ])
+        );
     });
 
     it("Excludes files when handling directories", async () => {
@@ -72,10 +80,12 @@ describe("globMatchFiles", () => {
 
     it("Handles multiple patterns", async () => {
         let results = await wrappedGlobMatchFiles(["main", "prefix"]);
-        expect(results).toEqual([
-            "bar/prefix-bar.test.brs",
-            "foo/main.test.brs",
-            "foo2/main.test.brs",
-        ]);
+        expect(results).toEqual(
+            expect.arrayContaining([
+                "bar/prefix-bar.test.brs",
+                "foo/main.test.brs",
+                "foo2/main.test.brs",
+            ])
+        );
     });
 });

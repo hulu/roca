@@ -53,12 +53,12 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
+    "@rokucommunity/brs": "0.47.2",
     "@types/glob": "^7.1.3",
     "@types/jest": "^26.0.21",
     "@types/long": "^4.0.1",
     "@types/memory-fs": "^0.3.2",
     "@types/xmldoc": "^1.1.5",
-    "brs": "^0.43.0",
     "docsify-cli": "^4.4.2",
     "doctoc": "^1.4.0",
     "husky": "^4.2.5",
@@ -73,7 +73,7 @@
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "brs": "^0.43.0"
+    "@rokucommunity/brs": "^0.47.2"
   },
   "lint-staged": {
     "./README.md": "doctoc",

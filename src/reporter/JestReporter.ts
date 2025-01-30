@@ -21,7 +21,7 @@ import {
     createFailureMessage,
 } from "./utils";
 import type { Config } from "@jest/types";
-import { BrsError } from "brs/types/Error";
+import { BrsError } from "@rokucommunity/brs/types/Error";
 
 function isBrsError(error: Error | BrsError): error is BrsError {
     let maybeBrsError = error as BrsError;
