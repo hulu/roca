@@ -21,6 +21,10 @@ All of our documentation is at [hulu.github.io/roca](https://hulu.github.io/roca
 
 If you spot a bug or want a feature, please feel free to file an issue. If you want to contribute code yourself, simply fork the repo and open a PR.
 
+### NPM Package Management
+
+The package registry for this project is located at npmjs.com: [@hulu/roca](https://www.npmjs.com/package/@hulu/roca). Only privileged members are able to publish new updates. If you need to be granted privileges, reach out to one of the repository owners and [have them add you](https://www.npmjs.com/settings/hulu/members).
+
 ### Modifying the docs site
 
 We use [docsify](https://docsify.js.org) to build our site, and [Github pages](https://pages.github.com/) to deploy it. To run the documentation site locally, simply run:
