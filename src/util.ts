@@ -47,7 +47,7 @@ export async function globMatchFiles(filePatterns: string[]) {
     } else {
         testsPattern += `{${parsedPatterns.join(",")}}`;
     }
-
+    testsPattern = testsPattern.replace(/\\/g, "/");
     // exclude node_modules from the test search
     return fastGlob([testsPattern, `!${process.cwd()}/node_modules/**/*`]);
 }
