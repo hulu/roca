@@ -75,6 +75,7 @@ async function run(brsSourceFiles: string[], options: CliOptions) {
             stderr: process.stderr,
             generateCoverage: coverageEnabled,
             componentDirs: ["test", "tests"],
+            noColor: true,
         });
     } catch (e) {
         console.error(
