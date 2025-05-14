@@ -598,10 +598,10 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@rokucommunity/brs@0.47.2":
-  version "0.47.2"
-  resolved "https://registry.yarnpkg.com/@rokucommunity/brs/-/brs-0.47.2.tgz#7a232e7b7f93abc7ac5edf8086ab049ee4d1cbc8"
-  integrity sha512-IUvxWhWQ6Q1VyadxDHZxGsgMjRREePXShPLmJy0GUZReI6EAl7EH1lNcILjsMkb4YUXydOXeVFYaZhDMqG4Cbw==
+"@rokucommunity/brs@0.47.4":
+  version "0.47.4"
+  resolved "https://registry.yarnpkg.com/@rokucommunity/brs/-/brs-0.47.4.tgz#8542e39e475d4464b0e6510665a7f81071bb5f72"
+  integrity sha512-N/6NmToi3UKJHFC5UUwt1EjQlP8q9ihNFMbDjtqzy8VKc88F5raU7QhqXxCzwp9RJV8JDDQATNRDuLTqoLLbuw==
   dependencies:
     chalk "^4.1.2"
     commander "^2.20.3"
