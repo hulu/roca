@@ -14,6 +14,8 @@ describe("assert", () => {
             { fullTitle: "hasBeenCalledWith success complex arg" },
             { fullTitle: "hasBeenCalledWith success multiple args" },
             { fullTitle: "hasBeenCalledWith success multiple calls" },
+            { fullTitle: "hasBeenCalledWith success boolean true value" },
+            { fullTitle: "hasBeenCalledWith success boolean false value" },
         ]);
 
         expect(results.failures).toMatchObject([
@@ -105,6 +107,28 @@ describe("assert", () => {
                     expected: '(["baz"], 456)',
                     message:
                         "Expected mock function 'fakeFunc' to have been called with args ([\"baz\"], 456)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle:
+                    "hasBeenCalledWith failure boolean values, which do not match(true/false)",
+                err: {
+                    actual: "(true)",
+                    expected: "(false)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (false)",
+                    name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle:
+                    "hasBeenCalledWith failure boolean values, which do not match(false/true)",
+                err: {
+                    actual: "(false)",
+                    expected: "(true)",
+                    message:
+                        "Expected mock function 'fakeFunc' to have been called with args (true)",
                     name: "m.assert.hasBeenCalledWith",
                 },
             },

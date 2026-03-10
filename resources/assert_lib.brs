@@ -161,8 +161,11 @@ function __roca_deepEquals(lhs as object, rhs as object) as boolean
         index = 0
         for each updatedLeft in lhs
             updatedRight = rhs[index]
-
             isEqual = __roca_deepEquals(updatedLeft, updatedRight)
+
+            if type(updatedRight) <> "roAssociativeArray" and type(updatedRight) <> "roArray" then
+                isEqual = (updatedLeft = updatedRight)
+            end if
 
             if not isEqual then return false
 
