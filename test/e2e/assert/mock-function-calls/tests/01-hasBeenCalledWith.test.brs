@@ -33,6 +33,16 @@ function main(args as object) as object
                 m.assert.hasBeenCalledWith(m.spy, ["bar"])
                 m.assert.hasBeenCalledWith(m.spy, ["baz"])
             end sub)
+
+            m.it("boolean true value", sub()
+                fakeFunc(true)
+                m.assert.hasBeenCalledWith(m.spy, [true])
+            end sub)
+
+            m.it("boolean false value", sub()
+                fakeFunc(false)
+                m.assert.hasBeenCalledWith(m.spy, [false])
+            end sub)
         end sub)
 
         m.describe("failure", sub()
@@ -59,6 +69,16 @@ function main(args as object) as object
                 fakeFunc(["foo", "bar"], 123)
                 fakeFunc([], 456)
                 m.assert.hasBeenCalledWith(m.spy, [["baz"], 456])
+            end sub)
+
+            m.it("boolean values, which do not match(true/false)", sub()
+                fakeFunc(true)
+                m.assert.hasBeenCalledWith(m.spy, [false])
+            end sub)
+
+            m.it("boolean values, which do not match(false/true)", sub()
+                fakeFunc(false)
+                m.assert.hasBeenCalledWith(m.spy, [true])
             end sub)
         end sub)
     end sub)
