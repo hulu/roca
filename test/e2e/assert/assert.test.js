@@ -3,7 +3,6 @@ const { rocaInDir } = require("../util");
 describe("assert", () => {
     test("mock-function-calls", async () => {
         let results = await rocaInDir(__dirname, "mock-function-calls");
-
         expect(results.passes).toMatchObject([
             { fullTitle: "hasBeenCalled success" },
             { fullTitle: "hasBeenCalledTimes success 0" },
@@ -16,6 +15,10 @@ describe("assert", () => {
             { fullTitle: "hasBeenCalledWith success multiple calls" },
             { fullTitle: "hasBeenCalledWith success boolean true value" },
             { fullTitle: "hasBeenCalledWith success boolean false value" },
+            { fullTitle: "deepEquals success array" },
+            { fullTitle: "deepEquals success boolean values" },
+            { fullTitle: "deepEquals success string values" },
+            { fullTitle: "deepEquals success numeric values" },
         ]);
 
         expect(results.failures).toMatchObject([
@@ -130,6 +133,46 @@ describe("assert", () => {
                     message:
                         "Expected mock function 'fakeFunc' to have been called with args (true)",
                     name: "m.assert.hasBeenCalledWith",
+                },
+            },
+            {
+                fullTitle: "deepEquals failure array",
+                err: {
+                    actual: "[2]",
+                    expected: "[1]",
+                    message:
+                        "Expected mock function 'fakeFunc' should have returned [2], but [1] is expected",
+                    name: "m.deepEquals",
+                },
+            },
+            {
+                fullTitle: "deepEquals failure boolean values",
+                err: {
+                    actual: "true",
+                    expected: "false",
+                    message:
+                        "Expected mock function 'fakeFunc' should have returned true, but false is expected",
+                    name: "m.deepEquals",
+                },
+            },
+            {
+                fullTitle: "deepEquals failure string values",
+                err: {
+                    actual: "test",
+                    expected: "false",
+                    message:
+                        "Expected mock function 'fakeFunc' should have returned 'test', but false is expected",
+                    name: "m.deepEquals",
+                },
+            },
+            {
+                fullTitle: "deepEquals failure numeric values",
+                err: {
+                    actual: "22",
+                    expected: "11",
+                    message:
+                        "Expected mock function 'fakeFunc' should have returned 22, but 11 is expected",
+                    name: "m.deepEquals",
                 },
             },
         ]);

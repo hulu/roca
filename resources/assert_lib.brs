@@ -186,11 +186,7 @@ function __roca_deepEquals(lhs as object, rhs as object) as boolean
         end for
     end if
 
-    if __roca_isNumeric(lhs) and __roca_isNumeric(rhs) then
-        if lhs <> rhs then return false
-    end if
-
-    if __roca_isString(lhs) and __roca_isString(rhs) then
+    if _roca_isSameValueType(lhs, rhs) then
         if lhs <> rhs then return false
     end if
 
@@ -265,12 +261,20 @@ function __roca_isInvalid(value as dynamic) as boolean
     return type(value) = "roInvalid"
 end function
 
+function __roca_isBoolean(value as dynamic) as boolean
+    return value <> invalid and type(value) = "roBoolean"
+end function
+
 function __roca_isFunction(value as dynamic) as boolean
     return value <> invalid and getInterface(value, "ifFunction") <> invalid
 end function
 
 function __roca_isNumeric(value as dynamic) as boolean
     return  __roca_isInteger(value) or __roca_isFloat(value) or __roca_isDouble(value)
+end function
+
+function _roca_isSameValueType(lhs as dynamic, rhs as dynamic) as boolean
+    return (__roca_isNumeric(lhs) and __roca_isNumeric(rhs)) or (__roca_isString(lhs) and __roca_isString(rhs)) or (__roca_isBoolean(lhs) and __roca_isBoolean(rhs))
 end function
 
 function __roca_isRoSGNode(obj as dynamic) as boolean
