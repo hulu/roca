@@ -46,7 +46,7 @@ m.it("calls a globally-defined test function", sub()
 end sub)
 ```
 
-And then you'd tell to `roca` to use the setup file:
+And then you'd tell `roca` to use the setup file:
 ```bash
 roca -r "tests/MySetupFile.brs"
 ```
